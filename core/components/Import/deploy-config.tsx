@@ -1,4 +1,5 @@
 "use client"
+
 import { useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useSession } from "next-auth/react"
@@ -98,6 +99,8 @@ export function DeployConfig() {
     if (!repoDetails) return
 
     setDeploying(true)
+    setError(null)
+
     try {
       const deploymentData = {
         repository: repoDetails.repository.full_name,
@@ -118,21 +121,18 @@ export function DeployConfig() {
         },
         body: JSON.stringify(deploymentData),
       })
+
       const result = await response.json()
 
       if (!response.ok) {
         throw new Error(result.error || "Deployment failed")
       }
 
-      console.log("Starting deployment with:", deploymentData)
-
-      // Simulate deployment API call
-      await new Promise((resolve) => setTimeout(resolve, 2000))
-
-      // Redirect to deployment overview
-      router.push(`/deployments/building?project=${projectName}`)
+      // Redirect to deployment status page with project ID
+      router.push(`/deployments/${result.project.id}`)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Deployment failed")
+      console.error("Deployment error:", err)
     } finally {
       setDeploying(false)
     }
