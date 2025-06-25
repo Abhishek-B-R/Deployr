@@ -1,10 +1,12 @@
 "use client";
 
-import { GithubIcon, Rocket } from "lucide-react";
+import { ChevronDown, GithubIcon, Rocket } from "lucide-react";
 import { ThemeToggle } from "../theme-toggle";
 import { Button } from "../ui/button";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Link from "next/link"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 
 export default function Header() {
     const session = useSession();
@@ -22,6 +24,41 @@ export default function Header() {
                 </span>
             </div>
             <nav className="hidden md:flex items-center space-x-6">
+                {session.status === "authenticated" ?  
+                (<>
+                    <Button size="sm" onClick={()=>router.push("/dashboard")}>
+                    Dashboard
+                    </Button>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button size="sm">
+                                Add New... <ChevronDown/>    
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                            <DropdownMenuItem asChild onClick={()=>router.push("/new")}>
+                                <Button variant="ghost" size="sm" className="w-full justify-start">
+                                    Project
+                                </Button>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild onClick={()=>{
+                                window.open('https://github.com/new', '_blank', 'noopener,noreferrer');
+                            }}>
+                                <Button variant="ghost" size="sm" className="w-full justify-start">
+                                    Repository
+                                </Button>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </>):
+                (<>
+                    <Link href="#features" className="text-sm font-medium hover:text-primary transition-colors">
+                    Features
+                    </Link>
+                    <Link href="#how-it-works" className="text-sm font-medium hover:text-primary transition-colors">
+                    How it Works
+                    </Link>
+                </>)}
                 <ThemeToggle />
                 <Button className="cursor-pointer bg-white dark:bg-black text-black dark:text-white hover:bg-gray-300" onClick={() => {
                     window.open('https://www.github.com/Abhishek-B-R/Deployr', '_blank', 'noopener,noreferrer');
@@ -38,12 +75,7 @@ export default function Header() {
                         Sign In
                     </Button>
                 }
-                <Button size="sm" onClick={()=>router.push("/dashboard")}>Get Started</Button>
             </nav>
-            <div className="md:hidden flex items-center space-x-2">
-                <ThemeToggle />
-                <Button size="sm">Get Started</Button>
-            </div>
             </div>
         </header>
     )

@@ -6,6 +6,10 @@ declare module "next-auth" {
   interface User {
     github_id?: number;
   }
+  
+  interface Session {
+    accessToken?: string;
+  }
 }
 
 const GITHUB_ID = process.env.GITHUB_ID! ;
@@ -25,6 +29,17 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
+
+    async jwt({ token, account }) {
+      if (account) {
+        token.accessToken = account.access_token
+      }
+      return token
+    },
+    async session({ session, token }) {
+      session.accessToken = token.accessToken as string
+      return session
+    },
     
     async signIn({ user, account, profile }) {
         if (!profile || !account) return false;
