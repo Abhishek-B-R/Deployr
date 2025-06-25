@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { Suspense } from "react"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/authOptions"
@@ -77,7 +78,7 @@ export default async function AddNew() {
             </div>
 
             {/* Templates Section */}
-            <div className="">
+            <div className="radial-gradient(circle at center, #f3f4f6, #e5e7eb) border-2 dark:bg-[radial-gradient(circle_at_center,_#1e293b,_#0f172a)] rounded-xl shadow-inner max-h-[580px]">
               <ModelRender />
             </div>
           </div>

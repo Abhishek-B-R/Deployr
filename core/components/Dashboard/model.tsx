@@ -7,17 +7,64 @@ Source: https://sketchfab.com/3d-models/low-poly-man-working-at-a-table-with-a-l
 Title: Low poly man working at a table with a laptop
 */
 
-import React, { useRef } from 'react'
-import { useGLTF } from '@react-three/drei'
+import React, { useEffect, useRef, useState } from 'react'
+import { useGLTF,useAnimations } from '@react-three/drei'
 import * as THREE from 'three'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function Model(props: any) {
   const group = useRef<THREE.Group>(null)
-  const { nodes, materials } = useGLTF('/scene.gltf')
-//   const { actions } = useAnimations(animations, group)
+  const { nodes, materials, animations } = useGLTF('/scene.gltf')
+  const { actions } = useAnimations(animations, group)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  useEffect(() => {
+    const action = actions?.Animation
+    if (action) {
+      action.setLoop(THREE.LoopOnce, 1) // Play only once
+      action.clampWhenFinished = true
+      action.timeScale = 1.5 // Speed up animation slightly
+    }
+
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current)
+    }
+  }, [actions])
+
+  const playWithDelayLoop = () => {
+    const action = actions?.Animation
+    if (!action) return
+
+    action.reset().play()
+    setIsPlaying(true)
+
+    action.getMixer().addEventListener('finished', () => {
+      setIsPlaying(false)
+
+      // Add 2s delay before playing again
+      timeoutRef.current = setTimeout(() => {
+        if (!isPlaying) playWithDelayLoop()
+      }, 1000)
+    })
+  }
+
+  const handlePointerOver = () => {
+    if (!isPlaying) playWithDelayLoop()
+  }
+
+  const handlePointerOut = () => {
+    actions?.Animation?.stop()
+    setIsPlaying(false)
+    if (timeoutRef.current) clearTimeout(timeoutRef.current)
+  }
+
+
   return (
-    <group ref={group} {...props} dispose={null}>
+    <group ref={group} {...props} dispose={null}
+      onPointerOver={handlePointerOver}
+      onPointerOut={handlePointerOut}
+    >
       <group name="Sketchfab_Scene">
         <group
           name="Sketchfab_model"
