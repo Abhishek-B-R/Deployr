@@ -16,8 +16,8 @@ datasource db {
 
 model User{
   id              String    @id @default(cuid())
-  name            String?
-  github_id       Int?      @unique
+  name            String
+  github_id       Int      @unique
   github_username String?   @unique
   email           String    @unique
   bio             String?
@@ -30,9 +30,9 @@ model Project{
   id          String   @id @default(cuid())
   name        String
   user        User     @relation(fields: [userId], references: [id])
-  repo_name   String?
-  repo_url    String?
-  branch      String?
+  repo_name   String
+  repo_url    String
+  branch      String
   slug        String   @unique
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -44,6 +44,12 @@ model Project{
   logs        String?
   envVars     EnvVar[]
   userId      String
+
+  buildCommand    String
+  installCommand  String
+  outputDirectory String 
+  framework       String
+  rootDirectory   String
 
   @@index([name],map: "name")
   @@index([slug],map: "slug")

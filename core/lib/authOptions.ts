@@ -78,7 +78,7 @@ export const authOptions: NextAuthOptions = {
         const upsertedUser = await prisma.user.upsert({
             where: { github_id: db_data.github_id },
             create: {
-            github_id: db_data.github_id,
+            github_id: db_data.github_id || 0,
             accessToken: db_data.access_token,
             avatar: db_data.avatar_url ?? "",
             bio: db_data.bio ?? "",

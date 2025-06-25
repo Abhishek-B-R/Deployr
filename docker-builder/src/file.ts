@@ -15,3 +15,5 @@ export function getAllFiles(folderPath:string){
     })
     return allPaths
 }
+
+// TODO : make this async

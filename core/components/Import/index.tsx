@@ -1,6 +1,6 @@
 "use client"
 import { Suspense } from "react"
-import { DeployConfig } from "@/components/deploy-config"
+import { DeployConfig } from "./deploy-config"
 import { Card, CardContent } from "@/components/ui/card"
 import Link from "next/link"
 import { SessionProvider } from "next-auth/react"

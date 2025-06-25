@@ -99,7 +99,6 @@ export function DeployConfig() {
 
     setDeploying(true)
     try {
-      // Here you would make the API call to start deployment
       const deploymentData = {
         repository: repoDetails.repository.full_name,
         branch: selectedBranch,
@@ -110,6 +109,19 @@ export function DeployConfig() {
         installCommand,
         envVars: envVars.filter((env) => env.key && env.value),
         framework: repoDetails.framework.slug,
+      }
+
+      const response = await fetch("/api/deploy", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(deploymentData),
+      })
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || "Deployment failed")
       }
 
       console.log("Starting deployment with:", deploymentData)

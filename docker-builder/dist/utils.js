@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generate = generate;
-const MAX_LEN = 5;
+const MAX_LEN = 10;
 function generate() {
     let ans = "";
     const subset = "123456789qwertyuiopasdfghjklzxcvbnm";
