@@ -2,8 +2,8 @@ import { Suspense } from "react"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/authOptions"
 import prisma from "@/db"
-import { UserSettings } from "@/components/user-settings"
-import { UserSettingsSkeleton } from "@/components/user-settings-skeleton"
+import { UserSettings } from "@/components/Settings/user-settings"
+import { UserSettingsSkeleton } from "@/components/Settings/user-settings-skeleton"
 import { redirect } from "next/navigation"
 
 async function getUserData(userEmail: string) {
