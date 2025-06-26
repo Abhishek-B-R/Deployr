@@ -3,7 +3,7 @@ import { notFound } from "next/navigation"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/authOptions"
 import prisma from "@/db"
-import { ProjectSettings } from "@/components/project-settings"
+import { ProjectSettings } from "@/components/ProjectOverview/project-settings"
 
 interface PageProps {
   params: {

@@ -7,12 +7,11 @@ import {
   GitBranch,
   Rocket,
 } from "lucide-react"
-import Header from "./NavBar"
 import Hero from "./Hero"
 import Features from "./Features"
 import AdditionalFeatures from "./AdditionalFeatures"
-import Footer from "./Footer"
-import { SessionProvider } from "next-auth/react";
+import Footer from "../Footer"
+import NavBar from "../NavBar"
 
 export default function Landing() {
   const [isVisible, setIsVisible] = useState(false)
@@ -23,9 +22,7 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen px-16 bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800">
-      <SessionProvider>
-        <Header/>
-      </SessionProvider>
+      <NavBar/>
       <Hero isVisible={isVisible}/>
       <Features/>
       

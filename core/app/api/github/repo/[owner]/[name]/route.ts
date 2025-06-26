@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/authOptions"
 import { detectFramework } from "@/lib/framework-detection"
 
-export async function GET(request: NextRequest, context: { params: { owner: string; name: string } }) {
+export async function GET(request: NextRequest, { params }: { params: { owner: string; name: string } }) {
   try {
     const session = await getServerSession(authOptions)
 
@@ -11,8 +11,7 @@ export async function GET(request: NextRequest, context: { params: { owner: stri
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const { params } = context
-    const { owner, name } = await params
+    const { owner, name } = params
 
     // Fetch repository details
     const repoResponse = await fetch(`https://api.github.com/repos/${owner}/${name}`, {
@@ -60,9 +59,14 @@ export async function GET(request: NextRequest, context: { params: { owner: stri
           packageJson = JSON.parse(content)
           framework = detectFramework(packageJson)
         }
+      } else {
+        // If package.json is not found, use unknown framework
+        framework = detectFramework(null)
       }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      console.log("Could not fetch package.json, using static framework"+error)
+      // If there's any error fetching or parsing package.json, use unknown framework
+      console.log("Could not fetch or parse package.json, using unknown framework")
       framework = detectFramework(null)
     }
 

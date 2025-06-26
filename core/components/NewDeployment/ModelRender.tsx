@@ -49,7 +49,7 @@ export default function ModelRender() {
     const isMobile = useMediaQuery({maxWidth: 768});
 
     return (
-        <section className="min-h-screen w-full flex flex-col relative">
+        <section className="min-h-screen w-full flex flex-col relative px-10">
             <div className="w-full h-full absolute inset-0">
                 {/* <Leva/> */}
                 <Canvas className="w-full h-full overflow-hidden">
@@ -59,7 +59,7 @@ export default function ModelRender() {
                             <Model 
                                 scale={isMobile?1:1.3}
                                 // scale={isMobile?5:6}
-                                position={[-2.5,isMobile?7:0,isMobile?3:0]} 
+                                position={[-2.5,isMobile?7:1,isMobile?3:0]} 
                                 rotation={[0.25,1.5,0]} 
                             />
                         </HeroCamera>

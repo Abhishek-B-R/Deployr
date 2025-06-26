@@ -30,7 +30,7 @@ app.get("/", (req, res) => {
     });
 });
 app.post("/deploy", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id, repository, branch, projectName, session } = req.body;
+    const { id, repository, branch, session } = req.body;
     const repo_url = `https://${repository.split("/")[0]}:${session.accessToken}@github.com/${repository}.git`;
     console.log(repo_url);
     //clone data from url and get all file paths and omit all folder names

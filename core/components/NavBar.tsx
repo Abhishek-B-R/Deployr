@@ -1,19 +1,29 @@
 "use client";
 
-import { ChevronDown, GithubIcon, Rocket } from "lucide-react";
-import { ThemeToggle } from "../theme-toggle";
-import { Button } from "../ui/button";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { ChevronDown, GithubIcon, Rocket, Settings } from "lucide-react";
+import { ThemeToggle } from "./theme-toggle";
+import { Button } from "./ui/button";
+import { SessionProvider, signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
-export default function Header() {
+function Header() {
     const session = useSession();
     const router = useRouter();
 
+    const getInitials = (name: string) => {
+        return name
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2)
+    }
+
     return (
-        <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:px-10 rounded-2xl">
             <div className="container flex h-16 items-center justify-between">
             <div className="flex items-center space-x-2">
                 <div className="flex items-center justify-center w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg">
@@ -26,7 +36,7 @@ export default function Header() {
             <nav className="hidden md:flex items-center space-x-6">
                 {session.status === "authenticated" ?  
                 (<>
-                    <Button size="sm" onClick={()=>router.push("/dashboard")}>
+                    <Button size="sm" onClick={()=>router.push("/projects")}>
                     Dashboard
                     </Button>
                     <DropdownMenu>
@@ -67,9 +77,41 @@ export default function Header() {
                     <GithubIcon/>
                 </Button>
                 {session.status==="authenticated" ? 
-                    <Button variant="outline" size="sm" onClick={() => signOut()}>
-                        Sign Out
-                    </Button>
+                    <div className="w-full">
+                    {session ? (
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                                <Avatar className="h-8 w-8">
+                                <AvatarImage src={session.data.user?.image || ""} alt={session.data.user?.name || ""} />
+                                <AvatarFallback>{getInitials(session.data.user?.name || session.data.user?.email || "U")}</AvatarFallback>
+                                </Avatar>
+                            </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="w-56" align="end" forceMount>
+                            <div className="flex items-center justify-start gap-2 p-2">
+                                <div className="flex flex-col space-y-1 leading-none">
+                                {session.data.user?.name && <p className="font-medium">{session.data.user?.name}</p>}
+                                {session.data.user?.email && <p className="w-[200px] truncate text-sm text-muted-foreground">{session.data.user?.email}</p>}
+                                </div>
+                            </div>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem asChild>
+                                <Link href="/settings">
+                                <Settings className="mr-2 h-4 w-4" />
+                                Settings
+                                </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={() => router.push("/api/auth/signout")}>Sign out</DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    ) : (
+                        <Button asChild>
+                        <Link href="/api/auth/signin">Sign In</Link>
+                        </Button>
+                    )}
+                    </div>
                 :
                     <Button variant="outline" size="sm" onClick={() => signIn('github')}>
                         Sign In
@@ -78,5 +120,13 @@ export default function Header() {
             </nav>
             </div>
         </header>
+    )
+};
+
+export default function NavBar() {
+    return (
+        <SessionProvider>
+            <Header/>
+        </SessionProvider>
     )
 };

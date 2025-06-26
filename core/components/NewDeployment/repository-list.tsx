@@ -53,6 +53,7 @@ function RepositoryListInsider() {
       <Card className="w-full max-w-2xl">
         <CardContent className="p-8 text-center">
           <p className="text-muted-foreground mb-4">Please sign in to view your repositories</p>
+          <p className="text-muted-foreground mb-4">Or maybe your access token got expired, consider relogging in.</p>
           <Button onClick={() => router.push("/api/auth/signin")}>Sign in with GitHub</Button>
         </CardContent>
       </Card>

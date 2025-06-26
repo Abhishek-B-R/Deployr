@@ -116,7 +116,7 @@ export function ProjectSettings({ project }: ProjectSettingsProps) {
         description: "Your project has been deleted successfully.",
       })
 
-      router.push("/dashboard")
+      router.push("/projects")
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast({
@@ -130,7 +130,7 @@ export function ProjectSettings({ project }: ProjectSettingsProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800">
+    <div className="min-h-screen md:pl-20 sm:pl-10 p-0 bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800">
       {/* Header */}
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center justify-between">

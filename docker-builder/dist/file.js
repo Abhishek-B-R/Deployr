@@ -20,3 +20,4 @@ function getAllFiles(folderPath) {
     });
     return allPaths;
 }
+// TODO : make this async

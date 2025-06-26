@@ -3,8 +3,8 @@ import { notFound } from "next/navigation"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/authOptions"
 import prisma from "@/db"
-import { ProjectOverview } from "@/components/project-overview"
-import { ProjectOverviewSkeleton } from "@/components/project-overview-skeleton"
+import { ProjectOverview } from "@/components/ProjectOverview/project-overview"
+import { ProjectOverviewSkeleton } from "@/components/ProjectOverview/project-overview-skeleton"
 
 interface PageProps {
   params: {
@@ -44,10 +44,10 @@ export default async function ProjectOverviewPage({ params }: PageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Suspense fallback={<ProjectOverviewSkeleton />}>
-        <ProjectOverview project={project} />
-      </Suspense>
-    </div>
+      <div className="min-h-screen min-w-full bg-background">
+        <Suspense fallback={<ProjectOverviewSkeleton />}>
+          <ProjectOverview project={project} />
+        </Suspense>
+      </div>
   )
 }

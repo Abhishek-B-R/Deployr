@@ -88,11 +88,22 @@ export const frameworks: Record<string, FrameworkConfig> = {
     description: "Static HTML, CSS, and JavaScript",
     color: "#E34F26",
   },
+  unknown: {
+    name: "Other",
+    slug: "unknown",
+    logo: "❓",
+    buildCommand: "npm run build",
+    outputDirectory: "public",
+    installCommand: "npm install",
+    devCommand: "npm run dev",
+    description: "Unknown framework",
+    color: "#000000",
+  },
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function detectFramework(packageJson: any): FrameworkConfig {
-  if (!packageJson) return frameworks.static
+  if (!packageJson) return frameworks.unknown
 
   const dependencies = { ...packageJson.dependencies, ...packageJson.devDependencies }
   const scripts = packageJson.scripts || {}
@@ -127,5 +138,5 @@ export function detectFramework(packageJson: any): FrameworkConfig {
     return frameworks.svelte
   }
 
-  return frameworks.static
+  return frameworks.unknown
 }

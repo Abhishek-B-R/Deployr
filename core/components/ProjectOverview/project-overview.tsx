@@ -8,13 +8,6 @@ import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import {
   Globe,
   Github,
   GitBranch,
@@ -22,7 +15,6 @@ import {
   Eye,
   ExternalLink,
   Settings,
-  MoreHorizontal,
   RefreshCw,
   Activity,
   Zap,
@@ -32,7 +24,8 @@ import {
   XCircle,
 } from "lucide-react"
 import { getTimeAgo } from "@/lib/utils"
-import { ProjectLogs } from "@/components/project-logs"
+import { ProjectLogs } from "@/components/ProjectOverview/project-logs"
+import NavBar from "../NavBar"
 
 interface ProjectOverviewProps {
   project: {
@@ -110,18 +103,14 @@ export function ProjectOverview({ project: initialProject }: ProjectOverviewProp
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800">
+    <div className="min-h-screen min-w-full md:pl-24 sm:pl-10 bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800">
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <Link href="/dashboard" className="flex items-center space-x-2">
-              <div className="flex items-center justify-center w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg">
-                <span className="text-white font-bold text-sm">D</span>
-              </div>
-              <span className="text-xl font-bold">Deployr</span>
-            </Link>
-            <Separator orientation="vertical" className="h-6" />
+      <NavBar />
+
+      {/* Main Content */}
+      <main className="container py-8">
+        <div className="max-w-6xl mx-auto space-y-8">
+          <div className="flex justify-between">
             <div className="flex items-center space-x-2">
               <h1 className="text-xl font-semibold">{project.name}</h1>
               <Badge variant={status.variant} className="flex items-center space-x-1">
@@ -129,52 +118,11 @@ export function ProjectOverview({ project: initialProject }: ProjectOverviewProp
                 <span className="capitalize">{project.status.toLowerCase()}</span>
               </Badge>
             </div>
+            <button onClick={()=>window.location.reload()} className="flex items-center border-1 p-2 rounded-2xl cursor-pointer">
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Refresh
+            </button>
           </div>
-          <div className="flex items-center space-x-2">
-            {project.status === "DEPLOYED" && (
-              <Button asChild variant="outline">
-                <a href={deploymentUrl} target="_blank" rel="noopener noreferrer">
-                  <Globe className="w-4 h-4 mr-2" />
-                  Visit
-                  <ExternalLink className="w-4 h-4 ml-2" />
-                </a>
-              </Button>
-            )}
-            <Button asChild variant="outline">
-              <Link href={`/projects/${project.id}/settings`}>
-                <Settings className="w-4 h-4 mr-2" />
-                Settings
-              </Link>
-            </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <MoreHorizontal className="w-4 h-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => copyToClipboard(deploymentUrl)}>
-                  <Copy className="w-4 h-4 mr-2" />
-                  Copy URL
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => copyToClipboard(project.id)}>
-                  <Copy className="w-4 h-4 mr-2" />
-                  Copy Project ID
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => window.location.reload()}>
-                  <RefreshCw className="w-4 h-4 mr-2" />
-                  Refresh
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="container py-8">
-        <div className="max-w-6xl mx-auto space-y-8">
           {/* Status Banner */}
           {project.status === "FAILED" && (
             <Card className="border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/50">

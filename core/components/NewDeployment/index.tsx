@@ -1,42 +1,22 @@
-/* eslint-disable @next/next/no-img-element */
 import { Suspense } from "react"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/authOptions"
 import RepositoryList from "./repository-list"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Github, Rocket } from "lucide-react"
+import { Github } from "lucide-react"
 import Link from "next/link"
-import ModelRender from "./template-showcase"
+import ModelRender from "./ModelRender"
+import NavBar from "../NavBar"
+import Footer from "../Footer"
 
 export default async function AddNew() {
   const session = await getServerSession(authOptions)
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background min-w-full">
       {/* Header */}
-      <header className="border-b">
-        <div className="container flex h-16 items-center justify-between">
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="flex items-center justify-center w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg">
-              <span className="text-white font-bold text-sm"><Rocket/></span>
-            </div>
-            <span className="text-xl font-bold">Deployr</span>
-          </Link>
-          <div className="flex items-center space-x-4">
-            {session ? (
-              <div className="flex items-center space-x-2">
-                <img src={session.user?.image || ""} alt={session.user?.name || ""} className="w-8 h-8 rounded-full" />
-                <span className="text-sm">{session.user?.name}</span>
-              </div>
-            ) : (
-              <Button asChild>
-                <Link href="/api/auth/signin">Sign In</Link>
-              </Button>
-            )}
-          </div>
-        </div>
-      </header>
+      <NavBar />
 
       {/* Main Content */}
       <main className="container py-12">
@@ -84,6 +64,7 @@ export default async function AddNew() {
           </div>
         </div>
       </main>
+      <Footer/>
     </div>
   )
 }

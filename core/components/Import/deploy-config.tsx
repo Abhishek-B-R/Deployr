@@ -23,6 +23,8 @@ import {
   AlertCircle,
 } from "lucide-react"
 import type { FrameworkConfig } from "@/lib/framework-detection"
+import { frameworks } from "@/lib/framework-detection"
+import DeployConfigSkeleton from "./deploy-config-skeleton"
 
 interface RepoDetails {
   repository: {
@@ -61,6 +63,10 @@ export function DeployConfig() {
   const [envVars, setEnvVars] = useState<Array<{ key: string; value: string }>>([])
   const [advancedSettings, setAdvancedSettings] = useState(false)
 
+  // Add framework selection state
+  const [selectedFramework, setSelectedFramework] = useState<string>("")
+
+  // Update the useEffect to set the selected framework
   useEffect(() => {
     if (!repo || !session) return
 
@@ -70,6 +76,7 @@ export function DeployConfig() {
     fetchRepoDetails(owner, name)
   }, [repo, session])
 
+  // Update fetchRepoDetails to set the selected framework
   const fetchRepoDetails = async (owner: string, name: string) => {
     try {
       setLoading(true)
@@ -85,6 +92,7 @@ export function DeployConfig() {
       // Set default values
       setProjectName(data.repository.name)
       setSelectedBranch(data.repository.default_branch)
+      setSelectedFramework(data.framework.slug)
       setBuildCommand(data.framework.buildCommand)
       setOutputDirectory(data.framework.outputDirectory)
       setInstallCommand(data.framework.installCommand)
@@ -95,6 +103,18 @@ export function DeployConfig() {
     }
   }
 
+  // Add framework change handler
+  const handleFrameworkChange = (frameworkSlug: string) => {
+    setSelectedFramework(frameworkSlug)
+    const framework = Object.values(frameworks).find((f) => f.slug === frameworkSlug)
+    if (framework) {
+      setBuildCommand(framework.buildCommand)
+      setOutputDirectory(framework.outputDirectory)
+      setInstallCommand(framework.installCommand)
+    }
+  }
+
+  // Update the handleDeploy function to use selectedFramework
   const handleDeploy = async () => {
     if (!repoDetails) return
 
@@ -111,7 +131,7 @@ export function DeployConfig() {
         outputDirectory,
         installCommand,
         envVars: envVars.filter((env) => env.key && env.value),
-        framework: repoDetails.framework.slug,
+        framework: selectedFramework,
       }
 
       const response = await fetch("/api/deploy", {
@@ -129,7 +149,7 @@ export function DeployConfig() {
       }
 
       // Redirect to deployment status page with project ID
-      router.push(`/deployments/${result.project.id}`)
+      router.push(`/projects/${result.project.id}/overview`)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Deployment failed")
       console.error("Deployment error:", err)
@@ -153,11 +173,7 @@ export function DeployConfig() {
   }
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <RefreshCw className="w-8 h-8 animate-spin" />
-      </div>
-    )
+    return <DeployConfigSkeleton />
   }
 
   if (error || !repoDetails) {
@@ -198,6 +214,27 @@ export function DeployConfig() {
       <div className="grid lg:grid-cols-3 gap-8">
         {/* Repository Info Sidebar */}
         <div className="space-y-6">
+          {/* Framework Detection */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg">Framework Preset</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center space-x-3">
+                <div className="text-2xl">{frameworks[selectedFramework]?.logo || "❓"}</div>
+                <div>
+                  <div className="font-medium">{frameworks[selectedFramework]?.name || "Unknown"}</div>
+                  <div className="text-sm text-muted-foreground">
+                    {frameworks[selectedFramework]?.description || "Unknown framework"}
+                  </div>
+                </div>
+              </div>
+              <Badge variant="secondary" className="mt-3">
+                {repoDetails.framework.slug === selectedFramework ? "Auto-detected" : "Manual"}
+              </Badge>
+            </CardContent>
+          </Card>
+
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-lg">Repository</CardTitle>
@@ -226,25 +263,6 @@ export function DeployConfig() {
                 <Folder className="w-4 h-4" />
                 <span className="text-sm">{rootDirectory}</span>
               </div>
-            </CardContent>
-          </Card>
-
-          {/* Framework Detection */}
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg">Framework Preset</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center space-x-3">
-                <div className="text-2xl">{repoDetails.framework.logo}</div>
-                <div>
-                  <div className="font-medium">{repoDetails.framework.name}</div>
-                  <div className="text-sm text-muted-foreground">{repoDetails.framework.description}</div>
-                </div>
-              </div>
-              <Badge variant="secondary" className="mt-3">
-                Auto-detected
-              </Badge>
             </CardContent>
           </Card>
         </div>
@@ -300,6 +318,29 @@ export function DeployConfig() {
                     The directory within your project, in case it is not in the root. Leave as &quot;./&quot; if unsure.
                   </p>
                 </div>
+              </div>
+
+              {/* Add framework selection dropdown in the configuration form after the root directory field */}
+              <div className="space-y-2">
+                <Label htmlFor="framework">Framework</Label>
+                <Select value={selectedFramework} onValueChange={handleFrameworkChange}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.values(frameworks).map((framework) => (
+                      <SelectItem key={framework.slug} value={framework.slug}>
+                        <div className="flex items-center space-x-2">
+                          <span>{framework.logo}</span>
+                          <span>{framework.name}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">
+                  Choose the framework that best matches your project. This will set optimal build settings.
+                </p>
               </div>
 
               <Separator />

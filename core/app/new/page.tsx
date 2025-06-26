@@ -1,6 +1,6 @@
-import AddNew from "@/components/Dashboard";
+import AddNew from "@/components/NewDeployment";
 
-export default function DashBoard() {
+export default function NewProject() {
   return (
     <div className="flex justify-center items-center">
       <AddNew/>
