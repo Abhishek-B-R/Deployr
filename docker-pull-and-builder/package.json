@@ -1,0 +1,26 @@
+{
+  "name": "docker-orchestrator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "npx tsc -b && node dist/index.js",
+    "build": "npx tsc -b",
+    "start": "node dist/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.10.0",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.837.0",
+    "@types/dockerode": "^3.3.41",
+    "@types/node": "^24.0.4",
+    "@types/pg": "^8.15.4",
+    "dockerode": "^4.0.7",
+    "dotenv": "^16.5.0",
+    "pg": "^8.16.2",
+    "redis": "^5.5.6",
+    "typescript": "^5.8.3"
+  }
+}

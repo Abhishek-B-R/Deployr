@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CLERK_SECRET_KEY = exports.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = exports.R2_TOKEN_VALUE = exports.R2_SECRET_ACCESS_KEY = exports.R2_ACCESS_KEY_ID = exports.R2_ENDPOINT = exports.R2_ACCOUNT_ID = void 0;
+exports.R2_ACCOUNT_ID = "d742946faacb17bc54e8996509568e49";
+exports.R2_ENDPOINT = "https://d742946faacb17bc54e8996509568e49.r2.cloudflarestorage.com";
+exports.R2_ACCESS_KEY_ID = "0e608e1af543c2a9167a1a6c18c9d430";
+exports.R2_SECRET_ACCESS_KEY = "2e27b678bb3d5de670057efe37e84896d0351f86b7fc11751d4f76582af07d8f";
+exports.R2_TOKEN_VALUE = "4L1gfR5bIWxIOmW8hkEcDFSoKJekLKefx95gEx2x";
+exports.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = "pk_test_dml0YWwtY3JpY2tldC0xMC5jbGVyay5hY2NvdW50cy5kZXYk";
+exports.CLERK_SECRET_KEY = "sk_test_gujqH44XolGEfnAszuNCCqxOHiX2QVXwzwpC06psJ8";

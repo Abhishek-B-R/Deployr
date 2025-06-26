@@ -1,0 +1,1 @@
+{"root":["./src/aws.ts","./src/config.ts","./src/deleteFilesInS3.ts","./src/deleteLocalFiles.ts","./src/envVars.ts","./src/index.ts","./src/utils.ts"],"version":"5.8.3"}

@@ -5,8 +5,12 @@ import path from "path"
 import { getAllFiles } from "./file"
 import { uploadFile } from "./aws"
 import { deleteAllFiles } from "./deleteFiles"
-import dotenv from "dotenv"
-dotenv.config();
+import { publisher } from "./redis"
+import { Client } from "pg"
+import { DATABASE_URL } from "./envVars"
+
+const pgClient = new Client(DATABASE_URL);
+pgClient.connect()
 
 const app=express()
 app.use(cors())
@@ -14,7 +18,7 @@ app.use(express.json())
 
 app.get("/",(req,res)=>{
     res.json({
-        msg:"hey this is working"
+        msg:"Docker Builder API is running"
     })
 })
 
@@ -41,7 +45,14 @@ app.post("/deploy",async (req,res)=>{
     await new Promise((resolve) => setTimeout(resolve, 5000))
 
     //push to redis queue
-    //insert status in hashset of redis
+    publisher.lPush("build-queue",id)
+
+    //insert status in DB
+    await Promise.race([
+        pgClient.query(`UPDATE "Project" SET status = $1 WHERE id = $2`, ['BUILDING', id]),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Query timed out')), 5000))
+    ])
+    
     //delete content of dist/output folder
     deleteAllFiles(path.join(__dirname,"output",id))
 
