@@ -5,6 +5,7 @@ import path from "path"
 import { deleteAllFiles } from "./deleteLocalFiles";
 import { subscriber } from "./redis";
 import pgClient from "./db";
+import { escape } from "querystring";
 
 async function  main() {
     while(1){
@@ -23,9 +24,10 @@ async function  main() {
             console.log("downloaded")
 
             const result = await pgClient.query(
-            `SELECT rootDirectory, installCommand, outputDirectory, buildCommand FROM "Project" WHERE id = $1`,
+            `SELECT "rootDirectory", "installCommand", "outputDirectory", "buildCommand" FROM "Project" WHERE id = $1`,
             [id]
             );
+            console.log("fetched data from db for table Project")
         
             // Always check if we got a row
             if (result.rows.length === 0) {
@@ -38,17 +40,23 @@ async function  main() {
             const envResult = await pgClient.query(
             `SELECT key, value 
             FROM "EnvVar"
-            WHERE projectId = $1`,
+            WHERE "projectId" = $1`,
             [id]
             );
-            const envVars: Record<string, string> = {};
-            for (const row of envResult.rows) {
-                envVars[row.key] = row.value;
+            console.log("fetched data from db for table EnvVar")
+            console.log(envResult.rows)
+            if(envResult.rows.length !== 0) {
+                const envVars: Record<string, string> = {};
+                for (const row of envResult.rows) {
+                    envVars[row.key] = row.value;
+                }
+                const envVarsArray = envResult.rows;
+                await buildProject(id,rootDirectory,installCommand,buildCommand,envVarsArray);
+            }else{
+                await buildProject(id,rootDirectory,installCommand,buildCommand);
             }
-            const envVarsArray = envResult.rows;
 
-            await buildProject(id,rootDirectory,installCommand,buildCommand,envVarsArray);
-            copyFinalDist(id,outputDirectory)
+            copyFinalDist(id,rootDirectory,outputDirectory)
 
             //insert status in hashset of redis
             console.log(path.join("output",id))

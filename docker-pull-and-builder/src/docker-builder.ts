@@ -7,7 +7,7 @@ import pgClient from "./db";
 
 const docker = new Docker();
 
-export async function buildProject(id: string,rootDirectory: string, installCommand: string, buildCommand: string,envVarsArray: { key: string, value: string }[]) {
+export async function buildProject(id: string,rootDirectory: string, installCommand: string, buildCommand: string,envVarsArray?: { key: string, value: string }[]) {
     const projectPath = path.resolve("output", id);
     let logsList = ""
 
@@ -30,10 +30,10 @@ export async function buildProject(id: string,rootDirectory: string, installComm
     try {
         await new Promise(resolve => {
             // Wait for 1 second to ensure Docker is ready
-            // setTimeout(() => {
-            //     log("Docker is ready");
-            //     resolve(null);
-            // }, 5000);
+            setTimeout(() => {
+                log("Docker is ready");
+                resolve(null);
+            }, 5000);
         });
         log("Pulling node:18 image...");
 
@@ -61,10 +61,10 @@ export async function buildProject(id: string,rootDirectory: string, installComm
                 `${installCommand} && ${buildCommand} && chown -R 1000:1000 /app`
             ],
             Tty: false,
-            WorkingDir: "/app",
-            Env: envVarsArray.map(({ key, value }) => `${key}=${value}`),
+            WorkingDir: `/app/${rootDirectory}`,
+            Env: envVarsArray?.map(({ key, value }) => `${key}=${value}`),
             HostConfig: {
-                Binds: [`${projectPath}:/app/${rootDirectory}`],
+                Binds: [`${projectPath}:/app`],
                 AutoRemove: true
             }
         });
@@ -95,8 +95,8 @@ export async function buildProject(id: string,rootDirectory: string, installComm
     }
 }
 
-export async function copyFinalDist(id: string, outputDirectory: string) {
-    const folderPath = path.resolve("output", id, outputDirectory);
+export async function copyFinalDist(id: string, rootDirectory: string, outputDirectory: string) {
+    const folderPath = path.resolve("output", id, rootDirectory, outputDirectory);
 
     try {
         if (!fs.existsSync(folderPath)) {
