@@ -26,32 +26,39 @@ interface LiveBuildLogsProps {
   projectName: string
   onLogsComplete?: (logs: string) => void
   className?: string
+  showAsActive?: boolean
 }
 
-export function LiveBuildLogs({ projectId, projectName, onLogsComplete, className }: LiveBuildLogsProps) {
+export function LiveBuildLogs({
+  projectId,
+  projectName,
+  onLogsComplete,
+  className,
+  showAsActive = false,
+}: LiveBuildLogsProps) {
   const [isPaused, setIsPaused] = useState(false)
   const [autoScroll, setAutoScroll] = useState(true)
   const scrollAreaRef = useRef<HTMLDivElement>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
 
-  const { logs, isConnected, isComplete, error, clearLogs, retry, formattedLogs } = useBuildLogs({
+  const { logs, isConnected, isComplete, isLive, error, clearLogs, retry, formattedLogs } = useBuildLogs({
     projectId,
     onLogsComplete,
   })
 
   // Auto-scroll to bottom when new logs arrive
   useEffect(() => {
-    if (autoScroll && !isPaused && bottomRef.current) {
+    if (autoScroll && !isPaused && bottomRef.current && (isLive || showAsActive)) {
       bottomRef.current.scrollIntoView({ behavior: "smooth" })
     }
-  }, [logs, autoScroll, isPaused])
+  }, [logs, autoScroll, isPaused, isLive, showAsActive])
 
   const downloadLogs = () => {
     const blob = new Blob([formattedLogs], { type: "text/plain" })
     const url = URL.createObjectURL(blob)
     const a = document.createElement("a")
     a.href = url
-    a.download = `${projectName}-build-logs-${new Date().toISOString().split("T")[0]}.txt`
+    a.download = `${projectName}-live-logs-${new Date().toISOString().split("T")[0]}.txt`
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
@@ -81,7 +88,7 @@ export function LiveBuildLogs({ projectId, projectName, onLogsComplete, classNam
     if (isConnected) {
       return { icon: Wifi, color: "text-green-500", label: "Connected" }
     }
-    return { icon: WifiOff, color: "text-red-500", label: "Disconnected" }
+    return { icon: WifiOff, color: "text-red-500", label: "Connecting..." }
   }
 
   const status = getConnectionStatus()
@@ -103,13 +110,18 @@ export function LiveBuildLogs({ projectId, projectName, onLogsComplete, classNam
               <StatusIcon className={cn("w-3 h-3", status.color)} />
               <span>{status.label}</span>
             </Badge>
+            {isLive && (
+              <Badge variant="default" className="bg-red-600">
+                LIVE
+              </Badge>
+            )}
             {logs.length > 0 && <Badge variant="secondary">{logs.length} lines</Badge>}
           </div>
         </div>
 
         <div className="flex items-center justify-between pt-2">
           <div className="flex items-center space-x-2">
-            <Button variant="outline" size="sm" onClick={() => setIsPaused(!isPaused)} disabled={isComplete}>
+            <Button variant="outline" size="sm" onClick={() => setIsPaused(!isPaused)} disabled={!isLive}>
               {isPaused ? (
                 <>
                   <Play className="w-4 h-4 mr-2" />
@@ -166,7 +178,7 @@ export function LiveBuildLogs({ projectId, projectName, onLogsComplete, classNam
                   ) : isConnected ? (
                     <div className="space-y-2">
                       <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse mx-auto"></div>
-                      <p>Waiting for build logs...</p>
+                      <p>Connected - Waiting for build logs...</p>
                     </div>
                   ) : (
                     <div className="space-y-2">
@@ -194,7 +206,7 @@ export function LiveBuildLogs({ projectId, projectName, onLogsComplete, classNam
           </ScrollArea>
 
           {/* Live indicator */}
-          {isConnected && !isComplete && !isPaused && (
+          {isLive && !isPaused && (
             <div className="absolute top-2 right-2">
               <div className="flex items-center space-x-1 bg-red-600 text-white px-2 py-1 rounded text-xs font-medium">
                 <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
@@ -219,12 +231,13 @@ export function LiveBuildLogs({ projectId, projectName, onLogsComplete, classNam
           <div className="flex items-center space-x-4">
             <span>Status: {status.label}</span>
             {logs.length > 0 && <span>Last update: {logs[logs.length - 1]?.timestamp.toLocaleTimeString()}</span>}
+            {isLive && <span className="text-red-500 font-medium">● LIVE MODE</span>}
           </div>
 
-          {isComplete && (
-            <div className="flex items-center space-x-1 text-green-600">
+          {!isLive && logs.length > 0 && (
+            <div className="flex items-center space-x-1 text-blue-600">
               <CheckCircle className="w-4 h-4" />
-              <span>Logs saved to database</span>
+              <span>Switched to stored logs</span>
             </div>
           )}
         </div>

@@ -6,7 +6,7 @@ import prisma from "@/db"
 export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const session = await getServerSession(authOptions)
-
+    const {id} = await params
     if (!session?.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
@@ -20,7 +20,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
     // Check if project exists and belongs to user
     const existingProject = await prisma.project.findFirst({
       where: {
-        id: params.id,
+        id,
         user: {
           email: session.user.email,
         },
@@ -33,7 +33,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
 
     // Update project with logs
     await prisma.project.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         logs,
         updatedAt: new Date(),
@@ -52,6 +52,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
 }
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+  const {id} = await params
   try {
     const session = await getServerSession(authOptions)
 
@@ -62,7 +63,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     // Get project logs
     const project = await prisma.project.findFirst({
       where: {
-        id: params.id,
+        id,
         user: {
           email: session.user.email,
         },

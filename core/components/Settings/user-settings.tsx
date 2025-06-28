@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
@@ -43,7 +44,9 @@ import {
   Activity,
 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
-import { ThemeToggle } from "./theme-toggle"
+import { ThemeToggle } from "../theme-toggle"
+import NavBar from "../NavBar"
+import Footer from "../Footer"
 
 const userUpdateSchema = z.object({
   name: z.string().min(1, "Name is required").max(50, "Name must be less than 50 characters"),
@@ -113,7 +116,6 @@ export function UserSettings({ user, session }: UserSettingsProps) {
       })
 
       router.refresh()
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast({
         title: "Error",
@@ -142,7 +144,6 @@ export function UserSettings({ user, session }: UserSettingsProps) {
       })
 
       router.push("/api/auth/signout")
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast({
         title: "Error",
@@ -163,41 +164,21 @@ export function UserSettings({ user, session }: UserSettingsProps) {
       .slice(0, 2)
   }
 
-  // const formatDate = (date: Date) => {
-  //   console.log(date)
-  //   return new Intl.DateTimeFormat("en-US", {
-  //     year: "numeric",
-  //     month: "long",
-  //     day: "numeric",
-  //   }).format(new Date(date))
-  // }
+  const formatDate = (date: Date) => {
+    return new Intl.DateTimeFormat("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    }).format(new Date(date))
+  }
 
   const deployedProjects = user.project.filter((p) => p.status === "DEPLOYED").length
   const totalProjects = user.project.length
 
   return (
-    <>
+    <div className="min-w-full min-h-screen px-16 bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800">
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/projects">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Projects
-              </Link>
-            </Button>
-            <Separator orientation="vertical" className="h-6" />
-            <div className="flex items-center space-x-2">
-              <Settings className="w-5 h-5" />
-              <h1 className="text-xl font-semibold">Settings</h1>
-            </div>
-          </div>
-          <div className="flex items-center space-x-2">
-            <ThemeToggle />
-          </div>
-        </div>
-      </header>
+      <NavBar/>
 
       {/* Main Content */}
       <main className="container py-8">
@@ -216,8 +197,7 @@ export function UserSettings({ user, session }: UserSettingsProps) {
                   <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                     <div className="flex items-center space-x-1">
                       <Calendar className="w-4 h-4" />
-                      {/* formatDate */}
-                      {/* <span>Joined {(user.createdAt.toDateString())}</span> */}
+                      <span>Joined {formatDate(user.createdAt)}</span>
                     </div>
                     <div className="flex items-center space-x-1">
                       <Rocket className="w-4 h-4" />
@@ -264,7 +244,7 @@ export function UserSettings({ user, session }: UserSettingsProps) {
                   <div className="space-y-1">
                     <p className="text-sm font-medium leading-none">Total Views</p>
                     <p className="text-2xl font-bold">
-                      {user.project.reduce((acc, p) => acc + (p as any).views || 0, 0).toLocaleString()}
+                      {user.project.reduce((acc, project) => acc + (project as any).views || 0, 0).toLocaleString()}
                     </p>
                   </div>
                 </div>
@@ -496,6 +476,7 @@ export function UserSettings({ user, session }: UserSettingsProps) {
           </Card>
         </div>
       </main>
-    </>
+      <Footer/>
+    </div>
   )
 }

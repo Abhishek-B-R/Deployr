@@ -96,12 +96,12 @@ export function ProjectsList({ projects }: ProjectsListProps) {
   }
 
   return (
-    <div>
+    <>
       {/* Header */}
       <NavBar/>
 
       {/* Main Content */}
-      <main className="container py-8 min-h-[700px]">
+      <main className="container py-8">
         <div className="max-w-7xl mx-auto space-y-8">
           {/* Page Header */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -348,6 +348,6 @@ export function ProjectsList({ projects }: ProjectsListProps) {
         </div>
       </main>
       <Footer/>
-    </div>
+    </>
   )
 }

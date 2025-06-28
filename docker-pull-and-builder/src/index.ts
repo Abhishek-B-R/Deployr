@@ -4,11 +4,7 @@ import { deleteAllFilesFromR2 } from "./deleteFilesInS3";
 import path from "path"
 import { deleteAllFiles } from "./deleteLocalFiles";
 import { subscriber } from "./redis";
-import { Client } from "pg"
-import { DATABASE_URL } from "./envVars"
-
-const pgClient = new Client(DATABASE_URL);
-pgClient.connect()
+import pgClient from "./db";
 
 async function  main() {
     while(1){
@@ -25,8 +21,34 @@ async function  main() {
             
             await downloadS3Folder(`output/${id}`)
             console.log("downloaded")
-            await buildProject(id)
-            copyFinalDist(id)
+
+            const result = await pgClient.query(
+            `SELECT rootDirectory, installCommand, outputDirectory, buildCommand FROM "Project" WHERE id = $1`,
+            [id]
+            );
+        
+            // Always check if we got a row
+            if (result.rows.length === 0) {
+            throw new Error(`Project with id ${id} not found`);
+            }
+        
+            const { rootDirectory, installCommand, outputDirectory, buildCommand } = result.rows[0];
+            
+            // Fetch env variables
+            const envResult = await pgClient.query(
+            `SELECT key, value 
+            FROM "EnvVar"
+            WHERE projectId = $1`,
+            [id]
+            );
+            const envVars: Record<string, string> = {};
+            for (const row of envResult.rows) {
+                envVars[row.key] = row.value;
+            }
+            const envVarsArray = envResult.rows;
+
+            await buildProject(id,rootDirectory,installCommand,buildCommand,envVarsArray);
+            copyFinalDist(id,outputDirectory)
 
             //insert status in hashset of redis
             console.log(path.join("output",id))

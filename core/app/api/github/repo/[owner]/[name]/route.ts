@@ -11,7 +11,7 @@ export async function GET(request: NextRequest, { params }: { params: { owner: s
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const { owner, name } = params
+    const { owner, name } = await params
 
     // Fetch repository details
     const repoResponse = await fetch(`https://api.github.com/repos/${owner}/${name}`, {
@@ -70,10 +70,16 @@ export async function GET(request: NextRequest, { params }: { params: { owner: s
       framework = detectFramework(null)
     }
 
+    interface branchType{
+      name: string
+      commit: {
+        sha: string
+      }
+    }
+
     return NextResponse.json({
       repository: repoData,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      branches: branches.map((branch: any) => ({
+      branches: branches.map((branch: branchType) => ({
         name: branch.name,
         sha: branch.commit.sha,
       })),

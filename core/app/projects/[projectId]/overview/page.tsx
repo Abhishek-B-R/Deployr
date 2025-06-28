@@ -31,13 +31,14 @@ async function getProject(projectId: string, userEmail: string) {
 }
 
 export default async function ProjectOverviewPage({ params }: PageProps) {
+  const { projectId } = await params
   const session = await getServerSession(authOptions)
 
   if (!session?.user?.email) {
     notFound()
   }
 
-  const project = await getProject(params.projectId, session.user.email)
+  const project = await getProject(projectId, session.user.email)
 
   if (!project) {
     notFound()

@@ -8,7 +8,7 @@ import DeployConfigSkeleton from "./deploy-config-skeleton"
 
 export default function ImportPage() {
   return (
-    <div className="min-h-screen bg-background min-w-full">
+    <div className="min-h-screen px-16 min-w-full bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800">
       {/* Header */}
       <NavBar />
 

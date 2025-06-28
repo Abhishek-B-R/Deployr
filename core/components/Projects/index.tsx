@@ -36,7 +36,7 @@ export default async function ProjectsPage() {
   const projects = await getProjects(session.user.email)
 
   return (
-    <div className="min-h-screen min-w-full md:pl-16 sm:pl-6 bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800">
+    <div className="min-h-screen min-w-full px-16 bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800">
       <Suspense fallback={<ProjectsListSkeleton />}>
         <ProjectsList projects={projects} user={session.user} />
       </Suspense>

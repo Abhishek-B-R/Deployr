@@ -16,6 +16,7 @@ const updateProjectSchema = z.object({
 })
 
 export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
+  const {id} = await params
   try {
     const session = await getServerSession(authOptions)
 
@@ -29,7 +30,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
     // Check if project exists and belongs to user
     const existingProject = await prisma.project.findFirst({
       where: {
-        id: params.id,
+        id,
         user: {
           email: session.user.email,
         },
@@ -53,7 +54,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
 
     // Update project
     const updatedProject = await prisma.project.update({
-      where: { id: params.id },
+      where: { id },
       data: validatedData,
     })
 
@@ -65,6 +66,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
 }
 
 export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+  const {id} = await params
   try {
     const session = await getServerSession(authOptions)
 
@@ -75,7 +77,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
     // Check if project exists and belongs to user
     const existingProject = await prisma.project.findFirst({
       where: {
-        id: params.id,
+        id,
         user: {
           email: session.user.email,
         },
@@ -88,7 +90,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
 
     // Soft delete the project
     await prisma.project.update({
-      where: { id: params.id },
+      where: { id },
       data: { isDeleted: true },
     })
 

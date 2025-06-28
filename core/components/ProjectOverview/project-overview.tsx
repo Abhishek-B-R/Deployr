@@ -26,6 +26,7 @@ import {
 import { getTimeAgo } from "@/lib/utils"
 import { ProjectLogs } from "@/components/ProjectOverview/project-logs"
 import NavBar from "../NavBar"
+import Footer from "../Footer"
 
 interface ProjectOverviewProps {
   project: {
@@ -60,14 +61,18 @@ const statusConfig = {
 export function ProjectOverview({ project: initialProject }: ProjectOverviewProps) {
   const [project, setProject] = useState(initialProject)
   const [copied, setCopied] = useState(false)
+  const [activeTab, setActiveTab] = useState("overview")
 
   const status = statusConfig[project.status as keyof typeof statusConfig] || statusConfig.PENDING
   const StatusIcon = status.icon
   const deploymentUrl = `https://${project.slug}.deployr.app`
+  const isLive = project.status === "BUILDING";
+
 
   // Poll for status updates if building
   useEffect(() => {
     if (project.status === "BUILDING" || project.status === "PENDING") {
+      setActiveTab("deployments")
       const interval = setInterval(async () => {
         try {
           const response = await fetch(`/api/deployments/${project.id}`)
@@ -103,26 +108,13 @@ export function ProjectOverview({ project: initialProject }: ProjectOverviewProp
   }
 
   return (
-    <div className="min-h-screen min-w-full md:pl-24 sm:pl-10 bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800">
+    <div className="min-h-screen px-16 bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800">
       {/* Header */}
-      <NavBar />
+      <NavBar/>
 
       {/* Main Content */}
       <main className="container py-8">
         <div className="max-w-6xl mx-auto space-y-8">
-          <div className="flex justify-between">
-            <div className="flex items-center space-x-2">
-              <h1 className="text-xl font-semibold">{project.name}</h1>
-              <Badge variant={status.variant} className="flex items-center space-x-1">
-                <StatusIcon className={`w-3 h-3 ${project.status === "BUILDING" ? "animate-spin" : ""}`} />
-                <span className="capitalize">{project.status.toLowerCase()}</span>
-              </Badge>
-            </div>
-            <button onClick={()=>window.location.reload()} className="flex items-center border-1 p-2 rounded-2xl cursor-pointer">
-              <RefreshCw className="w-4 h-4 mr-2" />
-              Refresh
-            </button>
-          </div>
           {/* Status Banner */}
           {project.status === "FAILED" && (
             <Card className="border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/50">
@@ -134,7 +126,7 @@ export function ProjectOverview({ project: initialProject }: ProjectOverviewProp
                     There was an error deploying your project. Check the logs below for details.
                   </p>
                 </div>
-                <Button variant="outline" size="sm" className="ml-auto">
+                <Button variant="outline" size="sm" className="ml-auto bg-transparent">
                   Retry Deployment
                 </Button>
               </CardContent>
@@ -209,10 +201,13 @@ export function ProjectOverview({ project: initialProject }: ProjectOverviewProp
           </div>
 
           {/* Main Content Tabs */}
-          <Tabs defaultValue="overview" className="space-y-6">
+          <Tabs value={activeTab} onValueChange={setActiveTab} defaultValue="overview" className="space-y-6">
             <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="deployments">Deployments</TabsTrigger>
+              <TabsTrigger value="deployments" className="flex items-center space-x-2">
+                <span>Deployments</span>
+                {isLive && <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />}
+              </TabsTrigger>
               <TabsTrigger value="analytics">Analytics</TabsTrigger>
               <TabsTrigger value="settings">Settings</TabsTrigger>
             </TabsList>
@@ -394,6 +389,7 @@ export function ProjectOverview({ project: initialProject }: ProjectOverviewProp
           </Tabs>
         </div>
       </main>
+      <Footer/>
     </div>
   )
 }

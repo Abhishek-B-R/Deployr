@@ -10,7 +10,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
-import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import {
@@ -24,8 +23,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { ArrowLeft, Save, Trash2, AlertTriangle, Settings, Globe } from "lucide-react"
+import { ArrowLeft, Save, Trash2, AlertTriangle, Globe } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import NavBar from "../NavBar"
+import Footer from "../Footer"
 
 const projectUpdateSchema = z.object({
   name: z.string().min(1, "Project name is required").max(50, "Project name must be less than 50 characters"),
@@ -132,22 +133,14 @@ export function ProjectSettings({ project }: ProjectSettingsProps) {
   return (
     <div className="min-h-screen md:pl-20 sm:pl-10 p-0 bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800">
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <Button variant="ghost" size="sm" asChild>
-              <Link href={`/projects/${project.id}/overview`}>
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Project
-              </Link>
-            </Button>
-            <Separator orientation="vertical" className="h-6" />
-            <div className="flex items-center space-x-2">
-              <Settings className="w-5 h-5" />
-              <h1 className="text-xl font-semibold">Project Settings</h1>
-            </div>
-          </div>
-        </div>
+      <NavBar/>
+      <header className="top-0 mt-4">
+        <Button variant="ghost" size="sm" asChild className="p-6 dark:bg-slate-900 bg-slate-200">
+          <Link href={`/projects/${project.id}/overview`}>
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Project
+          </Link>
+        </Button>
       </header>
 
       {/* Main Content */}
@@ -343,6 +336,7 @@ export function ProjectSettings({ project }: ProjectSettingsProps) {
           </Card>
         </div>
       </main>
+      <Footer/>
     </div>
   )
 }

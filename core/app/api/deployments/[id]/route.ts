@@ -6,14 +6,14 @@ import prisma from "@/db"
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const session = await getServerSession(authOptions)
-
+    const {id} = await params
     if (!session?.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
     const deployment = await prisma.project.findFirst({
       where: {
-        id: params.id,
+        id: id,
         user: {
           email: session.user.email,
         },

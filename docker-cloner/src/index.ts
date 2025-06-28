@@ -6,11 +6,12 @@ import { getAllFiles } from "./file"
 import { uploadFile } from "./aws"
 import { deleteAllFiles } from "./deleteFiles"
 import { publisher } from "./redis"
-import { Client } from "pg"
+import { Pool } from "pg"
 import { DATABASE_URL } from "./envVars"
 
-const pgClient = new Client(DATABASE_URL);
-pgClient.connect()
+const pgClient = new Pool({
+    connectionString: DATABASE_URL
+});
 
 const app=express()
 app.use(cors())

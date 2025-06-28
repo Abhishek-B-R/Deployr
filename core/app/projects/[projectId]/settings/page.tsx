@@ -35,8 +35,9 @@ export default async function ProjectSettingsPage({ params }: PageProps) {
   if (!session?.user?.email) {
     notFound()
   }
+  const {projectId} = await params
 
-  const project = await getProject(params.projectId, session.user.email)
+  const project = await getProject(projectId, session.user.email)
 
   if (!project) {
     notFound()
