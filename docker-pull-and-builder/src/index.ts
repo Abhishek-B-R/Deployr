@@ -54,16 +54,16 @@ async function  main() {
                 await buildProject(id,rootDirectory,installCommand,buildCommand);
             }
 
-            copyFinalDist(id,rootDirectory,outputDirectory)
+            const size=await copyFinalDist(id,rootDirectory,outputDirectory)
 
             //insert status in hashset of redis
             console.log(path.join("output",id))
 
             //insert status in DB
-            await Promise.race([
-                pgClient.query(`UPDATE "Project" SET status = $1 WHERE id = $2`, ['BUILD_SUCCESS', id]),
-                new Promise((_, reject) => setTimeout(() => reject(new Error('Query timed out')), 5000))
-            ])
+            await pgClient.query(
+            `UPDATE "Project" SET status = $1, "deployedBytes" = $2 WHERE id = $3`,
+            ['BUILD_SUCCESS', size, id]
+            );
         }catch(error){
             console.error("Error during build process:", error);
             try {

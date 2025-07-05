@@ -98,25 +98,38 @@ export async function buildProject(id: string,rootDirectory: string, installComm
     }
 }
 
-export async function copyFinalDist(id: string, rootDirectory: string, outputDirectory: string) {
-    const folderPath = path.resolve("output", id, rootDirectory, outputDirectory);
+export async function copyFinalDist(
+  id: string,
+  rootDirectory: string,
+  outputDirectory: string
+): Promise<number> {
+  const folderPath = path.resolve("output", id, rootDirectory, outputDirectory);
 
-    try {
-        if (!fs.existsSync(folderPath)) {
-            throw new Error(`Build output directory not found at ${folderPath}`);
-        }
-
-        const allFiles = getAllFiles(folderPath);
-        await Promise.all(allFiles.map(async file => {
-            const s3Key = `dist/${id}/` + file.slice(folderPath.length + 1);
-            await uploadFile(s3Key, file);
-        }));
-
-        return "Upload successful";
-    } catch (error) {
-        console.error("Upload failed:", error);
-        throw error;
+  try {
+    if (!fs.existsSync(folderPath)) {
+      throw new Error(`Build output directory not found at ${folderPath}`);
     }
+
+    const allFiles = getAllFiles(folderPath);
+
+    let totalBytes = 0;
+
+    await Promise.all(
+      allFiles.map(async (file) => {
+        const stat = await fs.promises.stat(file);
+        totalBytes += stat.size;
+
+        const s3Key = `dist/${id}/` + file.slice(folderPath.length + 1);
+        await uploadFile(s3Key, file);
+      })
+    );
+
+    console.log(`✅ Uploaded ${allFiles.length} files (${totalBytes} bytes)`);
+    return totalBytes; 
+  } catch (error) {
+    console.error("Upload failed:", error);
+    throw error;
+  }
 }
 
 function getAllFiles(folderPath: string): string[] {
