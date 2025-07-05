@@ -1,1 +1,1 @@
-{"root":["./src/envVars.ts","./src/index.ts"],"version":"5.8.3"}
+{"root":["./src/aws.ts","./src/envVars.ts","./src/index.ts","./src/not-found.ts"],"version":"5.8.3"}

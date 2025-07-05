@@ -1,40 +1,42 @@
 import path from "path";
-import fs from "fs";
+import fs from "fs/promises";
 
-export function getAllFiles(folderPath:string){
-    let allPaths:string[]=[];
+export async function getAllFiles(folderPath: string): Promise<string[]> {
+  let allPaths: string[] = [];
 
-    const allFilesAndFolders=fs.readdirSync(folderPath);
-    allFilesAndFolders.forEach(file=>{
-        const fullFilePath=path.join(folderPath,file)
-        if(fs.statSync(fullFilePath).isDirectory()){
-            allPaths=allPaths.concat(getAllFiles(fullFilePath))
-        }else{
-            allPaths.push(fullFilePath)
-        }
-    })
-    return allPaths
+  const entries = await fs.readdir(folderPath, { withFileTypes: true });
+  for (const entry of entries) {
+    const fullPath = path.join(folderPath, entry.name);
+    if (entry.isDirectory()) {
+      const subFiles = await getAllFiles(fullPath);
+      allPaths = allPaths.concat(subFiles);
+    } else {
+      allPaths.push(fullPath);
+    }
+  }
+
+  return allPaths;
 }
-// TODO: make this function async
 
-export function deleteAllFiles(folderPath: string): void {
-    const allFiles = getAllFiles(folderPath);
+export async function deleteAllFiles(folderPath: string): Promise<void> {
+  const allFiles = await getAllFiles(folderPath);
 
-    allFiles.forEach(filePath => {
-        fs.unlinkSync(filePath);
-    });
+  // Delete all files in parallel
+  await Promise.all(allFiles.map(file => fs.unlink(file)));
 
-    const deleteFolders = (folder: string) => {
-        const contents = fs.readdirSync(folder);
-        contents.forEach(item => {
-            const fullPath = path.join(folder, item);
-            if (fs.statSync(fullPath).isDirectory()) {
-                deleteFolders(fullPath); // recurse into subfolder
-            }
-        });
-        fs.rmdirSync(folder);
-    };
+  // Recursively delete all empty folders
+  async function deleteFolders(dir: string): Promise<void> {
+    const entries = await fs.readdir(dir, { withFileTypes: true });
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        await deleteFolders(fullPath);
+      }
+    }
+    await fs.rmdir(dir);
+  }
 
-    deleteFolders(folderPath);
-    console.log(`Deleted all files and folders in ${folderPath}`);
+  await deleteFolders(folderPath);
+
+  console.log(`Deleted all files and folders in ${folderPath}`);
 }

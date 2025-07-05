@@ -1,19 +1,19 @@
-import fs from "fs"
-import path from "path"
+import fs from "fs/promises";
+import path from "path";
 
-export function getAllFiles(folderPath:string){
-    let allPaths:string[]=[];
+export async function getAllFiles(folderPath: string): Promise<string[]> {
+  let allPaths: string[] = [];
 
-    const allFilesAndFolders=fs.readdirSync(folderPath);
-    allFilesAndFolders.forEach(file=>{
-        const fullFilePath=path.join(folderPath,file)
-        if(fs.statSync(fullFilePath).isDirectory()){
-            allPaths=allPaths.concat(getAllFiles(fullFilePath))
-        }else{
-            allPaths.push(fullFilePath)
-        }
-    })
-    return allPaths
+  const entries = await fs.readdir(folderPath, { withFileTypes: true });
+  for (const entry of entries) {
+    const fullPath = path.join(folderPath, entry.name);
+    if (entry.isDirectory()) {
+      const subFiles = await getAllFiles(fullPath);
+      allPaths = allPaths.concat(subFiles);
+    } else {
+      allPaths.push(fullPath);
+    }
+  }
+
+  return allPaths;
 }
-
-// TODO : make this async

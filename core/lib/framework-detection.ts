@@ -16,7 +16,7 @@ export const frameworks: Record<string, FrameworkConfig> = {
     slug: "nextjs",
     logo: "⚡",
     buildCommand: "npm run build",
-    outputDirectory: ".next",
+    outputDirectory: "out",
     installCommand: "npm install",
     devCommand: "npm run dev",
     description: "The React Framework for Production",

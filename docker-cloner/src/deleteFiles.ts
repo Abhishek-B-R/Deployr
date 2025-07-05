@@ -1,25 +1,26 @@
 import path from "path";
-import fs from "fs";
+import fs from "fs/promises";
 import { getAllFiles } from "./file";
 
-export function deleteAllFiles(folderPath: string): void {
-    const allFiles = getAllFiles(folderPath);
+export async function deleteAllFiles(folderPath: string): Promise<void> {
+  const allFiles = await getAllFiles(folderPath);
 
-    allFiles.forEach(filePath => {
-        fs.unlinkSync(filePath);
-    });
+  // Delete all files in parallel
+  await Promise.all(allFiles.map(file => fs.unlink(file)));
 
-    const deleteFolders = (folder: string) => {
-        const contents = fs.readdirSync(folder);
-        contents.forEach(item => {
-            const fullPath = path.join(folder, item);
-            if (fs.statSync(fullPath).isDirectory()) {
-                deleteFolders(fullPath); // recurse into subfolder
-            }
-        });
-        fs.rmdirSync(folder);
-    };
+  // Recursively delete all empty folders
+  async function deleteFolders(dir: string): Promise<void> {
+    const entries = await fs.readdir(dir, { withFileTypes: true });
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        await deleteFolders(fullPath);
+      }
+    }
+    await fs.rmdir(dir);
+  }
 
-    deleteFolders(folderPath);
-    console.log(`Deleted all files and folders in ${folderPath}`);
+  await deleteFolders(folderPath);
+
+  console.log(`Deleted all files and folders in ${folderPath}`);
 }

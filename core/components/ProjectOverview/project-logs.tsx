@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { RefreshCw, Download, Terminal, History, Wifi, WifiOff } from "lucide-react"
-import { LiveBuildLogs } from "@/components/live-build-logs"
+import { LiveBuildLogs } from "@/components/ProjectOverview/live-build-logs"
 import { useBuildLogs } from "@/hooks/use-build-logs"
 
 interface ProjectLogsProps {

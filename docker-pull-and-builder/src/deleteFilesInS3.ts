@@ -1,18 +1,8 @@
 import {
-  S3Client,
   ListObjectsV2Command,
   DeleteObjectsCommand,
 } from "@aws-sdk/client-s3";
-import { R2_ENDPOINT,R2_ACCESS_KEY_ID,R2_SECRET_ACCESS_KEY } from "./envVars";
-
-export const s3 = new S3Client({
-  region: "auto",
-  endpoint: R2_ENDPOINT!,
-  credentials: {
-    accessKeyId: R2_ACCESS_KEY_ID!,
-    secretAccessKey: R2_SECRET_ACCESS_KEY!,
-  },
-});
+import s3 from "./s3Client";
 
 export async function deleteAllFilesFromR2(folderPrefix: string): Promise<void> {
   const prefix = folderPrefix.endsWith("/") ? folderPrefix : `${folderPrefix}/`;

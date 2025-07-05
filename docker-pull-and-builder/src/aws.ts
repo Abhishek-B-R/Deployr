@@ -1,26 +1,12 @@
 import { 
     PutObjectCommand,
-    S3Client,
     GetObjectCommand,
     ListObjectsV2Command 
 } from "@aws-sdk/client-s3";
 import fs from "fs"
 import path from "path";
-import { 
-    R2_ACCESS_KEY_ID,
-    R2_ENDPOINT,
-    R2_SECRET_ACCESS_KEY 
-} from "./envVars";
 import { Readable } from "stream";
-
-export const s3 = new S3Client({
-    region: "auto",
-    endpoint:R2_ENDPOINT,
-    credentials: {
-        accessKeyId: R2_ACCESS_KEY_ID,
-        secretAccessKey: R2_SECRET_ACCESS_KEY
-    }
-});
+import s3 from "./s3Client";
 
 
 // DOWNLOAD S3 FOLDER

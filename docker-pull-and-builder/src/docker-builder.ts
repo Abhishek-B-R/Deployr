@@ -84,6 +84,9 @@ export async function buildProject(id: string,rootDirectory: string, installComm
         }
 
         log("Build successful");
+
+        // let all these be prineted on frontend via websockets
+        await new Promise((resolve) => setTimeout(resolve, 5000))
         return "Build successful";
     } catch (error) {
         log(`Build error: ${error}`);

@@ -46,6 +46,7 @@ model Project{
   logs        String?
   envVars     EnvVar[]
   userId      String
+  isNextjs   Boolean  @default(false)
 
   buildCommand    String
   installCommand  String

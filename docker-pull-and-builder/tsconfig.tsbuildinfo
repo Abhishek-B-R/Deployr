@@ -1,1 +1,1 @@
-{"root":["./src/aws.ts","./src/db.ts","./src/deleteFilesInS3.ts","./src/deleteLocalFiles.ts","./src/docker-builder.ts","./src/envVars.ts","./src/index.ts","./src/redis.ts","./src/websocketServer.ts"],"version":"5.8.3"}
+{"root":["./src/aws.ts","./src/db.ts","./src/deleteFilesInS3.ts","./src/deleteLocalFiles.ts","./src/docker-builder.ts","./src/envVars.ts","./src/index.ts","./src/redis.ts","./src/s3Client.ts","./src/websocketServer.ts"],"version":"5.8.3"}

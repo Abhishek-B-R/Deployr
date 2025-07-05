@@ -5,7 +5,6 @@ import path from "path"
 import { deleteAllFiles } from "./deleteLocalFiles";
 import { subscriber } from "./redis";
 import pgClient from "./db";
-import { escape } from "querystring";
 
 async function  main() {
     while(1){
@@ -19,7 +18,6 @@ async function  main() {
         if(response===null) return
         const id=response.element
         try{
-            
             await downloadS3Folder(`output/${id}`)
             console.log("downloaded")
 
@@ -61,10 +59,6 @@ async function  main() {
             //insert status in hashset of redis
             console.log(path.join("output",id))
 
-            // delete all files used for the process
-            await deleteAllFilesFromR2(path.join("output",id))
-            deleteAllFiles(path.resolve("output",id))
-
             //insert status in DB
             await Promise.race([
                 pgClient.query(`UPDATE "Project" SET status = $1 WHERE id = $2`, ['BUILD_SUCCESS', id]),
@@ -77,6 +71,11 @@ async function  main() {
             } catch (dbError) {
                 console.error("Failed to update project status in DB:", dbError);
             }
+        }
+        finally{            
+            // delete all files used for the process
+            await deleteAllFilesFromR2(path.join("output",id))
+            deleteAllFiles(path.resolve("output",id))
         }
     }
 }

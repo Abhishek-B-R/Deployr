@@ -10,7 +10,6 @@ const pgClient = new Pool({
   connectionString: DATABASE_URL
 });
 
-
 const app = express();
 const PORT = 8081;
 

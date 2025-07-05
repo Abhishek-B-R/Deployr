@@ -89,7 +89,7 @@ export function useBuildLogs({
 
     inactivityTimerRef.current = setTimeout(() => {
       switchToStored();
-    }, 15000);
+    }, 30000);
   }, [switchToStored]);
 
   const addLog = useCallback(

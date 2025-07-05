@@ -8,6 +8,7 @@ import { deleteAllFiles } from "./deleteFiles"
 import { publisher } from "./redis"
 import { Pool } from "pg"
 import { DATABASE_URL } from "./envVars"
+import { stat } from "fs"
 
 const pgClient = new Pool({
     connectionString: DATABASE_URL
@@ -35,30 +36,25 @@ app.post("/deploy",async (req,res)=>{
     console.log(repo_url)
     //clone data from url and get all file paths and omit all folder names
     await simpleGit().clone(repo_url, path.join(__dirname, `output/${id}`), ['--branch', branch, '--depth', '1'])
-    const files=getAllFiles(path.join(__dirname,`output/${id}`))
+    const files=await getAllFiles(path.join(__dirname,`output/${id}`))
     
     //put this in s3
-    files.forEach(async file=>{
+    await Promise.all(files.map(async file=>{
         await uploadFile(file.slice(__dirname.length+1),file)
-    })
+    }));
     console.log("All files uploaded successfully")
-
-    await new Promise((resolve) => setTimeout(resolve, 5000))
 
     //push to redis queue
     publisher.lPush("build-queue",id)
 
     //insert status in DB
-    await Promise.race([
-        pgClient.query(`UPDATE "Project" SET status = $1 WHERE id = $2`, ['BUILDING', id]),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('Query timed out')), 5000))
-    ])
+    await pgClient.query(`UPDATE "Project" SET status = $1 WHERE id = $2`, ['BUILDING', id]),
     
     //delete content of dist/output folder
-    deleteAllFiles(path.join(__dirname,"output",id))
+    await deleteAllFiles(path.join(__dirname,"output",id))
 
     res.json({
-        id
+        status: "success"
     })
 })
 
