@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
+import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import {
@@ -21,12 +22,17 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { ArrowLeft, Save, Trash2, AlertTriangle, Globe } from "lucide-react"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { ArrowLeft, Save, Trash2, AlertTriangle, Settings, Globe } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
-import NavBar from "../NavBar"
-import Footer from "../Footer"
 
 const projectUpdateSchema = z.object({
   name: z.string().min(1, "Project name is required").max(50, "Project name must be less than 50 characters"),
@@ -56,6 +62,9 @@ interface ProjectSettingsProps {
 export function ProjectSettings({ project }: ProjectSettingsProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [deleteConfirmation, setDeleteConfirmation] = useState("")
+  const [showUpdateDialog, setShowUpdateDialog] = useState(false)
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const { toast } = useToast()
   const router = useRouter()
 
@@ -88,6 +97,7 @@ export function ProjectSettings({ project }: ProjectSettingsProps) {
         description: "Your project settings have been updated successfully.",
       })
 
+      setShowUpdateDialog(false)
       router.refresh()
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
@@ -99,6 +109,10 @@ export function ProjectSettings({ project }: ProjectSettingsProps) {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const handleUpdateClick = () => {
+    setShowUpdateDialog(true)
   }
 
   const deleteProject = async () => {
@@ -127,20 +141,32 @@ export function ProjectSettings({ project }: ProjectSettingsProps) {
       })
     } finally {
       setIsDeleting(false)
+      setShowDeleteDialog(false)
+      setDeleteConfirmation("")
     }
   }
 
+  const isDeleteConfirmationValid = deleteConfirmation === project.name
+
   return (
-    <div className="min-h-screen md:pl-20 sm:pl-10 p-0 bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800">
       {/* Header */}
-      <NavBar/>
-      <header className="top-0 mt-4">
-        <Button variant="ghost" size="sm" asChild className="p-6 dark:bg-slate-900 bg-slate-200">
-          <Link href={`/projects/${project.id}/overview`}>
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Project
-          </Link>
-        </Button>
+      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container flex h-16 items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <Button variant="ghost" size="sm" asChild>
+              <Link href={`/projects/${project.id}/overview`}>
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Project
+              </Link>
+            </Button>
+            <Separator orientation="vertical" className="h-6" />
+            <div className="flex items-center space-x-2">
+              <Settings className="w-5 h-5" />
+              <h1 className="text-xl font-semibold">Project Settings</h1>
+            </div>
+          </div>
+        </div>
       </header>
 
       {/* Main Content */}
@@ -159,7 +185,7 @@ export function ProjectSettings({ project }: ProjectSettingsProps) {
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <p className="text-sm font-medium">Current URL</p>
-                  <code className="text-sm bg-muted px-2 py-1 rounded">{project.slug}.deployr.live</code>
+                  <code className="text-sm bg-muted px-2 py-1 rounded">{project.slug}.deployr.app</code>
                 </div>
                 <Badge variant={project.status === "DEPLOYED" ? "default" : "secondary"}>{project.status}</Badge>
               </div>
@@ -174,7 +200,7 @@ export function ProjectSettings({ project }: ProjectSettingsProps) {
             </CardHeader>
             <CardContent>
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <form onSubmit={form.handleSubmit(handleUpdateClick)} className="space-y-6">
                   <FormField
                     control={form.control}
                     name="name"
@@ -203,7 +229,7 @@ export function ProjectSettings({ project }: ProjectSettingsProps) {
                             </div>
                             <Input className="rounded-l-none" placeholder="my-project" {...field} />
                             <div className="flex items-center px-3 bg-muted border border-l-0 rounded-r-md text-sm text-muted-foreground">
-                              .deployr.live
+                              .deployr.app
                             </div>
                           </div>
                         </FormControl>
@@ -236,18 +262,9 @@ export function ProjectSettings({ project }: ProjectSettingsProps) {
                   />
 
                   <div className="flex justify-end">
-                    <Button type="submit" disabled={isLoading}>
-                      {isLoading ? (
-                        <>
-                          <Save className="w-4 h-4 mr-2 animate-spin" />
-                          Updating...
-                        </>
-                      ) : (
-                        <>
-                          <Save className="w-4 h-4 mr-2" />
-                          Update Settings
-                        </>
-                      )}
+                    <Button type="button" onClick={handleUpdateClick}>
+                      <Save className="w-4 h-4 mr-2" />
+                      Update Settings
                     </Button>
                   </div>
                 </form>
@@ -272,7 +289,7 @@ export function ProjectSettings({ project }: ProjectSettingsProps) {
                       <Badge variant="secondary">Set</Badge>
                     </div>
                   ))}
-                  <Button variant="outline" className="w-full">
+                  <Button variant="outline" className="w-full bg-transparent">
                     Manage Environment Variables
                   </Button>
                 </div>
@@ -303,40 +320,104 @@ export function ProjectSettings({ project }: ProjectSettingsProps) {
                       Permanently delete this project and all of its data. This action cannot be undone.
                     </p>
                   </div>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="destructive" size="sm">
-                        <Trash2 className="w-4 h-4 mr-2" />
-                        Delete
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          This action cannot be undone. This will permanently delete the project &quot;{project.name}&quot; and
-                          remove all of its data from our servers.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={deleteProject}
-                          disabled={isDeleting}
-                          className="bg-red-600 hover:bg-red-700"
-                        >
-                          {isDeleting ? "Deleting..." : "Delete Project"}
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
+                  <Button variant="destructive" size="sm" onClick={() => setShowDeleteDialog(true)}>
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Delete
+                  </Button>
                 </div>
               </div>
             </CardContent>
           </Card>
         </div>
       </main>
-      <Footer/>
+
+      {/* Update Confirmation Dialog */}
+      <Dialog open={showUpdateDialog} onOpenChange={setShowUpdateDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Update Project Settings</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to update the settings for &quot;{project.name}&quot;? This will apply the changes
+              immediately.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowUpdateDialog(false)}>
+              No, Cancel
+            </Button>
+            <Button onClick={form.handleSubmit(onSubmit)} disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Save className="w-4 h-4 mr-2 animate-spin" />
+                  Updating...
+                </>
+              ) : (
+                <>
+                  <Save className="w-4 h-4 mr-2" />
+                  Yes, Update
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog - GitHub Style */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent className="max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center space-x-2 text-red-600">
+              <AlertTriangle className="w-5 h-5" />
+              <span>Delete Project</span>
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-left space-y-3">
+              <p>
+                This action <strong>cannot</strong> be undone. This will permanently delete the{" "}
+                <strong>{project.name}</strong> project, deployments, and remove all associated data.
+              </p>
+              <p className="text-sm">
+                Please type <strong>{project.name}</strong> to confirm.
+              </p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <div className="py-4">
+            <Input
+              placeholder={project.name}
+              value={deleteConfirmation}
+              onChange={(e) => setDeleteConfirmation(e.target.value)}
+              className="w-full"
+            />
+          </div>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              onClick={() => {
+                setShowDeleteDialog(false)
+                setDeleteConfirmation("")
+              }}
+            >
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={deleteProject}
+              disabled={!isDeleteConfirmationValid || isDeleting}
+              className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+            >
+              {isDeleting ? (
+                <>
+                  <Trash2 className="w-4 h-4 mr-2 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                <>
+                  <Trash2 className="w-4 h-4 mr-2" />I understand the consequences, delete this project
+                </>
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

@@ -58,4 +58,17 @@ app.post("/deploy",async (req,res)=>{
     })
 })
 
+app.post("/redeploy",async (req,res)=>{
+    const { id } = req.body;
+
+    //push to redis queue
+    publisher.lPush("build-queue",id)
+
+    //insert status in DB
+    await pgClient.query(`UPDATE "Project" SET status = $1 WHERE id = $2`, ['BUILDING', id])
+    res.json({
+        status: "success"
+    })
+})
+
 app.listen(8080)
