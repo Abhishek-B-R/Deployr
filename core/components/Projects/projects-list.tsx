@@ -32,6 +32,8 @@ import {
   Rocket,
   Calendar,
   Activity,
+  CheckIcon,
+  Ban,
 } from "lucide-react"
 import { getTimeAgo } from "@/lib/utils"
 import NavBar from "../NavBar"
@@ -139,7 +141,7 @@ export function ProjectsList({ projects }: ProjectsListProps) {
               <DropdownMenuContent>
                 <DropdownMenuItem onClick={() => setStatusFilter("all")}>All Projects</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => setStatusFilter("DEPLOYED")}>
+                <DropdownMenuItem onClick={() => setStatusFilter("BUILD_SUCCESS")}>
                   <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
                   Live
                 </DropdownMenuItem>
@@ -147,7 +149,7 @@ export function ProjectsList({ projects }: ProjectsListProps) {
                   <RefreshCw className="w-4 h-4 mr-2 text-blue-500" />
                   Building
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setStatusFilter("FAILED")}>
+                <DropdownMenuItem onClick={() => setStatusFilter("BUILD_FAILED")}>
                   <XCircle className="w-4 h-4 mr-2 text-red-500" />
                   Failed
                 </DropdownMenuItem>
@@ -195,7 +197,7 @@ export function ProjectsList({ projects }: ProjectsListProps) {
               {filteredProjects.map((project) => {
                 const status = statusConfig[project.status as keyof typeof statusConfig] || statusConfig.PENDING
                 const StatusIcon = status.icon
-                const deploymentUrl = `https://${project.slug}.deployr.app`
+                const deploymentUrl = `https://${project.slug}.deployr.live`
 
                 return (
                   <Card
@@ -212,9 +214,15 @@ export function ProjectsList({ projects }: ProjectsListProps) {
                           <div className="flex items-center space-x-2">
                             <Badge variant={status.variant} className="flex items-center space-x-1">
                               <StatusIcon
-                                className={`w-3 h-3 ${project.status === "BUILDING" ? "animate-spin" : ""}`}
+                                className={`w-3 h-3 ${project.status === "BUILDING" ? "animate-spin" : "hidden"}`}
                               />
-                              <span>{status.label}</span>
+                              <CheckIcon
+                                className={`w-3 h-3 ${project.status === "BUILD_SUCCESS" ? "block text-green-500" : "hidden"}`}
+                              />
+                              <Ban
+                                className={`w-3 h-3 ${project.status === "BUILD_FAILED" ? "block text-red-500" : "hidden"}`}
+                              />
+                              <span>{project.status==="BUILD_SUCCESS"?"Deployed":project.status==="BUILD_FAILED"?"Failed":project.status}</span>
                             </Badge>
                             {project.private && (
                               <Badge variant="outline" className="text-xs">
@@ -284,7 +292,7 @@ export function ProjectsList({ projects }: ProjectsListProps) {
                       {project.status === "DEPLOYED" && (
                         <div className="flex items-center space-x-2 p-2 bg-muted/50 rounded-lg">
                           <Globe className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                          <code className="text-sm truncate flex-1">{project.slug}.deployr.app</code>
+                          <code className="text-sm truncate flex-1">{project.slug}.deployr.live</code>
                           <Button
                             variant="ghost"
                             size="icon"

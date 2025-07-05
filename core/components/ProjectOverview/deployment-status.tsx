@@ -96,7 +96,7 @@ export function DeploymentStatus({ deployment: initialDeployment }: DeploymentSt
     }
   }
 
-  const deploymentUrl = `https://${deployment.slug}.deployr.app`
+  const deploymentUrl = `https://${deployment.slug}.deployr.live`
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">

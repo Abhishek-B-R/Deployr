@@ -35,7 +35,7 @@ app.get(/.*/, async (req, res) => {
     );
     const project = rows[0];
 
-    if (!project?.id || project.private || project.status !== "BUILD_SUCCESS") {
+    if (!project?.id || project.isDeleted || project.status !== "BUILD_SUCCESS") {
       notFoundHandler("Project not found or unavailable", res);
       return;
     }
@@ -56,6 +56,15 @@ app.get(/.*/, async (req, res) => {
     // Stream S3 object body
     (s3Obj.Body as Readable).pipe(res);
 
+    // Increment views in background (fire-and-forget)
+    /* Temporarily done in server itself, on scale add these in Redis
+      and update in DB every 1 minute only once for a particular id */
+    await pgClient.query(
+      `UPDATE "Project" SET views = views + 1 WHERE id = $1`,
+      [id]
+    ).catch((err) => {
+      console.error("Error incrementing views:", err);
+    });
   } catch (err: any) {
     if (err.Code === "NoSuchKey" || err.name === "NoSuchKey") {
       console.warn("File not found:", err);

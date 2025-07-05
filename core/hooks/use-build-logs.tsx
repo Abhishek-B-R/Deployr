@@ -18,7 +18,7 @@ interface LogEntry {
 
 export function useBuildLogs({
   projectId,
-  wsUrl = "ws://localhost:8082",
+  wsUrl = process.env.WEBSOCKET_URL,
   active = true,
   onLogsComplete,
   onReceiveMessage,

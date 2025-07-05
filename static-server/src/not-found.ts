@@ -4,7 +4,7 @@ import path from "path";
 
 export function notFoundHandler(message:string,res:Response ) {
   const htmlTemplate = fs.readFileSync(
-    path.join(__dirname, "404.html"),
+    path.resolve("404.html"),
     "utf-8"
   );
 

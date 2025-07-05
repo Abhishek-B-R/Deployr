@@ -41,3 +41,7 @@ export async function deleteAllFilesFromR2(folderPrefix: string): Promise<void> 
 
   console.log(`✅ Deleted ${totalDeleted} objects from prefix: ${prefix}`);
 }
+
+// (async ()=>{
+//   await deleteAllFilesFromR2("output/");
+// })()

@@ -16,6 +16,7 @@ type BodyData = {
         value:string
     }[],
     framework:string,
+    isNextjs:boolean
 }
 
 function generateSlug(projectName: string): string {
@@ -47,6 +48,7 @@ export async function POST(request: NextRequest) {
       installCommand,
       envVars,
       framework,
+      isNextjs
     }:BodyData = body
 
     // Validate required fields
@@ -111,6 +113,7 @@ export async function POST(request: NextRequest) {
             value: env.value,
           })),
         },
+        isNextjs
       },
       include: {
         envVars: true,
@@ -127,7 +130,7 @@ export async function POST(request: NextRequest) {
 
     // Send to your backend
     try {
-      const backendResponse = await fetch("http://localhost:8080/deploy", {
+      const backendResponse = await fetch(process.env.BUILDER_URL!, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

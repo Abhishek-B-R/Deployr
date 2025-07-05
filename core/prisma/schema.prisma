@@ -66,13 +66,6 @@ model EnvVar {
   projectId String
 }
 
-model Session{
-  id        String   @id @default(cuid())
-  uid       String   @unique
-  expiresAt DateTime
-  data      String
-}
-
 enum DeployStatus {
   PENDING
   BUILDING

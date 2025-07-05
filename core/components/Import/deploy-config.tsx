@@ -21,6 +21,8 @@ import {
   ExternalLink,
   RefreshCw,
   AlertCircle,
+  AlertTriangle,
+  X,
 } from "lucide-react"
 import type { FrameworkConfig } from "@/lib/framework-detection"
 import { frameworks } from "@/lib/framework-detection"
@@ -66,6 +68,10 @@ export function DeployConfig() {
   // Add framework selection state
   const [selectedFramework, setSelectedFramework] = useState<string>("")
 
+  // Next.js validation state
+  const [showNextjsValidation, setShowNextjsValidation] = useState(false)
+  const [nextjsValidationConfirmed, setNextjsValidationConfirmed] = useState<boolean | null>(null)
+
   // Update the useEffect to set the selected framework
   useEffect(() => {
     if (!repo || !session) return
@@ -96,6 +102,11 @@ export function DeployConfig() {
       setBuildCommand(data.framework.buildCommand)
       setOutputDirectory(data.framework.outputDirectory)
       setInstallCommand(data.framework.installCommand)
+
+      // Show Next.js validation if framework is Next.js
+      if (data.framework.slug === "nextjs") {
+        setShowNextjsValidation(true)
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred")
     } finally {
@@ -112,11 +123,39 @@ export function DeployConfig() {
       setOutputDirectory(framework.outputDirectory)
       setInstallCommand(framework.installCommand)
     }
+
+    // Show/hide Next.js validation based on selection
+    if (frameworkSlug === "nextjs") {
+      setShowNextjsValidation(true)
+      setNextjsValidationConfirmed(null) // Reset confirmation
+    } else {
+      setShowNextjsValidation(false)
+      setNextjsValidationConfirmed(null)
+    }
+  }
+
+  const handleNextjsValidation = (confirmed: boolean) => {
+    setNextjsValidationConfirmed(confirmed)
+    if (!confirmed) {
+      // If user says no, they can still proceed but with warning
+      setShowNextjsValidation(false)
+    }
+  }
+
+  const dismissNextjsValidation = () => {
+    setShowNextjsValidation(false)
+    setNextjsValidationConfirmed(true)
   }
 
   // Update the handleDeploy function to use selectedFramework
   const handleDeploy = async () => {
     if (!repoDetails) return
+
+    // Check Next.js validation if framework is Next.js and not confirmed
+    if (selectedFramework === "nextjs" && nextjsValidationConfirmed === null) {
+      setShowNextjsValidation(true)
+      return
+    }
 
     setDeploying(true)
     setError(null)
@@ -149,7 +188,7 @@ export function DeployConfig() {
       }
 
       // Redirect to deployment status page with project ID
-      router.push(`/projects/${result.project.id}/overview`)
+      router.push(`/deployments/${result.project.id}`)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Deployment failed")
       console.error("Deployment error:", err)
@@ -211,6 +250,85 @@ export function DeployConfig() {
         </div>
       </div>
 
+      {/* Next.js Validation Bar */}
+      {showNextjsValidation && (
+        <Card className="border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-950/50">
+          <CardContent className="p-4">
+            <div className="flex items-start space-x-3">
+              <AlertTriangle className="w-5 h-5 text-orange-500 mt-0.5 flex-shrink-0" />
+              <div className="flex-1 space-y-3">
+                <div>
+                  <h4 className="font-medium text-orange-900 dark:text-orange-100 mb-2">Next.js Framework Selected</h4>
+                  <p className="text-sm text-orange-800 dark:text-orange-200 leading-relaxed">
+                    You have selected Next.js as your framework. But we support Next.js Frontend part only. So make sure
+                    you don&apos;t have any pure JS or TS files in your App or Pages router. If yes, do wait till the next version of Deployr arrives.
+                    We expect you to have only jsx or tsx files in your App/Pages router. 
+                    Also make sure your{" "}
+                    <code className="bg-orange-200 dark:bg-orange-900 px-1 py-0.5 rounded text-xs">
+                      next.config.ts/next.config.js
+                    </code>{" "}
+                    has{" "}
+                    <code className="bg-orange-200 dark:bg-orange-900 px-1 py-0.5 rounded text-xs">
+                      output: &apos;export&apos;
+                    </code>{" "}
+                    in it.
+                  </p>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <span className="text-sm font-medium text-orange-900 dark:text-orange-100">
+                    Do you understand and confirm these requirements?
+                  </span>
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleNextjsValidation(true)}
+                      className="bg-green-100 hover:bg-green-200 text-green-800 border-green-300 dark:bg-green-900 dark:hover:bg-green-800 dark:text-green-100 dark:border-green-700"
+                    >
+                      Yes, I understand
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleNextjsValidation(false)}
+                      className="bg-red-100 hover:bg-red-200 text-red-800 border-red-300 dark:bg-red-900 dark:hover:bg-red-800 dark:text-red-100 dark:border-red-700"
+                    >
+                      No, I&apos;ll wait
+                    </Button>
+                  </div>
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={dismissNextjsValidation}
+                className="h-6 w-6 text-orange-500 hover:text-orange-700"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Show warning if user selected "No" */}
+      {nextjsValidationConfirmed === false && (
+        <Card className="border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/50">
+          <CardContent className="p-4">
+            <div className="flex items-center space-x-3">
+              <AlertCircle className="w-5 h-5 text-red-500" />
+              <div>
+                <h4 className="font-medium text-red-900 dark:text-red-100">Deployment Not Recommended</h4>
+                <p className="text-sm text-red-800 dark:text-red-200">
+                  Since you don&apos;t meet the Next.js requirements, we recommend waiting for the next version of Deployr or
+                  choosing a different framework.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <div className="grid lg:grid-cols-3 gap-8">
         {/* Repository Info Sidebar */}
         <div className="space-y-6">
@@ -229,9 +347,21 @@ export function DeployConfig() {
                   </div>
                 </div>
               </div>
-              <Badge variant="secondary" className="mt-3">
-                {repoDetails.framework.slug === selectedFramework ? "Auto-detected" : "Manual"}
-              </Badge>
+              <div className="flex items-center space-x-2 mt-3">
+                <Badge variant="secondary">
+                  {repoDetails.framework.slug === selectedFramework ? "Auto-detected" : "Manual"}
+                </Badge>
+                {selectedFramework === "nextjs" && nextjsValidationConfirmed === true && (
+                  <Badge variant="outline" className="text-green-600 border-green-300">
+                    Validated
+                  </Badge>
+                )}
+                {selectedFramework === "nextjs" && nextjsValidationConfirmed === false && (
+                  <Badge variant="outline" className="text-red-600 border-red-300">
+                    Not Ready
+                  </Badge>
+                )}
+              </div>
             </CardContent>
           </Card>
 
@@ -436,7 +566,14 @@ export function DeployConfig() {
             </CardContent>
 
             <div className="px-6 py-4 bg-muted/50 rounded-b-lg">
-              <Button onClick={handleDeploy} disabled={deploying || !projectName} className="w-full" size="lg">
+              <Button
+                onClick={handleDeploy}
+                disabled={
+                  deploying || !projectName || (selectedFramework === "nextjs" && nextjsValidationConfirmed === false)
+                }
+                className="w-full"
+                size="lg"
+              >
                 {deploying ? (
                   <>
                     <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
@@ -446,9 +583,15 @@ export function DeployConfig() {
                   <>
                     <Rocket className="w-4 h-4 mr-2" />
                     Deploy
+                    {selectedFramework === "nextjs" && nextjsValidationConfirmed === false && " (Not Recommended)"}
                   </>
                 )}
               </Button>
+              {selectedFramework === "nextjs" && nextjsValidationConfirmed === false && (
+                <p className="text-xs text-muted-foreground text-center mt-2">
+                  Deployment is not recommended until Next.js requirements are met
+                </p>
+              )}
             </div>
           </Card>
         </div>

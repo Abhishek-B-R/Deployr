@@ -159,7 +159,7 @@ export function ProjectSettings({ project }: ProjectSettingsProps) {
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <p className="text-sm font-medium">Current URL</p>
-                  <code className="text-sm bg-muted px-2 py-1 rounded">{project.slug}.deployr.app</code>
+                  <code className="text-sm bg-muted px-2 py-1 rounded">{project.slug}.deployr.live</code>
                 </div>
                 <Badge variant={project.status === "DEPLOYED" ? "default" : "secondary"}>{project.status}</Badge>
               </div>
@@ -203,7 +203,7 @@ export function ProjectSettings({ project }: ProjectSettingsProps) {
                             </div>
                             <Input className="rounded-l-none" placeholder="my-project" {...field} />
                             <div className="flex items-center px-3 bg-muted border border-l-0 rounded-r-md text-sm text-muted-foreground">
-                              .deployr.app
+                              .deployr.live
                             </div>
                           </div>
                         </FormControl>

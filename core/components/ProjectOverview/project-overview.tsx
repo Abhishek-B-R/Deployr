@@ -22,6 +22,8 @@ import {
   Copy,
   CheckCircle,
   XCircle,
+  CheckIcon,
+  Ban,
 } from "lucide-react"
 import { getTimeAgo } from "@/lib/utils"
 import { ProjectLogs } from "@/components/ProjectOverview/project-logs"
@@ -65,7 +67,7 @@ export function ProjectOverview({ project: initialProject }: ProjectOverviewProp
 
   const status = statusConfig[project.status as keyof typeof statusConfig] || statusConfig.PENDING
   const StatusIcon = status.icon
-  const deploymentUrl = `https://${project.slug}.deployr.app`
+  const deploymentUrl = `https://${project.slug}.deployr.live`
   const isLive = project.status === "BUILDING";
 
 
@@ -155,7 +157,7 @@ export function ProjectOverview({ project: initialProject }: ProjectOverviewProp
                   <Globe className="w-5 h-5 text-blue-500" />
                   <div className="space-y-1">
                     <p className="text-sm font-medium leading-none">Domain</p>
-                    <p className="text-sm text-muted-foreground">{project.slug}.deployr.app</p>
+                    <p className="text-sm text-muted-foreground">{project.slug}.deployr.live</p>
                   </div>
                 </div>
               </CardContent>
@@ -303,8 +305,16 @@ export function ProjectOverview({ project: initialProject }: ProjectOverviewProp
                       <div className="space-y-1">
                         <p className="text-sm font-medium">Status</p>
                         <Badge variant={status.variant} className="flex items-center space-x-1 w-fit">
-                          <StatusIcon className={`w-3 h-3 ${project.status === "BUILDING" ? "animate-spin" : ""}`} />
-                          <span className="capitalize">{project.status.toLowerCase()}</span>
+                          <StatusIcon
+                            className={`w-3 h-3 ${project.status === "BUILDING" ? "animate-spin" : "hidden"}`}
+                          />
+                          <CheckIcon
+                            className={`w-3 h-3 ${project.status === "BUILD_SUCCESS" ? "block text-green-500" : "hidden"}`}
+                          />
+                          <Ban
+                            className={`w-3 h-3 ${project.status === "BUILD_FAILED" ? "block text-red-500" : "hidden"}`}
+                          />
+                          <span>{project.status==="BUILD_SUCCESS"?"Deployed":project.status==="BUILD_FAILED"?"Failed":project.status}</span>
                         </Badge>
                       </div>
                       {project.status === "DEPLOYED" && (
