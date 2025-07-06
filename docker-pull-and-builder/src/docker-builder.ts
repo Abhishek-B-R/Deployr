@@ -1,9 +1,10 @@
 import Docker from "dockerode";
-import path from "path";
+import path, { resolve } from "path";
 import fs from "fs";
 import { uploadFile } from "./aws";
 import { broadcastLog } from "./websocketServer";
 import pgClient from "./db";
+import {exec} from "child_process"
 
 const docker = new Docker();
 
@@ -11,10 +12,16 @@ export async function buildProject(id: string,rootDirectory: string, installComm
     const projectPath = path.resolve("output", id);
     let logsList = ""
 
-    function log(msg: string) {
+    async function log(msg: string) {
         logsList += msg + "\n";
         console.log(msg);
         broadcastLog(id, msg);
+        await new Promise(resolve => {
+            // Wait for 1.5 second to let logs react frontend
+            setTimeout(() => {
+                resolve(null);
+            }, 1500);
+        });
     }
 
     function sanitizeLogs(logs:string): string {
@@ -38,17 +45,41 @@ export async function buildProject(id: string,rootDirectory: string, installComm
         log("Pulling node:18 image...");
 
         await new Promise((resolve, reject) => {
-            docker.pull("node:18", {}, (err, stream) => {
-                if (err) return reject(err);
-                if (!stream) return reject(new Error("No stream returned from docker pull"));
+            try{
+                docker.pull("node:18", {}, (err, stream) => {
+                    if (err) return reject(err);
+                    if (!stream) return reject(new Error("No stream returned from docker pull"));
 
-                docker.modem.followProgress(stream, (err: any) => {
-                    if (err) reject(err);
-                    else resolve(null);
-                }, (event: any) => {
-                    if (event.status) log(`[pull] ${event.status}`);
+                    docker.modem.followProgress(stream, (err: any) => {
+                        if (err) reject(err);
+                        else resolve(null);
+                    }, (event: any) => {
+                        if (event.status) log(`[pull] ${event.status}`);
+                    });
                 });
-            });
+            }catch(err){
+                log(`Error pulling image: ${err}`);
+                log("Restarting Docker service...");
+                exec("sudo systemctl restart docker", (error, stdout, stderr) => {
+                    if (error) {
+                        log(`Error restarting Docker: ${error.message}`);
+                        return reject(error);
+                    }
+                    log("Docker service restarted successfully");
+                    // Retry pulling the image after restarting Docker
+                    docker.pull("node:18", {}, (err, stream) => {
+                        if (err) return reject(err);
+                        if (!stream) return reject(new Error("No stream returned from docker pull"));
+
+                        docker.modem.followProgress(stream, (err: any) => {
+                            if (err) reject(err);
+                            else resolve(null);
+                        }, (event: any) => {
+                            if (event.status) log(`[pull] ${event.status}`);
+                        });
+                    });
+                });
+            }
         });
 
         log("Creating and starting container...");
