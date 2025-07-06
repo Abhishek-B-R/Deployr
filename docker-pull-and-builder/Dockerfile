@@ -1,6 +1,7 @@
 FROM node:20-alpine
 
 WORKDIR /app
+USER root
 
 COPY package*.json ./
 RUN npm i -g pnpm

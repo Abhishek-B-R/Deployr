@@ -11,10 +11,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const searchParams = request.nextUrl.searchParams;
-    const page = searchParams.get("page") || "1";
-    const per_page = searchParams.get("per_page") || "30";
-    const sort = searchParams.get("sort") || "updated";
+    const searchParams = await request.nextUrl.searchParams;
+    const page = await searchParams.get("page") || "1";
+    const per_page = await searchParams.get("per_page") || "30";
+    const sort = await searchParams.get("sort") || "updated";
 
     const url = `https://api.github.com/user/repos?page=${page}&per_page=${per_page}&sort=${sort}&type=all`;
 

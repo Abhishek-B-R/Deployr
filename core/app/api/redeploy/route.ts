@@ -68,7 +68,9 @@ export async function POST(request: NextRequest) {
           },
         })
 
-        throw new Error(`Backend deployment failed: ${backendResponse.status}`)
+        const errorText = await backendResponse.text();
+        console.error("Backend deploy error response:", errorText);
+        throw new Error(`Backend deployment failed: ${backendResponse.status}`);
       }
 
       const backendResult = await backendResponse.json()

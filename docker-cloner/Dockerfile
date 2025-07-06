@@ -1,5 +1,8 @@
 FROM node:20-alpine
 
+# THIS IS REQUIRED:
+RUN apk add --no-cache git
+
 WORKDIR /app
 
 COPY package*.json ./

@@ -27,7 +27,7 @@ async function getProject(projectId: string, userEmail: string) {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default async function ProjectOverviewPage(props: any) {
-  const { params } = props
+  const { params } = await props
   const { projectId } = await params
   const session = await getServerSession(authOptions)
 

@@ -5,10 +5,9 @@ import { redirect } from "next/navigation";
 // NextJs issue, through i gave it valid types, its not building and throwing this error
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default async function ImportPageWrapper(props: any) {
+  const searchParams = await props?.searchParams;
   const repo =
-    typeof props?.searchParams?.repo === "string"
-      ? props.searchParams.repo
-      : undefined;
+    typeof searchParams?.repo === "string" ? searchParams.repo : undefined;
 
   if (repo) {
     const repo_url = `https://github.com/${repo}`;

@@ -7,7 +7,7 @@ import prisma from "@/db"
 export async function GET(request: NextRequest, context: any) {
   try {
     const session = await getServerSession(authOptions)
-    const { id } = context.params
+    const { id } = await context.params
     if (!session?.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }

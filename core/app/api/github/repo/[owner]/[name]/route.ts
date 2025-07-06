@@ -12,7 +12,7 @@ export async function GET(request: NextRequest, context: any) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const { owner, name } = context.params
+    const { owner, name } = await context.params
 
     // Fetch repository details
     const repoResponse = await fetch(`https://api.github.com/repos/${owner}/${name}`, {

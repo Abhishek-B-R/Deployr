@@ -189,7 +189,7 @@ export function DeployConfig() {
       }
 
       // Redirect to deployment status page with project ID
-      router.push(`/deployments/${result.project.id}`)
+      router.push(`/projects/${result.project.id}`)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Deployment failed")
       console.error("Deployment error:", err)

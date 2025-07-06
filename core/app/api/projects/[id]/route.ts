@@ -17,7 +17,7 @@ const updateProjectSchema = z.object({
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function PATCH(request: NextRequest, context: any) {
-  const { id } = context.params
+  const { id } = await context.params
   try {
     const session = await getServerSession(authOptions)
 
@@ -68,7 +68,7 @@ export async function PATCH(request: NextRequest, context: any) {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function DELETE(request: NextRequest, context: any) {
-  const { id } = context.params
+  const { id } = await context.params
   try {
     const session = await getServerSession(authOptions)
 

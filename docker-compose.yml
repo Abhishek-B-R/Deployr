@@ -1,0 +1,43 @@
+services:
+  redis:
+    image: redis:7
+    restart: always
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6380:6379"
+
+  docker-cloner:
+    build: ./docker-cloner
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./output:/app/output
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - redis
+    environment:
+      - REDIS_URL=redis://redis:6379
+
+  docker-pull-and-builder:
+    build: ./docker-pull-and-builder
+    ports:
+      - "8082:8082"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - redis
+    environment:
+      - REDIS_URL=redis://redis:6379
+
+  static-server:
+    build: ./static-server
+    depends_on:
+      - redis
+    ports:
+      - "8081:8081"
+    environment:
+      - REDIS_URL=redis://redis:6379
+
+volumes:
+  redis_data:
