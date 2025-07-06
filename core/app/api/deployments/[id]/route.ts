@@ -3,10 +3,11 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/authOptions"
 import prisma from "@/db"
 
-export async function GET(request: NextRequest, params: { id: string }) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function GET(request: NextRequest, context: any) {
   try {
     const session = await getServerSession(authOptions)
-    const { id } = await params
+    const { id } = context.params
     if (!session?.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }

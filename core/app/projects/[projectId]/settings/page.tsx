@@ -5,12 +5,6 @@ import { authOptions } from "@/lib/authOptions"
 import prisma from "@/db"
 import { ProjectSettings } from "@/components/ProjectOverview/project-settings"
 
-interface PageProps {
-  params: {
-    projectId: string
-  }
-}
-
 async function getProject(projectId: string, userEmail: string) {
   const project = await prisma.project.findFirst({
     where: {
@@ -29,13 +23,15 @@ async function getProject(projectId: string, userEmail: string) {
   return project
 }
 
-export default async function ProjectSettingsPage({ params }: PageProps) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default async function ProjectSettingsPage(props: any) {
   const session = await getServerSession(authOptions)
 
   if (!session?.user?.email) {
     notFound()
   }
-  const {projectId} = await params
+  const { params } = props
+  const { projectId } = await params
 
   const project = await getProject(projectId, session.user.email)
 

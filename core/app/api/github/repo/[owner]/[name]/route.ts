@@ -3,7 +3,8 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/authOptions"
 import { detectFramework } from "@/lib/framework-detection"
 
-export async function GET(request: NextRequest, { params }: { params: { owner: string; name: string } }) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function GET(request: NextRequest, context: any) {
   try {
     const session = await getServerSession(authOptions)
 
@@ -11,7 +12,7 @@ export async function GET(request: NextRequest, { params }: { params: { owner: s
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const { owner, name } = await params
+    const { owner, name } = context.params
 
     // Fetch repository details
     const repoResponse = await fetch(`https://api.github.com/repos/${owner}/${name}`, {

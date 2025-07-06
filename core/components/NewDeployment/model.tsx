@@ -14,7 +14,8 @@ import * as THREE from 'three'
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function Model(props: any) {
   const group = useRef<THREE.Group>(null)
-  const { nodes, materials, animations } = useGLTF('/scene.gltf')
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { nodes, materials, animations } = useGLTF('/scene.gltf') as any
   const { actions } = useAnimations(animations, group)
   const [isPlaying, setIsPlaying] = useState(false)
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)

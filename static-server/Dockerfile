@@ -3,9 +3,10 @@ FROM node:20-alpine
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install
+RUN npm i -g pnpm
+RUN pnpm install
 COPY . .
-RUN npm run build
+RUN pnpm run build
 
 EXPOSE 8081
-CMD ["npm", "run", "start"]
+CMD ["pnpm", "run", "start"]

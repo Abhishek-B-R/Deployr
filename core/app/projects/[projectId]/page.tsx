@@ -1,10 +1,8 @@
 import { redirect } from "next/navigation";
 
-export default async function ProjectPage({
-  params,
-}: {
-  params: { projectId: string };
-}) {
-    const projectId = await params.projectId;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default async function ProjectPage(props: any) {
+  const projectId = props.params?.projectId;
+
   redirect(`/project/${projectId}/overview`);
 }

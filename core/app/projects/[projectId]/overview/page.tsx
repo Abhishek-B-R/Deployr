@@ -6,11 +6,6 @@ import prisma from "@/db"
 import { ProjectOverview } from "@/components/ProjectOverview/project-overview"
 import { ProjectOverviewSkeleton } from "@/components/ProjectOverview/project-overview-skeleton"
 
-interface PageProps {
-  params: {
-    projectId: string
-  }
-}
 
 async function getProject(projectId: string, userEmail: string) {
   const project = await prisma.project.findFirst({
@@ -30,7 +25,9 @@ async function getProject(projectId: string, userEmail: string) {
   return project
 }
 
-export default async function ProjectOverviewPage({ params }: PageProps) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default async function ProjectOverviewPage(props: any) {
+  const { params } = props
   const { projectId } = await params
   const session = await getServerSession(authOptions)
 
