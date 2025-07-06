@@ -74,24 +74,6 @@ export function useBuildLogs({
     [projectId, formatLogs, onLogsComplete]
   );
 
-  const switchToStored = useCallback(() => {
-    console.log("No new logs for 5 seconds, switching to stored logs...");
-    setIsLive(false);
-    if (logs.length > 0) {
-      saveLogs(logs);
-    }
-  }, [logs, saveLogs]);
-
-  const resetInactivityTimer = useCallback(() => {
-    if (inactivityTimerRef.current) {
-      clearTimeout(inactivityTimerRef.current);
-    }
-
-    inactivityTimerRef.current = setTimeout(() => {
-      switchToStored();
-    }, 30000);
-  }, [switchToStored]);
-
   const addLog = useCallback(
     (message: string, type: LogEntry["type"] = "info") => {
       const newLog: LogEntry = {
@@ -107,10 +89,8 @@ export function useBuildLogs({
         setIsLive(true);
         onReceiveMessage?.();
       }
-
-      resetInactivityTimer();
     },
-    [resetInactivityTimer, onReceiveMessage]
+    [onReceiveMessage]
   );
 
   const connectWebSocket = useCallback(() => {

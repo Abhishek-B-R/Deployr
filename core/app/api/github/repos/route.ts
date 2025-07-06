@@ -1,42 +1,56 @@
-import { type NextRequest, NextResponse } from "next/server"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/authOptions"
+import { type NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/authOptions";
+import prisma from "@/db";
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getServerSession(authOptions);
 
     if (!session?.accessToken) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const searchParams = request.nextUrl.searchParams
-    const page = searchParams.get("page") || "1"
-    const per_page = searchParams.get("per_page") || "30"
-    const sort = searchParams.get("sort") || "updated"
+    const searchParams = request.nextUrl.searchParams;
+    const page = searchParams.get("page") || "1";
+    const per_page = searchParams.get("per_page") || "30";
+    const sort = searchParams.get("sort") || "updated";
 
-    const url = `https://api.github.com/user/repos?page=${page}&per_page=${per_page}&sort=${sort}&type=all`
+    const url = `https://api.github.com/user/repos?page=${page}&per_page=${per_page}&sort=${sort}&type=all`;
 
     const response = await fetch(url, {
       headers: {
         Authorization: `Bearer ${session.accessToken}`,
         Accept: "application/vnd.github.v3+json",
         "User-Agent": "Deployr-App",
-      },      
-    })
+      },
+    });
 
     if (!response.ok) {
-      throw new Error(`GitHub API error: ${response.status}`)
+      throw new Error(`GitHub API error: ${response.status}`);
     }
 
-    const data = await response.json()
+    const data = await response.json();
 
-    // Handle search results vs direct repo list
-    const repositories = data
+    // Filter out repos already deployed
+    const undeployedRepos = [];
 
-    return NextResponse.json(repositories)
+    for (const repo of data) {
+      const repoUrl = `https://github.com/${repo.full_name}`;
+      const found = await prisma.project.findFirst({
+        where: { repo_url: repoUrl },
+      });
+      if (!found) {
+        undeployedRepos.push(repo);
+      }
+    }
+
+    return NextResponse.json(undeployedRepos);
   } catch (error) {
-    console.error("Error fetching repositories:", error)
-    return NextResponse.json({ error: "Failed to fetch repositories" }, { status: 500 })
+    console.error("Error fetching repositories:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch repositories" },
+      { status: 500 }
+    );
   }
 }
