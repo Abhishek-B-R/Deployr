@@ -64,12 +64,12 @@ export function ProjectOverview({ project: initialProject }: ProjectOverviewProp
   const [project, setProject] = useState(initialProject)
   const [copied, setCopied] = useState(false)
   const [activeTab, setActiveTab] = useState("overview")
+  const [redeploy, setRedeploy] = useState(false)
 
   const status = statusConfig[project.status as keyof typeof statusConfig] || statusConfig.PENDING
   const StatusIcon = status.icon
   const deploymentUrl = `https://${project.slug}.deployr.live`
   const isLive = project.status === "BUILDING";
-
 
   // Poll for status updates if building
   useEffect(() => {
@@ -107,6 +107,38 @@ export function ProjectOverview({ project: initialProject }: ProjectOverviewProp
     const sizes = ["Bytes", "KB", "MB", "GB"]
     const i = Math.floor(Math.log(bytes) / Math.log(k))
     return Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
+  }
+
+    // Update the handleDeploy function to use selectedFramework
+  const handleRedeploy = async () => {
+    setRedeploy(true)
+    try {
+      const deploymentData = {
+        repository: project.repo_url?.split("/")[3]+"/"+project.repo_url?.split("/")[4],
+        branch: project.branch,
+        projectName: project.name
+      }
+      console.log(deploymentData)
+
+      const response = await fetch("/api/redeploy", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(deploymentData),
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || "Deployment failed")
+      }
+    } catch (err) {
+      console.error("Deployment error:", err)
+    } finally{
+      setRedeploy(false)
+      setActiveTab("deployments")
+    }
   }
 
   return (
@@ -317,14 +349,25 @@ export function ProjectOverview({ project: initialProject }: ProjectOverviewProp
                           <span>{project.status==="BUILD_SUCCESS"?"Deployed":project.status==="BUILD_FAILED"?"Failed":project.status}</span>
                         </Badge>
                       </div>
-                      {project.status === "DEPLOYED" && (
-                        <Button asChild>
-                          <a href={deploymentUrl} target="_blank" rel="noopener noreferrer">
-                            <ExternalLink className="w-4 h-4 mr-2" />
-                            Visit
-                          </a>
+
+                      <div className="flex items-center gap-3">
+                        <Button onClick={handleRedeploy} disabled={project.status === "BUILDING"}
+                        className={`flex ${redeploy?"cursor-not-allowed":""}`}>
+                            <RefreshCw className={`w-4 h-4 ${redeploy ? "animate-spin" : "disable"}`} />
+                            Redeploy
                         </Button>
-                      )}
+
+                        {project.status === "BUILD_SUCCESS" && (
+                          <a href={deploymentUrl} target="_blank" rel="noopener noreferrer">
+                            <Button asChild>
+                              <span>
+                                <ExternalLink className="w-4 h-4 mr-2" />
+                                Visit
+                              </span>
+                            </Button>
+                          </a>
+                        )}
+                      </div>
                     </div>
 
                     <Separator />

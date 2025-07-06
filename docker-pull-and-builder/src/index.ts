@@ -61,7 +61,7 @@ async function  main() {
 
             //insert status in DB
             await pgClient.query(
-            `UPDATE "Project" SET status = $1, "deployedBytes" = $2 WHERE id = $3`,
+            `UPDATE "Project" SET status = $1, "size" = $2 WHERE id = $3`,
             ['BUILD_SUCCESS', size, id]
             );
         }catch(error){

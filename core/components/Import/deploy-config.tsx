@@ -171,6 +171,7 @@ export function DeployConfig() {
         installCommand,
         envVars: envVars.filter((env) => env.key && env.value),
         framework: selectedFramework,
+        isNextjs: selectedFramework === "nextjs"
       }
 
       const response = await fetch("/api/deploy", {
@@ -569,7 +570,7 @@ export function DeployConfig() {
               <Button
                 onClick={handleDeploy}
                 disabled={
-                  deploying || !projectName || (selectedFramework === "nextjs" && nextjsValidationConfirmed === false)
+                  deploying || !projectName || (selectedFramework === "nextjs" && !nextjsValidationConfirmed)
                 }
                 className="w-full"
                 size="lg"

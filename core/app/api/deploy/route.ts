@@ -130,7 +130,7 @@ export async function POST(request: NextRequest) {
 
     // Send to your backend
     try {
-      const backendResponse = await fetch(process.env.BUILDER_URL!, {
+      const backendResponse = await fetch("http://localhost:8080/deploy", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
