@@ -21,7 +21,7 @@ jobs:
       - name: Build and push docker-cloner
         uses: docker/build-push-action@v4
         with:
-          context: .
+          context: ./docker-cloner
           file: ./docker-cloner/Dockerfile
           push: true
           tags: |
@@ -31,7 +31,7 @@ jobs:
       - name: Build and push docker-pull-and-builder
         uses: docker/build-push-action@v4
         with:
-          context: .
+          context: ./docker-pull-and-builder
           file: ./docker-pull-and-builder/Dockerfile
           push: true
           tags: |
@@ -41,7 +41,7 @@ jobs:
       - name: Build and push static-server
         uses: docker/build-push-action@v4
         with:
-          context: .
+          context: ./static-server
           file: ./static-server/Dockerfile
           push: true
           tags: |
