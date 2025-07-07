@@ -41,7 +41,7 @@ export async function buildProject(id: string,rootDirectory: string, installComm
             setTimeout(() => {
                 log("Docker is ready");
                 resolve(null);
-            }, 5000);
+            }, 2000);
         });
         log("Pulling node:18 image...");
 
