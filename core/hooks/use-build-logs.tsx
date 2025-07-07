@@ -270,6 +270,7 @@ export function useBuildLogs({
     if (ws) ws.close(1000, "Manual disconnect");
     setIsConnected(false);
   };
+// eslint-disable-next-line react-hooks/exhaustive-deps
 }, [active, projectId, wsUrl]);
 
 
