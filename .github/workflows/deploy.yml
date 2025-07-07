@@ -1,0 +1,62 @@
+name: Deploy All Docker Services
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy_everything:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v3
+
+      - name: Docker login
+        uses: docker/login-action@v2
+        with: 
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push docker-cloner
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./docker-cloner/Dockerfile
+          push: true
+          tags: |
+            abhibr/deployr-docker-cloner:${{ github.sha }}
+            abhibr/deployr-docker-cloner:latest
+
+      - name: Build and push docker-pull-and-builder
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./docker-pull-and-builder/Dockerfile
+          push: true
+          tags: |
+            abhibr/deployr-docker-pull-and-builder:${{ github.sha }}
+            abhibr/deployr-docker-pull-and-builder:latest
+
+      - name: Build and push static-server
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./static-server/Dockerfile
+          push: true
+          tags: |
+            abhibr/deployr-static-server:${{ github.sha }}
+            abhibr/deployr-static-server:latest
+
+      - name: SSH Deploy to Server
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: azureuser
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            cd /home/ubuntu/deployr
+            sudo docker-compose pull
+            sudo docker-compose up -d --build
+            sudo docker image prune -a -f

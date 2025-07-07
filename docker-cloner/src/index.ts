@@ -8,7 +8,6 @@ import { deleteAllFiles } from "./deleteFiles"
 import { publisher } from "./redis"
 import { Pool } from "pg"
 import { DATABASE_URL } from "./envVars"
-import { stat } from "fs"
 
 const pgClient = new Pool({
     connectionString: DATABASE_URL

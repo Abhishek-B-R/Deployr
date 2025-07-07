@@ -9,6 +9,7 @@ services:
 
   docker-cloner:
     build: ./docker-cloner
+    restart: always
     ports:
       - "8080:8080"
     volumes:
@@ -21,6 +22,7 @@ services:
 
   docker-pull-and-builder:
     build: ./docker-pull-and-builder
+    restart: always
     ports:
       - "8082:8082"
     volumes:
@@ -34,6 +36,7 @@ services:
 
   static-server:
     build: ./static-server
+    restart: always
     depends_on:
       - redis
     ports:

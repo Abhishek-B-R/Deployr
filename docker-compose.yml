@@ -8,7 +8,8 @@ services:
       - "6380:6379"
 
   docker-cloner:
-    build: ./docker-cloner
+    image: abhibr/deployr-docker-cloner:latest
+    restart: always
     ports:
       - "8080:8080"
     volumes:
@@ -20,7 +21,8 @@ services:
       - REDIS_URL=redis://redis:6379
 
   docker-pull-and-builder:
-    build: ./docker-pull-and-builder
+    image: abhibr/deployr-docker-pull-and-builder:latest
+    restart: always
     ports:
       - "8082:8082"
     volumes:
@@ -33,7 +35,8 @@ services:
       - OUTPUT_BASE_PATH=/home/azureuser/deployr/output
 
   static-server:
-    build: ./static-server
+    image: abhibr/deployr-static-server:latest
+    restart: always
     depends_on:
       - redis
     ports:
