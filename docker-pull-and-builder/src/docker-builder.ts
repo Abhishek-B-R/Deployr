@@ -9,7 +9,8 @@ import {exec} from "child_process"
 const docker = new Docker();
 
 export async function buildProject(id: string,rootDirectory: string, installCommand: string, buildCommand: string,envVarsArray?: { key: string, value: string }[]) {
-    const projectPath = path.resolve("output", id);
+    const outputBasePath = process.env.OUTPUT_BASE_PATH || path.resolve("output");
+    const projectPath = path.join(outputBasePath, id);
     let logsList = ""
 
     async function log(msg: string) {

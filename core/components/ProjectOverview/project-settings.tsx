@@ -371,13 +371,9 @@ export function ProjectSettings({ project }: ProjectSettingsProps) {
               <span>Delete Project</span>
             </AlertDialogTitle>
             <AlertDialogDescription className="text-left space-y-3">
-              <p>
                 This action <strong>cannot</strong> be undone. This will permanently delete the{" "}
                 <strong>{project.name}</strong> project, deployments, and remove all associated data.
-              </p>
-              <p className="text-sm">
                 Please type <strong>{project.name}</strong> to confirm.
-              </p>
             </AlertDialogDescription>
           </AlertDialogHeader>
 
