@@ -1,11 +1,45 @@
-import { createClient } from "redis"
+import { createClient } from "redis";
+import pRetry from "p-retry";
 
-export const subscriber=createClient({
-    url: process.env.REDIS_URL || "redis://localhost:6379",
-})
-subscriber.connect()
+const url = process.env.REDIS_URL;
+if (!url) throw new Error("REDIS_URL not defined");
 
-export const publisher=createClient({
-    url: process.env.REDIS_URL || "redis://localhost:6379",
-})
-publisher.connect()
+export const subscriber = createClient({ 
+  url,
+  socket: {
+    reconnectStrategy: retries => {
+      // Retry every 2s for first 50 tries, then give up
+      if (retries > 50) return new Error("Redis reconnection failed.");
+      return 2000; // ms
+    }
+  }
+});
+export const publisher = createClient({ 
+  url,
+  socket: {
+    reconnectStrategy: retries => {
+      // Retry every 2s for first 50 tries, then give up
+      if (retries > 50) return new Error("Redis reconnection failed.");
+      return 2000; // ms
+    }
+  }
+});
+
+(async () => {
+  await pRetry(() => subscriber.connect(), {
+    retries: 50,
+    onFailedAttempt: (error) => {
+      console.warn(`Redis subscriber attempt ${error.attemptNumber} failed. ${error.retriesLeft} retries left.`);
+    },
+  });
+
+  await pRetry(() => publisher.connect(), {
+    retries: 50,
+    onFailedAttempt: (error) => {
+      console.warn(`Redis publisher attempt ${error.attemptNumber} failed. ${error.retriesLeft} retries left.`);
+    },
+  });
+})().catch((err) => {
+  console.error('Failed to connect to Redis:', err);
+  process.exit(1);
+});
