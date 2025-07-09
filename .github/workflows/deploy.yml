@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'docker-cloner/**'
+      - 'docker-pull-and-builder/**'
+      - 'static-server/**'
 
 jobs:
   deploy_everything:

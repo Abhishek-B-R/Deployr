@@ -4,5 +4,5 @@ import { redirect } from "next/navigation";
 export default async function ProjectPage(props: any) {
   const projectId = await props.params?.projectId;
 
-  redirect(`/project/${projectId}/overview`);
+  redirect(`/projects/${projectId}/overview`);
 }
