@@ -1,6 +1,6 @@
 # Deployr: Self-Hosted Vercel Clone
 
-![Deployr Banner](insert-image-url-here)
+![Deployr Banner](https://deployr.live/imgs/Landing.png)
 
 > **Deployr** is a full-stack, self-hosted Vercel-like platform that allows you to connect a GitHub repository, specify your build settings, and deploy static/Next.js sites dynamically under a custom subdomain (e.g., `yourproject.deployr.live`).
 
