@@ -73,3 +73,8 @@ enum DeployStatus {
   BUILD_FAILED
   DELETED
 }
+
+model FailedJobs {
+  id String @id @default(cuid())
+  createdAt DateTime @default(now())
+}
