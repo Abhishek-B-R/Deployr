@@ -83,43 +83,62 @@ export async function POST(request: NextRequest) {
         })
     }
 
-    // Generate unique slug
-    let slug = generateSlug(projectName)
-    let slugExists = await prisma.project.findUnique({ where: { slug } })
-
-    while (slugExists) {
-      slug = generateSlug(projectName)
-      slugExists = await prisma.project.findUnique({ where: { slug } })
-    }
-
-    // Create project in database using your schema
-    const project = await prisma.project.create({
-      data: {
-        name: projectName,
-        repo_name: repository.split("/")[1],
-        repo_url: `https://github.com/${repository}`,
-        branch,
-        slug,
+    let project = await prisma.project.findFirst({
+      where: {
         userId: user.id,
-        status: "PENDING", 
-        buildCommand: buildCommand || "",
-        installCommand: installCommand || "npm install",
-        outputDirectory: outputDirectory || "dist",
-        framework: framework || "",
-        rootDirectory: "./"+rootDirectory,
-        envVars: {
-          create: envVars.map((env: { key: string; value: string }) => ({
-            key: env.key,
-            value: env.value,
-          })),
-        },
-        isNextjs
-      },
-      include: {
-        envVars: true,
+        repo_url: `https://github.com/${repository}`,
       },
     })
 
+    if(project){
+      await prisma.project.update({
+        where: { id: project.id },
+        data: {
+          isDeleted: false,
+          name: projectName,
+          repo_name: repository.split("/")[1],
+          repo_url: `https://github.com/${repository}`,
+        },
+      })
+    }else{
+      // Generate unique slug
+      let slug = generateSlug(projectName)
+      let slugExists = await prisma.project.findUnique({ where: { slug } })
+
+      while (slugExists) {
+        slug = generateSlug(projectName)
+        slugExists = await prisma.project.findUnique({ where: { slug } })
+      }
+
+      // Create project in database using your schema
+      const newProject = await prisma.project.create({
+        data: {
+          name: projectName,
+          repo_name: repository.split("/")[1],
+          repo_url: `https://github.com/${repository}`,
+          branch,
+          slug,
+          userId: user.id,
+          status: "PENDING", 
+          buildCommand: buildCommand || "",
+          installCommand: installCommand || "npm install",
+          outputDirectory: outputDirectory || "dist",
+          framework: framework || "",
+          rootDirectory: "./"+rootDirectory,
+          envVars: {
+            create: envVars.map((env: { key: string; value: string }) => ({
+              key: env.key,
+              value: env.value,
+            })),
+          },
+          isNextjs
+        },
+        include: {
+          envVars: true,
+        },
+      })
+      project = newProject
+    }
     // Prepare data for backend
     const backendPayload = {
       id: project.id,
