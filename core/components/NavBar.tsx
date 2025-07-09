@@ -23,9 +23,9 @@ function Header() {
     }
 
     return (
-        <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:px-10 rounded-2xl">
+        <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:px-10 rounded-2xl flex justify-center">
             <div className="container flex h-16 items-center justify-between">
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 cursor-pointer" onClick={() => router.push("/")}>
                 <div className="flex items-center justify-center w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg">
                 <Rocket className="w-5 h-5 text-white" />
                 </div>
@@ -34,24 +34,23 @@ function Header() {
                 </span>
             </div>
             <nav className="hidden md:flex items-center space-x-6">
-                {session.status === "authenticated" ?  
-                (<>
-                    <Button size="sm" onClick={()=>router.push("/projects")}>
+                <>
+                    <Button size="sm" className="cursor-pointer" onClick={()=>router.push("/projects")}>
                     Dashboard
                     </Button>
                     <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
+                        <DropdownMenuTrigger asChild className="cursor-pointer">
                             <Button size="sm">
                                 Add New... <ChevronDown/>    
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
                             <DropdownMenuItem asChild onClick={()=>router.push("/new")}>
-                                <Button variant="ghost" size="sm" className="w-full justify-start">
+                                <Button variant="ghost" size="sm" className="w-full justify-start cursor-pointer">
                                     Project
                                 </Button>
                             </DropdownMenuItem>
-                            <DropdownMenuItem asChild onClick={()=>{
+                            <DropdownMenuItem asChild className="cursor-pointer" onClick={()=>{
                                 window.open('https://github.com/new', '_blank', 'noopener,noreferrer');
                             }}>
                                 <Button variant="ghost" size="sm" className="w-full justify-start">
@@ -60,17 +59,9 @@ function Header() {
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
-                </>):
-                (<>
-                    <Link href="#features" className="text-sm font-medium hover:text-primary transition-colors">
-                    Features
-                    </Link>
-                    <Link href="#how-it-works" className="text-sm font-medium hover:text-primary transition-colors">
-                    How it Works
-                    </Link>
-                </>)}
+                </>
                 <ThemeToggle />
-                <Button className="cursor-pointer bg-white dark:bg-black text-black dark:text-white hover:bg-gray-300" onClick={() => {
+                <Button className="bg-white dark:bg-black text-black dark:text-white hover:bg-gray-300 cursor-pointer" onClick={() => {
                     window.open('https://www.github.com/Abhishek-B-R/Deployr', '_blank', 'noopener,noreferrer');
                     }
                 }>
@@ -81,7 +72,7 @@ function Header() {
                     {session ? (
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                            <Button variant="ghost" className="relative h-8 w-8 rounded-full cursor-pointer">
                                 <Avatar className="h-8 w-8">
                                 <AvatarImage src={session.data.user?.image || ""} alt={session.data.user?.name || ""} />
                                 <AvatarFallback>{getInitials(session.data.user?.name || session.data.user?.email || "U")}</AvatarFallback>
@@ -96,14 +87,14 @@ function Header() {
                                 </div>
                             </div>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem asChild>
+                            <DropdownMenuItem asChild className="cursor-pointer">
                                 <Link href="/settings">
                                 <Settings className="mr-2 h-4 w-4" />
                                 Settings
                                 </Link>
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={() => router.push("/api/auth/signout")}>Sign out</DropdownMenuItem>
+                            <DropdownMenuItem className="cursor-pointer" onClick={() => router.push("/api/auth/signout")}>Sign out</DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     ) : (

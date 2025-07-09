@@ -34,10 +34,13 @@ import {
   Activity,
   CheckIcon,
   Ban,
+  Sparkles,
 } from "lucide-react"
 import { getTimeAgo } from "@/lib/utils"
 import NavBar from "../NavBar"
 import Footer from "../Footer"
+import { motion, useInView, Variants } from "framer-motion"
+import { useRef } from "react"
 
 interface Project {
   id: string
@@ -80,6 +83,8 @@ export function ProjectsList({ projects }: ProjectsListProps) {
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState<string>("all")
   const router = useRouter()
+  const ref = useRef(null)
+  const isInView = useInView(ref, { once: true, margin: "-50px" })
 
   const filteredProjects = projects.filter((project) => {
     const matchesSearch =
@@ -97,46 +102,134 @@ export function ProjectsList({ projects }: ProjectsListProps) {
     return Number.parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i]
   }
 
+  const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2,
+      },
+    },
+  }
+
+  const itemVariants: Variants = {
+    hidden: { opacity: 0, y: 20, scale: 0.95 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        duration: 0.5,
+        ease: [0.25, 0.46, 0.45, 0.94],
+      },
+    },
+  }
+
   return (
-    <>
+    <div className="min-h-screen flex flex-col overflow-x-hidden">
       {/* Header */}
-      <NavBar/>
+      <NavBar />
+
+      {/* Floating Background Elements */}
+      <motion.div
+        className="fixed top-20 right-10 text-blue-500/5 pointer-events-none z-0"
+        animate={{
+          y: [-20, 20, -20],
+          rotate: [0, 180, 360],
+        }}
+        transition={{
+          duration: 20,
+          repeat: Number.POSITIVE_INFINITY,
+          ease: "linear",
+        }}
+      >
+        <Rocket className="w-32 h-32" />
+      </motion.div>
+
+      <motion.div
+        className="fixed bottom-20 left-10 text-purple-500/5 pointer-events-none z-0"
+        animate={{
+          y: [15, -15, 15],
+          rotate: [0, -90, -180, -270, -360],
+        }}
+        transition={{
+          duration: 25,
+          repeat: Number.POSITIVE_INFINITY,
+          ease: "linear",
+        }}
+      >
+        <Sparkles className="w-24 h-24" />
+      </motion.div>
 
       {/* Main Content */}
-      <main className="container py-8">
+      <main ref={ref} className="flex-1 container mx-auto px-4 py-8 relative z-10 max-w-full">
         <div className="max-w-7xl mx-auto space-y-8">
           {/* Page Header */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <h1 className="text-3xl font-bold">Projects</h1>
+          <motion.div
+            className="flex flex-col md:flex-row md:items-center justify-between gap-4"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                Projects
+              </h1>
               <p className="text-muted-foreground">Manage and monitor your deployed projects</p>
-            </div>
-            <Button asChild>
-              <Link href="/new">
-                <Plus className="w-4 h-4 mr-2" />
-                New Project
-              </Link>
-            </Button>
-          </div>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Button
+                asChild
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+              >
+                <Link href="/new">
+                  <Plus className="w-4 h-4 mr-2" />
+                  New Project
+                </Link>
+              </Button>
+            </motion.div>
+          </motion.div>
 
           {/* Filters and Search */}
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="relative flex-1">
+          <motion.div
+            className="flex flex-col sm:flex-row gap-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+          >
+            <motion.div
+              className="relative flex-1"
+              whileFocus={{ scale: 1.02 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
                 placeholder="Search projects..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
+                className="pl-10 transition-all duration-200 focus:shadow-lg"
               />
-            </div>
+            </motion.div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="flex items-center gap-2">
-                  <Filter className="w-4 h-4" />
-                  Status:{" "}
-                  {statusFilter === "all" ? "All" : statusConfig[statusFilter as keyof typeof statusConfig]?.label}
-                </Button>
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                  <Button variant="outline" className="flex items-center gap-2 min-w-fit bg-transparent">
+                    <Filter className="w-4 h-4" />
+                    Status:{" "}
+                    {statusFilter === "all" ? "All" : statusConfig[statusFilter as keyof typeof statusConfig]?.label}
+                  </Button>
+                </motion.div>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuItem onClick={() => setStatusFilter("all")}>All Projects</DropdownMenuItem>
@@ -159,203 +252,252 @@ export function ProjectsList({ projects }: ProjectsListProps) {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          </div>
+          </motion.div>
 
           {/* Projects Grid */}
           {filteredProjects.length === 0 ? (
-            <div className="text-center py-12">
+            <motion.div
+              className="text-center py-12"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, delay: 0.8 }}
+            >
               {projects.length === 0 ? (
                 <div className="space-y-4">
-                  <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto">
+                  <motion.div
+                    className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto"
+                    animate={{ y: [-5, 5, -5] }}
+                    transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY }}
+                  >
                     <Rocket className="w-8 h-8 text-muted-foreground" />
-                  </div>
+                  </motion.div>
                   <div>
                     <h3 className="text-lg font-semibold mb-2">No projects yet</h3>
                     <p className="text-muted-foreground mb-4">Get started by deploying your first project</p>
-                    <Button asChild>
-                      <Link href="/new">
-                        <Plus className="w-4 h-4 mr-2" />
-                        Create New Project
-                      </Link>
-                    </Button>
+                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                      <Button asChild>
+                        <Link href="/new">
+                          <Plus className="w-4 h-4 mr-2" />
+                          Create New Project
+                        </Link>
+                      </Button>
+                    </motion.div>
                   </div>
                 </div>
               ) : (
                 <div className="space-y-4">
-                  <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto">
+                  <motion.div
+                    className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto"
+                    animate={{ rotate: [0, 360] }}
+                    transition={{ duration: 4, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
+                  >
                     <Search className="w-8 h-8 text-muted-foreground" />
-                  </div>
+                  </motion.div>
                   <div>
                     <h3 className="text-lg font-semibold mb-2">No projects found</h3>
                     <p className="text-muted-foreground">Try adjusting your search or filter criteria</p>
                   </div>
                 </div>
               )}
-            </div>
+            </motion.div>
           ) : (
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <motion.div
+              className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 w-full"
+              variants={containerVariants}
+              initial="hidden"
+              animate={isInView ? "visible" : "hidden"}
+            >
               {filteredProjects.map((project) => {
                 const status = statusConfig[project.status as keyof typeof statusConfig] || statusConfig.PENDING
                 const StatusIcon = status.icon
                 const deploymentUrl = `https://${project.slug}.deployr.live`
 
                 return (
-                  <Card
-                    key={project.id}
-                    className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer border-2 hover:border-primary/20"
-                    onClick={() => router.push(`/projects/${project.id}/overview`)}
-                  >
-                    <CardHeader className="pb-3">
-                      <div className="flex items-start justify-between">
-                        <div className="space-y-1 flex-1 min-w-0">
-                          <CardTitle className="text-lg truncate group-hover:text-primary transition-colors">
-                            {project.name}
-                          </CardTitle>
-                          <div className="flex items-center space-x-2">
-                            <Badge variant={status.variant} className="flex items-center space-x-1">
-                              <StatusIcon
-                                className={`w-3 h-3 ${project.status === "BUILDING" ? "animate-spin" : "hidden"}`}
-                              />
-                              <CheckIcon
-                                className={`w-3 h-3 ${project.status === "BUILD_SUCCESS" ? "block text-green-500" : "hidden"}`}
-                              />
-                              <Ban
-                                className={`w-3 h-3 ${project.status === "BUILD_FAILED" ? "block text-red-500" : "hidden"}`}
-                              />
-                              <span>{project.status==="BUILD_SUCCESS"?"Deployed":project.status==="BUILD_FAILED"?"Failed":project.status}</span>
-                            </Badge>
-                            {project.private && (
-                              <Badge variant="outline" className="text-xs">
-                                Private
-                              </Badge>
-                            )}
+                  <motion.div key={project.id} variants={itemVariants}>
+                    <Card
+                      className="group hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 cursor-pointer border-2 hover:border-primary/20 backdrop-blur-sm bg-white/80 dark:bg-gray-800/80 relative overflow-hidden"
+                      onClick={() => router.push(`/projects/${project.id}/overview`)}
+                    >
+                      {/* Glow effect on hover */}
+                      <motion.div
+                        className="absolute inset-0 bg-gradient-to-r from-blue-400/10 to-purple-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                        whileHover={{ scale: 1.02 }}
+                      />
+
+                      <CardHeader className="pb-3 relative z-10">
+                        <div className="flex items-start justify-between">
+                          <div className="space-y-1 flex-1 min-w-0">
+                            <motion.div whileHover={{ x: 5 }} transition={{ type: "spring", stiffness: 300 }}>
+                              <CardTitle className="text-lg truncate group-hover:text-primary transition-colors">
+                                {project.name}
+                              </CardTitle>
+                            </motion.div>
+                            <div className="flex items-center space-x-2 flex-wrap">
+                              <motion.div whileHover={{ scale: 1.05 }} transition={{ type: "spring", stiffness: 400 }}>
+                                <Badge variant={status.variant} className="flex items-center space-x-1">
+                                  <StatusIcon
+                                    className={`w-3 h-3 ${project.status === "BUILDING" ? "animate-spin" : "hidden"}`}
+                                  />
+                                  <CheckIcon
+                                    className={`w-3 h-3 ${project.status === "BUILD_SUCCESS" ? "block text-green-500" : "hidden"}`}
+                                  />
+                                  <Ban
+                                    className={`w-3 h-3 ${project.status === "BUILD_FAILED" ? "block text-red-500" : "hidden"}`}
+                                  />
+                                  <span>
+                                    {project.status === "BUILD_SUCCESS"
+                                      ? "Deployed"
+                                      : project.status === "BUILD_FAILED"
+                                        ? "Failed"
+                                        : project.status}
+                                  </span>
+                                </Badge>
+                              </motion.div>
+                              {project.private && (
+                                <Badge variant="outline" className="text-xs">
+                                  Private
+                                </Badge>
+                              )}
+                            </div>
                           </div>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                              <motion.div
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.9 }}
+                                className="opacity-0 group-hover:opacity-100 transition-opacity"
+                              >
+                                <Button variant="ghost" size="icon">
+                                  <MoreHorizontal className="w-4 h-4" />
+                                </Button>
+                              </motion.div>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem  className="cursor-pointer"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  router.push(`/projects/${project.id}/overview`)
+                                }}
+                              >
+                                <Eye className="w-4 h-4 mr-2" />
+                                View Project
+                              </DropdownMenuItem>
+                              {project.status === "BUILD_SUCCESS" && (
+                                <DropdownMenuItem
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    window.open(deploymentUrl, "_blank")
+                                  }}
+                                >
+                                  <Globe className="w-4 h-4 mr-2" />
+                                  Visit Site
+                                </DropdownMenuItem>
+                              )}
+                              <DropdownMenuItem className="cursor-pointer"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  router.push(`/projects/${project.id}/settings`)
+                                }}
+                              >
+                                <Settings className="w-4 h-4 mr-2" />
+                                Settings
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              {project.repo_url && (
+                                <DropdownMenuItem className="cursor-pointer"
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    window.open(project.repo_url!, "_blank")
+                                  }}
+                                >
+                                  <Github className="w-4 h-4 mr-2" />
+                                  View Source
+                                </DropdownMenuItem>
+                              )}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </div>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="opacity-0 group-hover:opacity-100 transition-opacity"
-                            >
-                              <MoreHorizontal className="w-4 h-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                router.push(`/projects/${project.id}/overview`)
-                              }}
-                            >
-                              <Eye className="w-4 h-4 mr-2" />
-                              View Project
-                            </DropdownMenuItem>
-                            {project.status === "DEPLOYED" && (
-                              <DropdownMenuItem
+                      </CardHeader>
+
+                      <CardContent className="space-y-4 relative z-10">
+                        {/* Project URL */}
+                        {project.status === "BUILD_SUCCESS" && (
+                          <motion.div
+                            className="flex items-center space-x-2 p-2 bg-muted/50 rounded-lg"
+                            whileHover={{ scale: 1.02, backgroundColor: "rgba(0,0,0,0.05)" }}
+                            transition={{ duration: 0.2 }}
+                          >
+                            <Globe className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                            <code className="text-sm truncate flex-1">{project.slug}.deployr.live</code>
+                            <motion.div whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.8 }}>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-6 w-6"
                                 onClick={(e) => {
                                   e.stopPropagation()
                                   window.open(deploymentUrl, "_blank")
                                 }}
                               >
-                                <Globe className="w-4 h-4 mr-2" />
-                                Visit Site
-                              </DropdownMenuItem>
-                            )}
-                            <DropdownMenuItem
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                router.push(`/projects/${project.id}/settings`)
-                              }}
-                            >
-                              <Settings className="w-4 h-4 mr-2" />
-                              Settings
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            {project.repo_url && (
-                              <DropdownMenuItem
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  window.open(project.repo_url!, "_blank")
-                                }}
-                              >
-                                <Github className="w-4 h-4 mr-2" />
-                                View Source
-                              </DropdownMenuItem>
-                            )}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      {/* Project URL */}
-                      {project.status === "DEPLOYED" && (
-                        <div className="flex items-center space-x-2 p-2 bg-muted/50 rounded-lg">
-                          <Globe className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                          <code className="text-sm truncate flex-1">{project.slug}.deployr.live</code>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-6 w-6"
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              window.open(deploymentUrl, "_blank")
-                            }}
+                                <ExternalLink className="w-3 h-3" />
+                              </Button>
+                            </motion.div>
+                          </motion.div>
+                        )}
+
+                        {/* Repository Info */}
+                        {project.repo_url && (
+                          <motion.div
+                            className="flex items-center space-x-2 text-sm text-muted-foreground"
+                            whileHover={{ x: 3 }}
+                            transition={{ type: "spring", stiffness: 300 }}
                           >
-                            <ExternalLink className="w-3 h-3" />
-                          </Button>
-                        </div>
-                      )}
+                            <Github className="w-4 h-4" />
+                            <span className="truncate">{project.repo_name}</span>
+                            {project.branch && (
+                              <>
+                                <GitBranch className="w-3 h-3" />
+                                <span>{project.branch}</span>
+                              </>
+                            )}
+                          </motion.div>
+                        )}
 
-                      {/* Repository Info */}
-                      {project.repo_url && (
-                        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                          <Github className="w-4 h-4" />
-                          <span className="truncate">{project.repo_name}</span>
-                          {project.branch && (
-                            <>
-                              <GitBranch className="w-3 h-3" />
-                              <span>{project.branch}</span>
-                            </>
-                          )}
+                        {/* Stats */}
+                        <div className="grid grid-cols-3 gap-4 pt-2 border-t">
+                          {[
+                            { icon: Eye, value: project.views.toLocaleString(), label: "Views" },
+                            {
+                              icon: Activity,
+                              value: project.size ? formatBytes(project.size) : "—",
+                              label: "Size",
+                            },
+                            { icon: Calendar, value: getTimeAgo(project.updatedAt), label: "Updated" },
+                          ].map((stat, statIndex) => (
+                            <motion.div
+                              key={statIndex}
+                              className="text-center"
+                              whileHover={{ scale: 1.05, y: -2 }}
+                              transition={{ type: "spring", stiffness: 400 }}
+                            >
+                              <div className="flex items-center justify-center space-x-1">
+                                <stat.icon className="w-3 h-3 text-muted-foreground" />
+                                <span className="text-sm font-medium">{stat.value}</span>
+                              </div>
+                              <p className="text-xs text-muted-foreground">{stat.label}</p>
+                            </motion.div>
+                          ))}
                         </div>
-                      )}
-
-                      {/* Stats */}
-                      <div className="grid grid-cols-3 gap-4 pt-2 border-t">
-                        <div className="text-center">
-                          <div className="flex items-center justify-center space-x-1">
-                            <Eye className="w-3 h-3 text-muted-foreground" />
-                            <span className="text-sm font-medium">{project.views.toLocaleString()}</span>
-                          </div>
-                          <p className="text-xs text-muted-foreground">Views</p>
-                        </div>
-                        <div className="text-center">
-                          <div className="flex items-center justify-center space-x-1">
-                            <Activity className="w-3 h-3 text-muted-foreground" />
-                            <span className="text-sm font-medium">
-                              {project.size ? formatBytes(project.size) : "—"}
-                            </span>
-                          </div>
-                          <p className="text-xs text-muted-foreground">Size</p>
-                        </div>
-                        <div className="text-center">
-                          <div className="flex items-center justify-center space-x-1">
-                            <Calendar className="w-3 h-3 text-muted-foreground" />
-                            <span className="text-sm font-medium">{getTimeAgo(project.updatedAt)}</span>
-                          </div>
-                          <p className="text-xs text-muted-foreground">Updated</p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
                 )
               })}
-            </div>
+            </motion.div>
           )}
         </div>
       </main>
-      <Footer/>
-    </>
+      <Footer />
+    </div>
   )
 }

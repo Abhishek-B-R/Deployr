@@ -172,11 +172,11 @@ export function UserSettings({ user, session }: UserSettingsProps) {
     }).format(new Date(date))
   }
 
-  const deployedProjects = user.project.filter((p) => p.status === "DEPLOYED").length
+  const deployedProjects = user.project.filter((p) => p.status === "BUILD_SUCCESS").length
   const totalProjects = user.project.length
 
   return (
-    <div className="min-w-full min-h-screen px-16 bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800">
+    <div className="min-w-full min-h-screen md:pl-30 px-16 bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800">
       {/* Header */}
       <NavBar/>
 

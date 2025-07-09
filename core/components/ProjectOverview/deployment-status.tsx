@@ -36,16 +36,16 @@ const statusConfig = {
     label: "Building",
     description: "Your project is being built",
   },
-  DEPLOYED: {
+  BUILD_SUCCESS: {
     color: "bg-green-500",
     icon: CheckCircle,
-    label: "Deployed",
+    label: "BUILD_SUCCESS",
     description: "Successfully deployed",
   },
-  FAILED: {
+  BUILD_FAILED: {
     color: "bg-red-500",
     icon: XCircle,
-    label: "Failed",
+    label: "BUILD_FAILED",
     description: "Deployment failed",
   },
 }
@@ -68,7 +68,7 @@ export function DeploymentStatus({ deployment: initialDeployment }: DeploymentSt
             setDeployment(updated)
 
             // Stop polling if deployment is complete
-            if (updated.status === "DEPLOYED" || updated.status === "FAILED") {
+            if (updated.status === "BUILD_SUCCESS" || updated.status === "BUILD_FAILED") {
               clearInterval(interval)
             }
           }
@@ -128,7 +128,7 @@ export function DeploymentStatus({ deployment: initialDeployment }: DeploymentSt
                 <CardDescription>{status.description}</CardDescription>
               </div>
             </div>
-            {deployment.status === "DEPLOYED" && (
+            {deployment.status === "BUILD_SUCCESS" && (
               <Button asChild>
                 <a href={deploymentUrl} target="_blank" rel="noopener noreferrer">
                   <Globe className="w-4 h-4 mr-2" />
@@ -177,7 +177,7 @@ export function DeploymentStatus({ deployment: initialDeployment }: DeploymentSt
       </Card>
 
       {/* Deployment URL */}
-      {deployment.status === "DEPLOYED" && (
+      {deployment.status === "BUILD_SUCCESS" && (
         <Card>
           <CardHeader>
             <CardTitle>Deployment URL</CardTitle>

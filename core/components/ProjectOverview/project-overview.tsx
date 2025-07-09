@@ -82,7 +82,7 @@ export function ProjectOverview({ project: initialProject }: ProjectOverviewProp
             const updated = await response.json()
             setProject(updated)
 
-            if (updated.status === "DEPLOYED" || updated.status === "FAILED") {
+            if (updated.status === "BUILD_SUCCESS" || updated.status === "FAILED") {
               clearInterval(interval)
             }
           }
@@ -147,7 +147,7 @@ export function ProjectOverview({ project: initialProject }: ProjectOverviewProp
       <NavBar/>
 
       {/* Main Content */}
-      <main className="container py-8">
+      <main className="container py-8 min-h-[750px] 2xl:pl-46 pt-20">
         <div className="max-w-6xl mx-auto space-y-8">
           {/* Status Banner */}
           {project.status === "FAILED" && (

@@ -187,7 +187,7 @@ export function ProjectSettings({ project }: ProjectSettingsProps) {
                   <p className="text-sm font-medium">Current URL</p>
                   <code className="text-sm bg-muted px-2 py-1 rounded">{project.slug}.deployr.app</code>
                 </div>
-                <Badge variant={project.status === "DEPLOYED" ? "default" : "secondary"}>{project.status}</Badge>
+                <Badge variant={project.status === "BUILD_SUCCESS" ? "default" : "secondary"}>{project.status}</Badge>
               </div>
             </CardContent>
           </Card>
