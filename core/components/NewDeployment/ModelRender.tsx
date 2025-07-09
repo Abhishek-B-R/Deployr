@@ -46,7 +46,7 @@ export default function ModelRender() {
     //         max: 20
     //     }
     // })
-    const isMobile = useMediaQuery({maxWidth: 768});
+    const isMobile = useMediaQuery({maxWidth: 800});
 
     return (
         <section className="min-h-screen w-full flex flex-col relative px-10">

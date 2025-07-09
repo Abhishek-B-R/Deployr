@@ -19,7 +19,7 @@ export default async function AddNew() {
       <NavBar />
 
       {/* Main Content */}
-      <main className="container py-12">
+      <main className="container py-12 2xl:pl-40">
         <div className="max-w-4xl mx-auto">
           {/* Hero Section */}
           <div className="text-center mb-12">
@@ -32,7 +32,7 @@ export default async function AddNew() {
           {/* Main Content Grid */}
           <div className="grid lg:grid-cols-2 gap-20 ">
             {/* Import Repository Section */}
-            <div className="space-y-6">
+            <div className="space-y-6 w-[500px] xl:pr-10">
               {session ? (
                 <Suspense fallback={<RepositoryListSkeleton />}>
                   <RepositoryList />

@@ -16,7 +16,7 @@ export default async function ImportPageWrapper(props: any) {
       where: { repo_url },
     });
 
-    if (project) {
+    if (project && !project.isDeleted) {
       redirect(`/projects/${project.id}/overview`);
     }
   }

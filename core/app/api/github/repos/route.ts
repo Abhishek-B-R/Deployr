@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
       const found = await prisma.project.findFirst({
         where: { repo_url: repoUrl },
       });
-      if (!found) {
+      if (!found || found.isDeleted) {
         undeployedRepos.push(repo);
       }
     }

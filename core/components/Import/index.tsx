@@ -13,7 +13,7 @@ export default function ImportPage() {
       <NavBar />
 
       {/* Main Content */}
-      <main className="container py-12 pl-10">
+      <main className="container py-12 pl-30">
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-4 text-center">You&apos;re almost done.</h1>
           <p className="text-lg text-muted-foreground text-center">

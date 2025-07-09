@@ -61,7 +61,7 @@ function RepositoryListInsider() {
   }
 
   return (
-    <Card className="w-full max-w-2xl">
+    <Card className="w-full max-w-2xl ">
       <CardContent className="p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold">Import Git Repository</h2>
@@ -162,7 +162,7 @@ function RepositoryListInsider() {
                     )}
                   </div>
                 </div>
-                <Button onClick={() => handleImport(repo)} size="sm" className="ml-4 flex-shrink-0">
+                <Button onClick={() => handleImport(repo)} size="sm" className="ml-4 flex-shrink-0 cursor-pointer">
                   Import
                 </Button>
               </div>

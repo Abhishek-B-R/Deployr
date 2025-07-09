@@ -424,12 +424,12 @@ export function DeployConfig() {
                 <div className="space-y-2">
                   <Label htmlFor="branch">Branch</Label>
                   <Select value={selectedBranch} onValueChange={setSelectedBranch}>
-                    <SelectTrigger>
+                    <SelectTrigger className="cursor-pointer">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       {repoDetails.branches.map((branch) => (
-                        <SelectItem key={branch.name} value={branch.name}>
+                        <SelectItem key={branch.name} value={branch.name} className="cursor-pointer">
                           {branch.name}
                         </SelectItem>
                       ))}
@@ -486,7 +486,7 @@ export function DeployConfig() {
                     </p>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Switch id="advanced-settings" checked={advancedSettings} onCheckedChange={setAdvancedSettings} />
+                    <Switch id="advanced-settings" className="cursor-pointer" checked={advancedSettings} onCheckedChange={setAdvancedSettings} />
                     <Label htmlFor="advanced-settings" className="text-sm">
                       Override
                     </Label>
@@ -537,7 +537,7 @@ export function DeployConfig() {
                     <h3 className="text-lg font-medium">Environment Variables</h3>
                     <p className="text-sm text-muted-foreground">Add environment variables for your deployment.</p>
                   </div>
-                  <Button variant="outline" size="sm" onClick={addEnvVar}>
+                  <Button variant="outline" size="sm" onClick={addEnvVar} className="cursor-pointer">
                     Add Variable
                   </Button>
                 </div>
@@ -582,7 +582,7 @@ export function DeployConfig() {
                   </>
                 ) : (
                   <>
-                    <Rocket className="w-4 h-4 mr-2" />
+                    <Rocket className="w-4 h-4 mr-2 cursor-pointer" />
                     Deploy
                     {selectedFramework === "nextjs" && nextjsValidationConfirmed === false && " (Not Recommended)"}
                   </>
