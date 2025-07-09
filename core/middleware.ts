@@ -6,7 +6,7 @@ export default async function middleware(req: NextRequest) {
 
   const { pathname } = req.nextUrl;
 
-  if (pathname.startsWith("/x.svg")) return NextResponse.next();
+  if (pathname.startsWith("/x.svg") || pathname.startsWith("/imgs")) return NextResponse.next();
 
   if (pathname.startsWith("/api/auth")) return NextResponse.next();
 
