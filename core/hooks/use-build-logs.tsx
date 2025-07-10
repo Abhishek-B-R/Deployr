@@ -206,7 +206,7 @@ export function useBuildLogs({
       if (logs.length > 0) {
         saveLogs(logs);
       }
-    }, 5000);
+    }, 30000);
   };
 
   const addLogInline = (message: string, type: LogEntry["type"] = "info") => {

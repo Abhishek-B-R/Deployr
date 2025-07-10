@@ -45,7 +45,7 @@ export function ProjectLogs({ project }: ProjectLogsProps) {
       if (isLive && logs.length > 0) {
       setActiveTab("live")
     } else if (!isLive) {
-      await new Promise(resolve => setTimeout(resolve, 3000)) // Wait for logs to get stored in database
+      await new Promise(resolve => setTimeout(resolve, 5000)) // Wait for logs to get stored in database
       await refreshStoredLogs()
       setActiveTab("stored")
     }
