@@ -18,7 +18,8 @@ interface LogEntry {
 
 export function useBuildLogs({
   projectId,
-  wsUrl = "wss://ws.deployr.abhi.wtf",
+  wsUrl = "ws://localhost:8082",
+  // wsUrl = "wss://ws.deployr.abhi.wtf",
   active = true,
   onLogsComplete,
   onReceiveMessage,

@@ -50,7 +50,8 @@ export async function POST(request: NextRequest) {
 
     // Send to your backend
     try {
-      const backendResponse = await fetch("https://api.deployr.abhi.wtf/deploy", {
+      const backendResponse = await fetch("http://localhost:8080/deploy", {
+      // const backendResponse = await fetch("https://api.deployr.abhi.wtf/deploy", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -213,7 +213,7 @@ export function ProjectOverview({ project: initialProject }: ProjectOverviewProp
                   <Activity className="w-5 h-5 text-purple-500" />
                   <div className="space-y-1">
                     <p className="text-sm font-medium leading-none">Last Updated</p>
-                    <p className="text-sm text-muted-foreground">{getTimeAgo(project.updatedAt)}</p>
+                    <p className="text-sm text-muted-foreground" suppressHydrationWarning>{getTimeAgo(project.updatedAt)}</p>
                   </div>
                 </div>
               </CardContent>

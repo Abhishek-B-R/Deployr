@@ -44,7 +44,12 @@ app.post("/deploy",async (req,res)=>{
     console.log("All files uploaded successfully")
 
     //push to redis queue
-    publisher.lPush("build-queue",id)
+    try {
+        await publisher.lPush("build-queue",id)
+    } catch (err) {
+        console.error("Failed to enqueue build:", err);
+        await pgClient.query(`INSERT INTO "FailedJobs" (id) VALUES ($1)`, [id]);
+    }
 
     //insert status in DB
     await pgClient.query(`UPDATE "Project" SET status = $1 WHERE id = $2`, ['BUILDING', id]),

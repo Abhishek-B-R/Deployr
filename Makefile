@@ -3,7 +3,7 @@ build:
 	docker-compose build
 
 devBuild:
-	docker-compose -f dev.docker-compose.yml build
+	docker-compose -f dev.docker-compose.yml build --no-cache
 
 # Start all services
 up:

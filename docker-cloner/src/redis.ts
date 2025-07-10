@@ -8,8 +8,8 @@ export const subscriber = createClient({
   url,
   socket: {
     reconnectStrategy: retries => {
-      // Retry every 2s for first 50 tries, then give up
-      if (retries > 50) return new Error("Redis reconnection failed.");
+      // Retry every 2s for first 3 tries, then give up
+      if (retries > 3) return new Error("Redis reconnection failed.");
       return 2000; // ms
     }
   }
@@ -18,8 +18,8 @@ export const publisher = createClient({
   url,
   socket: {
     reconnectStrategy: retries => {
-      // Retry every 2s for first 50 tries, then give up
-      if (retries > 50) return new Error("Redis reconnection failed.");
+      // Retry every 2s for first 3 tries, then give up
+      if (retries > 3) return new Error("Redis reconnection failed.");
       return 2000; // ms
     }
   }
@@ -27,19 +27,18 @@ export const publisher = createClient({
 
 (async () => {
   await pRetry(() => subscriber.connect(), {
-    retries: 50,
+    retries: 3,
     onFailedAttempt: (error) => {
       console.warn(`Redis subscriber attempt ${error.attemptNumber} failed. ${error.retriesLeft} retries left.`);
     },
   });
 
   await pRetry(() => publisher.connect(), {
-    retries: 50,
+    retries: 3,
     onFailedAttempt: (error) => {
       console.warn(`Redis publisher attempt ${error.attemptNumber} failed. ${error.retriesLeft} retries left.`);
     },
   });
 })().catch((err) => {
   console.error('Failed to connect to Redis:', err);
-  process.exit(1);
 });

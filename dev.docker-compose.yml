@@ -32,7 +32,7 @@ services:
       - redis
     environment:
       - REDIS_URL=redis://redis:6379
-      - OUTPUT_BASE_PATH=/home/abhishek/WebDev/Projects/Deployr/deployr/output
+      - OUTPUT_BASE_PATH=/home/abhishek/WebDev/Projects/Deployr/output
 
   static-server:
     build: ./static-server
