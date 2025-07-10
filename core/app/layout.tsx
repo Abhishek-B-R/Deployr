@@ -7,7 +7,7 @@ const geistSans = Geist({
   subsets: ["latin"],
 });
 
-const logo = "https://raw.githubusercontent.com/Abhishek-B-R/Deployr/main/core/public/logo.png";
+const logo = "https://raw.githubusercontent.com/Abhishek-B-R/Deployr/main/core/public/logo.jpeg";
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
