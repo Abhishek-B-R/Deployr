@@ -214,6 +214,7 @@ export default function Hero({ isVisible }: { isVisible: boolean }) {
               <Button
                 variant="outline"
                 size="lg"
+                onClick={() => { router.push("/demo.mp4") }}
                 className="text-lg px-8 py-4 cursor-pointer backdrop-blur-sm bg-white/10 border-white/20 hover:bg-white/20 shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 <motion.div
