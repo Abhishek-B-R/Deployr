@@ -140,23 +140,23 @@ server {
 
 ## 📸 Screenshots
 
-![alt text](https://deployr.live/imgs/Dashboard.png)
 * Dashboard with list of projects
+![alt text](https://deployr.live/imgs/Dashboard.png)
 
-![alt text](https://deployr.live/imgs/CreateProject.png)
 * Create project modal with GitHub repo selector
+![alt text](https://deployr.live/imgs/CreateProject.png)
 
-![alt text](https://deployr.live/imgs/LogViewer.png)
-* Logs viewer with real-time status (via WS)
-
-![alt text](https://deployr.live/imgs/FrameworkDetection.png)
 * Smart framework detection along with customization like editing framework,build command,install command and output directory.
+![alt text](https://deployr.live/imgs/FrameworkDetection.png)
 
-![alt text](https://deployr.live/imgs/CloudflareDash.png)
+* Logs viewer with real-time status (via WS)
+![alt text](https://deployr.live/imgs/LogViewer.png)
+
 * R2 uploads in Cloudflare dashboard
+![alt text](https://deployr.live/imgs/CloudflareDash.png)
 
-![alt text](https://deployr.live/imgs/Landing.png)
 * Final deployed website - `deployr.live`
+![alt text](https://deployr.live/imgs/Landing.png)
 
 ---
 
