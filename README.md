@@ -149,6 +149,9 @@ server {
 ![alt text](https://deployr.live/imgs/LogViewer.png)
 * Logs viewer with real-time status (via WS)
 
+![alt text](https://deployr.live/imgs/FrameworkDetection.png)
+* Smart framework detection along with customization like editing framework,build command,install command and output directory.
+
 ![alt text](https://deployr.live/imgs/CloudflareDash.png)
 * R2 uploads in Cloudflare dashboard
 
