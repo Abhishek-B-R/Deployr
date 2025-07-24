@@ -44,13 +44,8 @@ export function ProjectLogs({ project }: ProjectLogsProps) {
     (async ()=>{
       if (isLive && logs.length > 0) {
       setActiveTab("live")
-    } else if (!isLive) {
-      await new Promise(resolve => setTimeout(resolve, 5000)) // Wait for logs to get stored in database
-      await refreshStoredLogs()
-      setActiveTab("stored")
     }
   })()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLive, logs.length])
 
   const refreshStoredLogs = async () => {
