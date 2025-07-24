@@ -171,7 +171,7 @@ function Header() {
               </div>
             ) : (
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button variant="outline" size="sm" onClick={() => signIn("github")}>
+                <Button variant="outline" size="sm" onClick={() => signIn()}>
                   Sign In
                 </Button>
               </motion.div>

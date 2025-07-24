@@ -8,7 +8,7 @@ export default async function middleware(req: NextRequest) {
 
   if (pathname.startsWith("/x.svg") || pathname.startsWith("/demo.mp4") || pathname.startsWith("/logo.png") || pathname.startsWith("/imgs")) return NextResponse.next();
 
-  if (pathname.startsWith("/api/auth")) return NextResponse.next();
+  if (pathname.startsWith("/api/auth") || pathname.startsWith("/signin")) return NextResponse.next();
 
   if (!token && pathname !== "/") {
     return NextResponse.redirect(new URL("/api/auth/signin", req.url));
