@@ -40,7 +40,7 @@ export default async function ProjectSettingsPage(props: any) {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex justify-center-safe">
       <Suspense fallback={<div>Loading project settings...</div>}>
         <ProjectSettings project={project} />
       </Suspense>

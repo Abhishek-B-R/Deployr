@@ -1,8 +1,9 @@
 "use client"
 
+// TODO: Implement env vars update and also updates of build,root and out dirs from here
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { useForm } from "react-hook-form"
+import { useForm, useFieldArray } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import Link from "next/link"
@@ -31,7 +32,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { ArrowLeft, Save, Trash2, AlertTriangle, Settings, Globe } from "lucide-react"
+import { ArrowLeft, Save, Trash2, AlertTriangle, Settings, Globe, Plus, X } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
 const projectUpdateSchema = z.object({
@@ -42,6 +43,17 @@ const projectUpdateSchema = z.object({
     .max(50, "Slug must be less than 50 characters")
     .regex(/^[a-z0-9-]+$/, "Slug can only contain lowercase letters, numbers, and hyphens"),
   private: z.boolean(),
+  buildCommand: z.string().min(1, "Build command is required"),
+  installCommand: z.string().min(1, "Install command is required"),
+  outputDirectory: z.string().min(1, "Output directory is required"),
+  framework: z.string().min(1, "Framework is required"),
+  rootDirectory: z.string().min(1, "Root directory is required"),
+  envVars: z.array(
+    z.object({
+      key: z.string().min(1, "Environment variable key is required"),
+      value: z.string().min(1, "Environment variable value is required"),
+    }),
+  ),
 })
 
 type ProjectUpdateForm = z.infer<typeof projectUpdateSchema>
@@ -53,9 +65,14 @@ interface ProjectSettingsProps {
     slug: string
     private: boolean
     status: string
-    repo_url: string | null
-    branch: string | null
-    envVars: Array<{ key: string; value: string }>
+    repo_url: string
+    branch: string
+    buildCommand: string
+    installCommand: string
+    outputDirectory: string
+    framework: string
+    rootDirectory: string
+    envVars: Array<{ id: string; key: string; value: string }>
   }
 }
 
@@ -74,7 +91,18 @@ export function ProjectSettings({ project }: ProjectSettingsProps) {
       name: project.name,
       slug: project.slug,
       private: project.private,
+      buildCommand: project.buildCommand,
+      installCommand: project.installCommand,
+      outputDirectory: project.outputDirectory,
+      framework: project.framework,
+      rootDirectory: project.rootDirectory,
+      envVars: project.envVars.map((env) => ({ key: env.key, value: env.value })),
     },
+  })
+
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "envVars",
   })
 
   const onSubmit = async (values: ProjectUpdateForm) => {
@@ -89,21 +117,20 @@ export function ProjectSettings({ project }: ProjectSettingsProps) {
       })
 
       if (!response.ok) {
-        throw new Error("Failed to update project")
+        const errorData = await response.json()
+        throw new Error(errorData.error || "Failed to update project")
       }
 
       toast({
         title: "Project updated",
         description: "Your project settings have been updated successfully.",
       })
-
       setShowUpdateDialog(false)
       router.refresh()
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast({
         title: "Error",
-        description: "There was a problem updating your project settings.",
+        description: error instanceof Error ? error.message : "There was a problem updating your project settings.",
         variant: "destructive",
       })
     } finally {
@@ -130,9 +157,8 @@ export function ProjectSettings({ project }: ProjectSettingsProps) {
         title: "Project deleted",
         description: "Your project has been deleted successfully.",
       })
-
       router.push("/projects")
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast({
         title: "Error",
@@ -146,6 +172,10 @@ export function ProjectSettings({ project }: ProjectSettingsProps) {
     }
   }
 
+  const addEnvVar = () => {
+    append({ key: "", value: "" })
+  }
+
   const isDeleteConfirmationValid = deleteConfirmation === project.name
 
   return (
@@ -153,7 +183,7 @@ export function ProjectSettings({ project }: ProjectSettingsProps) {
       {/* Header */}
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center space-x-4">
+          <div className="flex justify-center space-x-4">
             <Button variant="ghost" size="sm" asChild>
               <Link href={`/projects/${project.id}/overview`}>
                 <ArrowLeft className="w-4 h-4 mr-2" />
@@ -193,14 +223,15 @@ export function ProjectSettings({ project }: ProjectSettingsProps) {
           </Card>
 
           {/* Settings Form */}
-          <Card>
-            <CardHeader>
-              <CardTitle>General Settings</CardTitle>
-              <CardDescription>Update your project&apos;s basic information and configuration.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(handleUpdateClick)} className="space-y-6">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleUpdateClick)} className="space-y-8">
+              {/* General Settings */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>General Settings</CardTitle>
+                  <CardDescription>Update your project&apos;s basic information and configuration.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
                   <FormField
                     control={form.control}
                     name="name"
@@ -234,8 +265,8 @@ export function ProjectSettings({ project }: ProjectSettingsProps) {
                           </div>
                         </FormControl>
                         <FormDescription>
-                          The unique identifier for your project&apos;s URL. Only lowercase letters, numbers, and hyphens are
-                          allowed.
+                          The unique identifier for your project&apos;s URL. Only lowercase letters, numbers, and
+                          hyphens are allowed.
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -260,47 +291,151 @@ export function ProjectSettings({ project }: ProjectSettingsProps) {
                       </FormItem>
                     )}
                   />
+                </CardContent>
+              </Card>
 
-                  <div className="flex justify-end">
-                    <Button type="button" onClick={handleUpdateClick}>
-                      <Save className="w-4 h-4 mr-2" />
-                      Update Settings
+              {/* Build & Deploy Settings */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Build & Deploy Settings</CardTitle>
+                  <CardDescription>Configure how your project is built and deployed.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <FormField
+                    control={form.control}
+                    name="rootDirectory"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Root Directory</FormLabel>
+                        <FormControl>
+                          <Input placeholder="./" {...field} />
+                        </FormControl>
+                        <FormDescription>
+                          The directory within your repository where your project is located.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="buildCommand"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Build Command</FormLabel>
+                        <FormControl>
+                          <Input placeholder="npm run build" {...field} />
+                        </FormControl>
+                        <FormDescription>The command used to build your project.</FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="installCommand"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Install Command</FormLabel>
+                        <FormControl>
+                          <Input placeholder="npm install" {...field} />
+                        </FormControl>
+                        <FormDescription>The command used to install dependencies.</FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="outputDirectory"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Output Directory</FormLabel>
+                        <FormControl>
+                          <Input placeholder="dist" {...field} />
+                        </FormControl>
+                        <FormDescription>The directory where your built project files are located.</FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
+
+              {/* Environment Variables */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Environment Variables</CardTitle>
+                  <CardDescription>
+                    Manage environment variables for your project. Changes require a new deployment.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {fields.map((field, index) => (
+                      <div key={field.id} className="flex gap-2 items-start">
+                        <FormField
+                          control={form.control}
+                          name={`envVars.${index}.key`}
+                          render={({ field }) => (
+                            <FormItem className="flex-1">
+                              <FormControl>
+                                <Input placeholder="VARIABLE_NAME" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name={`envVars.${index}.value`}
+                          render={({ field }) => (
+                            <FormItem className="flex-1">
+                              <FormControl>
+                                <Input placeholder="variable_value" type="password" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          onClick={() => remove(index)}
+                          className="shrink-0"
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ))}
+
+                    {fields.length === 0 && (
+                      <div className="text-center py-6">
+                        <p className="text-muted-foreground mb-4">No environment variables configured</p>
+                      </div>
+                    )}
+
+                    <Button type="button" variant="outline" onClick={addEnvVar} className="w-full bg-transparent">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Environment Variable
                     </Button>
                   </div>
-                </form>
-              </Form>
-            </CardContent>
-          </Card>
+                </CardContent>
+              </Card>
 
-          {/* Environment Variables */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Environment Variables</CardTitle>
-              <CardDescription>
-                Manage environment variables for your project. Changes require a new deployment.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {project.envVars.length > 0 ? (
-                <div className="space-y-3">
-                  {project.envVars.map((env, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                      <code className="text-sm font-medium">{env.key}</code>
-                      <Badge variant="secondary">Set</Badge>
-                    </div>
-                  ))}
-                  <Button variant="outline" className="w-full bg-transparent">
-                    Manage Environment Variables
-                  </Button>
-                </div>
-              ) : (
-                <div className="text-center py-6">
-                  <p className="text-muted-foreground mb-4">No environment variables configured</p>
-                  <Button variant="outline">Add Environment Variable</Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+              {/* Update Button */}
+              <div className="flex justify-end">
+                <Button type="button" onClick={handleUpdateClick}>
+                  <Save className="w-4 h-4 mr-2" />
+                  Update Settings
+                </Button>
+              </div>
+            </form>
+          </Form>
 
           {/* Danger Zone */}
           <Card className="border-red-200 dark:border-red-800">
@@ -338,7 +473,7 @@ export function ProjectSettings({ project }: ProjectSettingsProps) {
             <DialogTitle>Update Project Settings</DialogTitle>
             <DialogDescription>
               Are you sure you want to update the settings for &quot;{project.name}&quot;? This will apply the changes
-              immediately.
+              immediately and may trigger a new deployment.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -371,12 +506,11 @@ export function ProjectSettings({ project }: ProjectSettingsProps) {
               <span>Delete Project</span>
             </AlertDialogTitle>
             <AlertDialogDescription className="text-left space-y-3">
-                This action <strong>cannot</strong> be undone. This will permanently delete the{" "}
-                <strong>{project.name}</strong> project, deployments, and remove all associated data.
-                Please type <strong>{project.name}</strong> to confirm.
+              This action <strong>cannot</strong> be undone. This will permanently delete the{" "}
+              <strong>{project.name}</strong> project, deployments, and remove all associated data. Please type{" "}
+              <strong>{project.name}</strong> to confirm.
             </AlertDialogDescription>
           </AlertDialogHeader>
-
           <div className="py-4">
             <Input
               placeholder={project.name}
@@ -385,7 +519,6 @@ export function ProjectSettings({ project }: ProjectSettingsProps) {
               className="w-full"
             />
           </div>
-
           <AlertDialogFooter>
             <AlertDialogCancel
               onClick={() => {
