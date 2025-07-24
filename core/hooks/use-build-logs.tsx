@@ -201,7 +201,7 @@ export function useBuildLogs({
       clearTimeout(inactivityTimer);
     }
     inactivityTimer = setTimeout(() => {
-      console.log("No new logs for 5 seconds, switching to stored logs...");
+      console.log("No new logs for 30 seconds, switching to stored logs...");
       setIsLive(false);
       if (logs.length > 0) {
         saveLogs(logs);
