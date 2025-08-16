@@ -86,7 +86,8 @@ interface DeploymentResult {
 }
 
 export function DeployConfig() {
-  const { data: session } = useSession()
+  const sessionResult = useSession()
+  const session = sessionResult?.data
   const router = useRouter()
   const searchParams = useSearchParams()
   const repo = searchParams.get("repo")
@@ -112,6 +113,7 @@ export function DeployConfig() {
   const [nextjsValidationConfirmed, setNextjsValidationConfirmed] = useState<boolean | null>(null)
 
   const [showFolderBrowser, setShowFolderBrowser] = useState(false)
+  const [detectingFramework, setDetectingFramework] = useState(false)
 
   useEffect(() => {
     if (!repo || !session) return
@@ -121,6 +123,15 @@ export function DeployConfig() {
 
     fetchRepoDetails(owner, name)
   }, [repo, session])
+
+  useEffect(() => {
+    if (!repoDetails || !rootDirectory || rootDirectory === "./") return
+
+    const [owner, name] = repoDetails.repository.full_name.split("/")
+    if (!owner || !name) return
+
+    detectFrameworkInDirectory(owner, name, rootDirectory)
+  }, [rootDirectory, repoDetails])
 
   const fetchRepoDetails = async (owner: string, name: string) => {
     try {
@@ -249,6 +260,43 @@ export function DeployConfig() {
 
   const handleFolderSelect = (path: string) => {
     setRootDirectory(path)
+  }
+
+  const detectFrameworkInDirectory = async (owner: string, name: string, directory: string) => {
+    try {
+      setDetectingFramework(true)
+      const response = await fetch(
+        `/api/github/repo/${owner}/${name}/detect-framework?path=${encodeURIComponent(directory)}`,
+      )
+
+      if (!response.ok) {
+        console.error("Failed to detect framework in directory")
+        return
+      }
+
+      const frameworkData = await response.json()
+
+      if (frameworkData.success && frameworkData.framework) {
+        // Update framework-related states using the nested framework object
+        setSelectedFramework(frameworkData.framework.slug)
+        setBuildCommand(frameworkData.framework.buildCommand)
+        setOutputDirectory(frameworkData.framework.outputDirectory)
+        setInstallCommand(frameworkData.framework.installCommand)
+
+        // Handle Next.js validation
+        if (frameworkData.framework.slug === "nextjs") {
+          setShowNextjsValidation(true)
+          setNextjsValidationConfirmed(null)
+        } else {
+          setShowNextjsValidation(false)
+          setNextjsValidationConfirmed(null)
+        }
+      }
+    } catch (err) {
+      console.error("Framework detection error:", err)
+    } finally {
+      setDetectingFramework(false)
+    }
   }
 
   if (loading) {
@@ -508,23 +556,32 @@ export function DeployConfig() {
               {/* Add framework selection dropdown in the configuration form after the root directory field */}
               <div className="space-y-2">
                 <Label htmlFor="framework">Framework</Label>
-                <Select value={selectedFramework} onValueChange={handleFrameworkChange}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.values(frameworks).map((framework) => (
-                      <SelectItem key={framework.slug} value={framework.slug}>
-                        <div className="flex items-center space-x-2">
-                          <span>{framework.logo}</span>
-                          <span>{framework.name}</span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <div className="relative">
+                  <Select value={selectedFramework} onValueChange={handleFrameworkChange} disabled={detectingFramework}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.values(frameworks).map((framework) => (
+                        <SelectItem key={framework.slug} value={framework.slug}>
+                          <div className="flex items-center space-x-2">
+                            <span>{framework.logo}</span>
+                            <span>{framework.name}</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {detectingFramework && (
+                    <div className="absolute right-10 top-1/2 transform -translate-y-1/2">
+                      <RefreshCw className="w-4 h-4 animate-spin text-muted-foreground" />
+                    </div>
+                  )}
+                </div>
                 <p className="text-xs text-muted-foreground">
-                  Choose the framework that best matches your project. This will set optimal build settings.
+                  {detectingFramework
+                    ? "Detecting framework in selected directory..."
+                    : "Choose the framework that best matches your project. This will set optimal build settings."}
                 </p>
               </div>
 
