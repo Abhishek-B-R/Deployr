@@ -210,7 +210,7 @@ export function ProjectOverview({ project: initialProject }: ProjectOverviewProp
             <Card className="hover:shadow-md transition-shadow">
               <CardContent className="p-6">
                 <div className="flex items-center space-x-2">
-                  <Activity className="w-5 h-5 text-purple-500" />
+                  <Activity className="w-5 h-5 text-gray-500" />
                   <div className="space-y-1">
                     <p className="text-sm font-medium leading-none">Last Updated</p>
                     <p className="text-sm text-muted-foreground" suppressHydrationWarning>{getTimeAgo(project.updatedAt)}</p>

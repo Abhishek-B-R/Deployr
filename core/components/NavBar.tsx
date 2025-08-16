@@ -59,13 +59,13 @@ function Header() {
             whileTap={{ scale: 0.95 }}
           >
             <motion.div
-              className="flex items-center justify-center w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg"
+              className="flex items-center justify-center w-8 h-8 bg-gradient-to-br from-blue-500 to-gray-600 rounded-lg"
               animate={{ rotate: [0, 360] }}
               transition={{ duration: 1, ease: "linear" }}
             >
               <Rocket className="w-5 h-5 text-white" />
             </motion.div>
-            <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-gray-600 bg-clip-text text-transparent">
               Deployr
             </span>
           </motion.div>
@@ -75,7 +75,7 @@ function Header() {
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button
                 size="sm"
-                className="cursor-pointer bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                className="cursor-pointer bg-gradient-to-r text-white from-blue-600 to-gray-600 hover:from-blue-700 hover:to-gray-700"
                 onClick={() => router.push("/projects")}
               >
                 Dashboard
@@ -253,7 +253,7 @@ function Header() {
                   }}
                 >
                   <Button
-                    className="w-full justify-start bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                    className="w-full justify-start bg-gradient-to-r from-blue-600 to-gray-600 hover:from-blue-700 hover:to-gray-700 text-white"
                     onClick={() => {
                       router.push("/projects")
                       closeMobileMenu()

@@ -148,7 +148,7 @@ export function ProjectsList({ projects }: ProjectsListProps) {
       </motion.div>
 
       <motion.div
-        className="fixed bottom-20 left-10 text-purple-500/5 pointer-events-none z-0"
+        className="fixed bottom-20 left-10 text-gray-500/5 pointer-events-none z-0"
         animate={{
           y: [15, -15, 15],
           rotate: [0, -90, -180, -270, -360],
@@ -177,7 +177,7 @@ export function ProjectsList({ projects }: ProjectsListProps) {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-gray-600 to-indigo-600 bg-clip-text text-transparent">
                 Projects
               </h1>
               <p className="text-muted-foreground">Manage and monitor your deployed projects</p>
@@ -191,7 +191,7 @@ export function ProjectsList({ projects }: ProjectsListProps) {
             >
               <Button
                 asChild
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                className="bg-gradient-to-r from-blue-600 to-gray-600 text-white hover:from-blue-700 hover:to-gray-700"
               >
                 <Link href="/new">
                   <Plus className="w-4 h-4 mr-2" />
@@ -267,7 +267,7 @@ export function ProjectsList({ projects }: ProjectsListProps) {
                   <motion.div
                     className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto"
                     animate={{ y: [-5, 5, -5] }}
-                    transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY }}
+                    transition={{ duration: 1, repeat: Number.POSITIVE_INFINITY }}
                   >
                     <Rocket className="w-8 h-8 text-muted-foreground" />
                   </motion.div>
@@ -320,7 +320,7 @@ export function ProjectsList({ projects }: ProjectsListProps) {
                     >
                       {/* Glow effect on hover */}
                       <motion.div
-                        className="absolute inset-0 bg-gradient-to-r from-blue-400/10 to-purple-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                        className="absolute inset-0 bg-gradient-to-r from-blue-400/10 to-gray-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                         whileHover={{ scale: 1.02 }}
                       />
 

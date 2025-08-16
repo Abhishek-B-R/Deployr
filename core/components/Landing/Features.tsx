@@ -69,9 +69,9 @@ export default function Features() {
       icon: Brain,
       title: "Smart Build Detection",
       description: "Automatically detects React, Vue, Angular, and other frameworks. Optimizes builds automatically.",
-      gradient: "from-purple-500 to-purple-600",
-      hoverBorder: "hover:border-purple-200 dark:hover:border-purple-800",
-      glowColor: "purple",
+      gradient: "from-gray-500 to-gray-600",
+      hoverBorder: "hover:border-gray-200 dark:hover:border-gray-800",
+      glowColor: "gray",
     },
     {
       icon: Monitor,
@@ -102,7 +102,7 @@ export default function Features() {
       </motion.div>
 
       <motion.div
-        className="absolute top-1/3 right-10 text-purple-500/10"
+        className="absolute top-1/3 right-10 text-gray-500/10"
         animate={{
           y: [20, -20, 20],
           rotate: [360, 180, 0],
@@ -134,7 +134,7 @@ export default function Features() {
 
       {/* Gradient Orbs */}
       <motion.div
-        className="absolute top-1/4 right-1/3 w-64 h-64 bg-gradient-to-r from-blue-400/20 to-purple-600/20 rounded-full blur-3xl"
+        className="absolute top-1/4 right-1/3 w-64 h-64 bg-gradient-to-r from-blue-400/20 to-gray-600/20 rounded-full blur-3xl"
         animate={{
           scale: [1, 1.3, 1],
           opacity: [0.2, 0.4, 0.2],
@@ -194,7 +194,7 @@ export default function Features() {
           >
             Everything you need to deploy with{" "}
             <motion.span
-              className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent"
+              className="bg-gradient-to-r from-blue-600 via-gray-600 to-indigo-600 bg-clip-text text-transparent"
               animate={{
                 backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
               }}
@@ -204,7 +204,7 @@ export default function Features() {
                 ease: "linear",
               }}
               style={{
-                background: "linear-gradient(90deg, #2563eb, #9333ea, #4f46e5, #2563eb)",
+                background: "linear-gradient(90deg, #2563eb, #718096, #2563eb)",
                 backgroundSize: "200% 100%",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
@@ -242,8 +242,8 @@ export default function Features() {
                       ? "from-blue-400/20 to-blue-600/20"
                       : feature.glowColor === "green"
                         ? "from-green-400/20 to-green-600/20"
-                        : feature.glowColor === "purple"
-                          ? "from-purple-400/20 to-purple-600/20"
+                        : feature.glowColor === "gray"
+                          ? "from-gray-400/20 to-gray-600/20"
                           : "from-orange-400/20 to-orange-600/20"
                   }`}
                 />
@@ -299,7 +299,7 @@ export default function Features() {
                           ? "#3b82f6"
                           : feature.glowColor === "green"
                             ? "#10b981"
-                            : feature.glowColor === "purple"
+                            : feature.glowColor === "gray"
                               ? "#8b5cf6"
                               : "#f97316",
                       boxShadow: `0 0 20px ${
@@ -307,7 +307,7 @@ export default function Features() {
                           ? "#3b82f620"
                           : feature.glowColor === "green"
                             ? "#10b98120"
-                            : feature.glowColor === "purple"
+                            : feature.glowColor === "gray"
                               ? "#8b5cf620"
                               : "#f9731620"
                       }`,
@@ -338,7 +338,7 @@ export default function Features() {
             <Badge
               variant="secondary"
               onClick={()=>{router.push("/new")}}
-              className="px-6 py-2 text-sm cursor-pointer bg-gradient-to-r from-blue-500/10 to-purple-500/10 hover:from-blue-500/20 hover:to-purple-500/20 transition-all duration-300"
+              className="px-6 py-2 text-sm cursor-pointer bg-gradient-to-r from-blue-500/10 to-gray-500/10 hover:from-blue-500/20 hover:to-gray-500/20 transition-all duration-300"
             >
               <motion.div animate={{ x: [0, 5, 0] }} transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}>
                 Get started for free →

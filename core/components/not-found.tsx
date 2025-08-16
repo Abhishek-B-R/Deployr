@@ -55,7 +55,7 @@ export default function NotFound() {
       </motion.div>
 
       <motion.div
-        className="absolute top-1/4 right-20 text-purple-500/10"
+        className="absolute top-1/4 right-20 text-gray-500/10"
         variants={floatingVariants}
         animate="animate"
         transition={{ delay: 2 }}
@@ -83,7 +83,7 @@ export default function NotFound() {
 
       {/* Gradient Orbs */}
       <motion.div
-        className="absolute top-1/3 left-1/3 w-96 h-96 bg-gradient-to-r from-blue-400/20 to-purple-600/20 rounded-full blur-3xl"
+        className="absolute top-1/3 left-1/3 w-96 h-96 bg-gradient-to-r from-blue-400/20 to-gray-600/20 rounded-full blur-3xl"
         animate={{
           scale: [1, 1.3, 1],
           opacity: [0.2, 0.4, 0.2],
@@ -96,7 +96,7 @@ export default function NotFound() {
       />
 
       <motion.div
-        className="absolute bottom-1/3 right-1/3 w-80 h-80 bg-gradient-to-r from-purple-400/15 to-indigo-600/15 rounded-full blur-3xl"
+        className="absolute bottom-1/3 right-1/3 w-80 h-80 bg-gradient-to-r from-gray-400/15 to-indigo-600/15 rounded-full blur-3xl"
         animate={{
           scale: [1.2, 1, 1.2],
           opacity: [0.15, 0.3, 0.15],
@@ -142,7 +142,7 @@ export default function NotFound() {
             transition={{ duration: 1, delay: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
             <motion.span
-              className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent"
+              className="bg-gradient-to-r from-blue-600 via-gray-600 to-black bg-clip-text text-transparent"
               animate={{
                 backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
               }}
@@ -152,7 +152,7 @@ export default function NotFound() {
                 ease: "linear",
               }}
               style={{
-                background: "linear-gradient(90deg, #2563eb, #9333ea, #4f46e5, #2563eb)",
+                background: "linear-gradient(90deg, #2563eb, #718096, #2563eb)",
                 backgroundSize: "200% 100%",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
@@ -175,7 +175,7 @@ export default function NotFound() {
         {/* Animated Rocket */}
         <motion.div variants={itemVariants} className="mb-12 flex justify-center">
           <motion.div
-            className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-2xl"
+            className="w-24 h-24 bg-gradient-to-br from-blue-500 to-gray-600 rounded-full flex items-center justify-center shadow-2xl"
             animate={{
               y: [-10, 10, -10],
               rotate: [0, 5, -5, 0],
@@ -202,7 +202,7 @@ export default function NotFound() {
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Button
               size="lg"
-              className="text-lg px-8 py-4 cursor-pointer bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300"
+              className="text-lg px-8 py-4 text-white cursor-pointer bg-gradient-to-r from-blue-600 to-gray-600 hover:from-blue-700 hover:to-gray-700 shadow-lg hover:shadow-xl transition-all duration-300"
               onClick={() => router.push("/")}
             >
               <Home className="mr-2 w-5 h-5" />
@@ -242,7 +242,7 @@ export default function NotFound() {
               <Link href={link.href}>
                 <div className="p-6 rounded-lg border-2 border-transparent hover:border-primary/20 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm transition-all duration-300 hover:shadow-lg group cursor-pointer">
                   <motion.div
-                    className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center mb-4 mx-auto group-hover:scale-110 transition-transform"
+                    className="w-12 h-12 bg-gradient-to-br from-blue-500 to-gray-600 rounded-lg flex items-center justify-center mb-4 mx-auto group-hover:scale-110 transition-transform"
                     whileHover={{
                       x: [-2, 2, -2, 2, 0],
                       y: [-2, 2, -2, 2, 0],
@@ -285,7 +285,7 @@ export default function NotFound() {
         transition={{ delay: 2, duration: 0.5 }}
       >
         <motion.div
-          className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg cursor-pointer"
+          className="w-12 h-12 bg-gradient-to-r from-blue-500 to-gray-600 rounded-full flex items-center justify-center shadow-lg cursor-pointer"
           animate={{ rotate: 360 }}
           transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
           whileHover={{ scale: 1.1 }}

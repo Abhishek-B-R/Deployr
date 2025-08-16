@@ -41,7 +41,7 @@ export default function HowItWorks() {
       number: 1,
       title: "Connect Repository",
       description: "Link your GitHub, GitLab, or Bitbucket repository containing your frontend project.",
-      gradient: "from-blue-500 to-purple-600",
+      gradient: "from-blue-500 to-gray-600",
       glowColor: "blue",
     },
     {
@@ -57,8 +57,8 @@ export default function HowItWorks() {
       number: 3,
       title: "Deploy & Share",
       description: "Your frontend goes live instantly with a custom URL ready to share with clients and users.",
-      gradient: "from-purple-500 to-pink-600",
-      glowColor: "purple",
+      gradient: "from-gray-500 to-pink-600",
+      glowColor: "gray",
     },
   ]
 
@@ -82,7 +82,7 @@ export default function HowItWorks() {
       </motion.div>
 
       <motion.div
-        className="absolute bottom-20 left-20 text-purple-500/10"
+        className="absolute bottom-20 left-20 text-gray-500/10"
         animate={{
           y: [10, -10, 10],
           rotate: [0, -90, -180, -270, -360],
@@ -98,7 +98,7 @@ export default function HowItWorks() {
 
       {/* Gradient Orbs */}
       <motion.div
-        className="absolute top-1/3 left-1/4 w-72 h-72 bg-gradient-to-r from-purple-400/20 to-blue-600/20 rounded-full blur-3xl"
+        className="absolute top-1/3 left-1/4 w-72 h-72 bg-gradient-to-r from-gray-400/20 to-blue-600/20 rounded-full blur-3xl"
         animate={{
           scale: [1, 1.4, 1],
           opacity: [0.2, 0.4, 0.2],
@@ -144,7 +144,7 @@ export default function HowItWorks() {
           >
             Deploy in{" "}
             <motion.span
-              className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent"
+              className="bg-gradient-to-r from-blue-600 via-gray-600 to-pink-600 bg-clip-text text-transparent"
               animate={{
                 backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
               }}
@@ -154,7 +154,7 @@ export default function HowItWorks() {
                 ease: "linear",
               }}
               style={{
-                background: "linear-gradient(90deg, #2563eb, #9333ea, #ec4899, #2563eb)",
+                background: "linear-gradient(90deg, #2563eb, #2563eb, #718096, #2563eb)",
                 backgroundSize: "200% 100%",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
@@ -198,7 +198,7 @@ export default function HowItWorks() {
                       ? "bg-blue-400/30"
                       : step.glowColor === "green"
                         ? "bg-green-400/30"
-                        : "bg-purple-400/30"
+                        : "bg-gray-400/30"
                   } blur-xl`}
                   whileHover={{ scale: 1.5 }}
                 />
@@ -286,7 +286,7 @@ export default function HowItWorks() {
             <Badge
               variant="secondary"
               onClick={() => router.push("/new")}
-              className="px-6 py-2 text-sm cursor-pointer bg-gradient-to-r from-purple-500/10 to-pink-500/10 hover:from-purple-500/20 hover:to-pink-500/20 transition-all duration-300"
+              className="px-6 py-2 text-sm cursor-pointer bg-gradient-to-r from-gray-500/10 to-pink-500/10 hover:from-gray-500/20 hover:to-pink-500/20 transition-all duration-300"
             >
               <motion.div animate={{ x: [0, 5, 0] }} transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}>
                 Start deploying now →

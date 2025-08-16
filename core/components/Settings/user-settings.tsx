@@ -240,7 +240,7 @@ export function UserSettings({ user, session }: UserSettingsProps) {
             <Card>
               <CardContent className="p-6">
                 <div className="flex items-center space-x-2">
-                  <Activity className="w-5 h-5 text-purple-500" />
+                  <Activity className="w-5 h-5 text-gray-500" />
                   <div className="space-y-1">
                     <p className="text-sm font-medium leading-none">Total Views</p>
                     <p className="text-2xl font-bold">

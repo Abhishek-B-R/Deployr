@@ -26,7 +26,7 @@ export default function AdditionalFeatures() {
       icon: Settings,
       title: "Environment Variables",
       description: "Secure configuration management with encrypted environment variables.",
-      color: "text-purple-500",
+      color: "text-gray-500",
     },
   ]
 
@@ -34,13 +34,13 @@ export default function AdditionalFeatures() {
     <section ref={ref} className="py-20 relative overflow-hidden">
       {/* Background gradient */}
       <motion.div
-        className="absolute top-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-blue-400/10 to-purple-600/10 rounded-full blur-3xl"
+        className="absolute top-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-blue-400/10 to-gray-600/10 rounded-full blur-3xl"
         animate={{
           scale: [1, 1.2, 1],
           opacity: [0.3, 0.5, 0.3],
         }}
         transition={{
-          duration: 8,
+          duration: 4,
           repeat: Number.POSITIVE_INFINITY,
           ease: "easeInOut",
         }}
@@ -74,7 +74,7 @@ export default function AdditionalFeatures() {
             >
               Built for{" "}
               <motion.span
-                className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent"
+                className="bg-gradient-to-r from-blue-600 via-gray-600 to-indigo-600 bg-clip-text text-transparent"
                 animate={{
                   backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
                 }}
@@ -84,7 +84,7 @@ export default function AdditionalFeatures() {
                   ease: "linear",
                 }}
                 style={{
-                  background: "linear-gradient(90deg, #2563eb, #9333ea, #4f46e5, #2563eb)",
+                  background: "linear-gradient(90deg, #2563eb, #2563eb, #718096, #2563eb)",
                   backgroundSize: "200% 100%",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",

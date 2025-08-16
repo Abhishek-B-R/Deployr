@@ -66,7 +66,7 @@ export default function Hero({ isVisible }: { isVisible: boolean }) {
       </motion.div>
 
       <motion.div
-        className="absolute top-40 right-20 text-purple-500/20"
+        className="absolute top-40 right-20 text-gray-500/20"
         animate={{
           y: [-10, 10, -10],
           rotate: [0, 5, -5, 0],
@@ -99,7 +99,7 @@ export default function Hero({ isVisible }: { isVisible: boolean }) {
 
       {/* Gradient Orbs */}
       <motion.div
-        className="absolute top-1/4 left-1/4 w-72 h-72 bg-gradient-to-r from-blue-400/30 to-purple-600/30 rounded-full blur-3xl"
+        className="absolute top-1/4 left-1/4 w-72 h-72 bg-gradient-to-r from-blue-400/30 to-gray-600/30 rounded-full blur-3xl"
         animate={{
           scale: [1, 1.2, 1],
           opacity: [0.3, 0.5, 0.3],
@@ -112,7 +112,7 @@ export default function Hero({ isVisible }: { isVisible: boolean }) {
       />
 
       <motion.div
-        className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-purple-400/20 to-indigo-600/20 rounded-full blur-3xl"
+        className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-gray-400/20 to-indigo-600/20 rounded-full blur-3xl"
         animate={{
           scale: [1.2, 1, 1.2],
           opacity: [0.2, 0.4, 0.2],
@@ -157,7 +157,7 @@ export default function Hero({ isVisible }: { isVisible: boolean }) {
               Deploy Your Frontend
             </motion.span>
             <motion.span
-              className="block bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent"
+              className="block bg-gradient-to-r from-blue-600 via-gray-600 to-indigo-600 bg-clip-text text-transparent"
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.8 }}
@@ -172,7 +172,7 @@ export default function Hero({ isVisible }: { isVisible: boolean }) {
                   ease: "linear",
                 }}
                 style={{
-                  background: "linear-gradient(90deg, #2563eb, #9333ea, #4f46e5, #2563eb)",
+                  background: "linear-gradient(90deg, #2563eb, #718096, #2563eb)",
                   backgroundSize: "200% 100%",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
@@ -196,7 +196,7 @@ export default function Hero({ isVisible }: { isVisible: boolean }) {
               <Button
                 size="lg"
                 onClick={()=>{router.push("/new")}}
-                className="text-lg px-8 py-4 cursor-pointer bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300"
+                className="text-lg px-8 py-4 cursor-pointer bg-gradient-to-r text-white from-blue-600 to-gray-600 hover:from-blue-700 hover:to-gray-700 shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 <motion.span className="flex items-center">
                   Get Started Free
