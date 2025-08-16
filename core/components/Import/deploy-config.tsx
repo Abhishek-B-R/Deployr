@@ -23,25 +23,66 @@ import {
   AlertCircle,
   AlertTriangle,
   X,
+  Lock,
+  Settings,
 } from "lucide-react"
 import type { FrameworkConfig } from "@/lib/framework-detection"
 import { frameworks } from "@/lib/framework-detection"
 import DeployConfigSkeleton from "./deploy-config-skeleton"
+import { FolderBrowser } from "./folder-browser" // Import new FolderBrowser component
+
+interface Repository {
+  id: number
+  name: string
+  full_name: string
+  description: string
+  html_url: string
+  default_branch: string
+  private: boolean
+}
+
+interface Branch {
+  name: string
+  sha: string
+}
+
+interface PackageJson {
+  name?: string
+  version?: string
+  dependencies?: Record<string, string>
+  devDependencies?: Record<string, string>
+  scripts?: Record<string, string>
+}
 
 interface RepoDetails {
-  repository: {
-    id: number
-    name: string
-    full_name: string
-    description: string
-    html_url: string
-    default_branch: string
-    private: boolean
-  }
-  branches: Array<{ name: string; sha: string }>
+  repository: Repository
+  branches: Branch[]
   framework: FrameworkConfig
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  packageJson: any
+  packageJson: PackageJson
+}
+
+interface EnvVar {
+  key: string
+  value: string
+}
+
+interface DeploymentData {
+  repository: string
+  branch: string
+  projectName: string
+  rootDirectory: string
+  buildCommand: string
+  outputDirectory: string
+  installCommand: string
+  envVars: EnvVar[]
+  framework: string
+  isNextjs: boolean
+}
+
+interface DeploymentResult {
+  project: {
+    id: string
+  }
 }
 
 export function DeployConfig() {
@@ -62,17 +103,16 @@ export function DeployConfig() {
   const [buildCommand, setBuildCommand] = useState("")
   const [outputDirectory, setOutputDirectory] = useState("")
   const [installCommand, setInstallCommand] = useState("")
-  const [envVars, setEnvVars] = useState<Array<{ key: string; value: string }>>([])
+  const [envVars, setEnvVars] = useState<EnvVar[]>([])
   const [advancedSettings, setAdvancedSettings] = useState(false)
-
-  // Add framework selection state
   const [selectedFramework, setSelectedFramework] = useState<string>("")
 
   // Next.js validation state
   const [showNextjsValidation, setShowNextjsValidation] = useState(false)
   const [nextjsValidationConfirmed, setNextjsValidationConfirmed] = useState<boolean | null>(null)
 
-  // Update the useEffect to set the selected framework
+  const [showFolderBrowser, setShowFolderBrowser] = useState(false)
+
   useEffect(() => {
     if (!repo || !session) return
 
@@ -82,7 +122,6 @@ export function DeployConfig() {
     fetchRepoDetails(owner, name)
   }, [repo, session])
 
-  // Update fetchRepoDetails to set the selected framework
   const fetchRepoDetails = async (owner: string, name: string) => {
     try {
       setLoading(true)
@@ -92,7 +131,7 @@ export function DeployConfig() {
         throw new Error("Failed to fetch repository details")
       }
 
-      const data = await response.json()
+      const data: RepoDetails = await response.json()
       setRepoDetails(data)
 
       // Set default values
@@ -114,7 +153,6 @@ export function DeployConfig() {
     }
   }
 
-  // Add framework change handler
   const handleFrameworkChange = (frameworkSlug: string) => {
     setSelectedFramework(frameworkSlug)
     const framework = Object.values(frameworks).find((f) => f.slug === frameworkSlug)
@@ -127,7 +165,7 @@ export function DeployConfig() {
     // Show/hide Next.js validation based on selection
     if (frameworkSlug === "nextjs") {
       setShowNextjsValidation(true)
-      setNextjsValidationConfirmed(null) // Reset confirmation
+      setNextjsValidationConfirmed(null)
     } else {
       setShowNextjsValidation(false)
       setNextjsValidationConfirmed(null)
@@ -137,7 +175,6 @@ export function DeployConfig() {
   const handleNextjsValidation = (confirmed: boolean) => {
     setNextjsValidationConfirmed(confirmed)
     if (!confirmed) {
-      // If user says no, they can still proceed but with warning
       setShowNextjsValidation(false)
     }
   }
@@ -147,7 +184,6 @@ export function DeployConfig() {
     setNextjsValidationConfirmed(true)
   }
 
-  // Update the handleDeploy function to use selectedFramework
   const handleDeploy = async () => {
     if (!repoDetails) return
 
@@ -161,7 +197,7 @@ export function DeployConfig() {
     setError(null)
 
     try {
-      const deploymentData = {
+      const deploymentData: DeploymentData = {
         repository: repoDetails.repository.full_name,
         branch: selectedBranch,
         projectName,
@@ -171,7 +207,7 @@ export function DeployConfig() {
         installCommand,
         envVars: envVars.filter((env) => env.key && env.value),
         framework: selectedFramework,
-        isNextjs: selectedFramework === "nextjs"
+        isNextjs: selectedFramework === "nextjs",
       }
 
       const response = await fetch("/api/deploy", {
@@ -182,13 +218,12 @@ export function DeployConfig() {
         body: JSON.stringify(deploymentData),
       })
 
-      const result = await response.json()
+      const result: DeploymentResult = await response.json()
 
       if (!response.ok) {
-        throw new Error(result.error || "Deployment failed")
+        throw new Error("Deployment failed")
       }
 
-      // Redirect to deployment status page with project ID
       router.push(`/projects/${result.project.id}`)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Deployment failed")
@@ -210,6 +245,10 @@ export function DeployConfig() {
 
   const removeEnvVar = (index: number) => {
     setEnvVars(envVars.filter((_, i) => i !== index))
+  }
+
+  const handleFolderSelect = (path: string) => {
+    setRootDirectory(path)
   }
 
   if (loading) {
@@ -262,9 +301,9 @@ export function DeployConfig() {
                   <h4 className="font-medium text-orange-900 dark:text-orange-100 mb-2">Next.js Framework Selected</h4>
                   <p className="text-sm text-orange-800 dark:text-orange-200 leading-relaxed">
                     You have selected Next.js as your framework. But we support Next.js Frontend part only. So make sure
-                    you don&apos;t have any pure JS or TS files in your App or Pages router. If yes, do wait till the next version of Deployr arrives.
-                    We expect you to have only jsx or tsx files in your App/Pages router. 
-                    Also make sure your{" "}
+                    you don&apos;t have any pure JS or TS files in your App or Pages router. If yes, do wait till the
+                    next version of Deployr arrives. We expect you to have only jsx or tsx files in your App/Pages
+                    router. Also make sure your{" "}
                     <code className="bg-orange-200 dark:bg-orange-900 px-1 py-0.5 rounded text-xs">
                       next.config.ts/next.config.js
                     </code>{" "}
@@ -321,8 +360,8 @@ export function DeployConfig() {
               <div>
                 <h4 className="font-medium text-red-900 dark:text-red-100">Deployment Not Recommended</h4>
                 <p className="text-sm text-red-800 dark:text-red-200">
-                  Since you don&apos;t meet the Next.js requirements, we recommend waiting for the next version of Deployr or
-                  choosing a different framework.
+                  Since you don&apos;t meet the Next.js requirements, we recommend waiting for the next version of
+                  Deployr or choosing a different framework.
                 </p>
               </div>
             </div>
@@ -439,15 +478,30 @@ export function DeployConfig() {
 
                 <div className="space-y-2">
                   <Label htmlFor="root-directory">Root Directory</Label>
-                  <Input
-                    id="root-directory"
-                    value={rootDirectory}
-                    onChange={(e) => setRootDirectory(e.target.value)}
-                    placeholder="./"
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    The directory within your project, in case it is not in the root. Leave as &quot;./&quot; if unsure.
-                  </p>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-3 border rounded-lg bg-muted/30">
+                      <div className="flex items-center space-x-2">
+                        <Lock className="w-4 h-4 text-muted-foreground" />
+                        <div className="flex items-center space-x-2">
+                          <Folder className="w-4 h-4 text-blue-500" />
+                          <span className="font-medium">{rootDirectory === "./" ? "./ (root)" : rootDirectory}</span>
+                        </div>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowFolderBrowser(true)}
+                        className="flex items-center space-x-2"
+                      >
+                        <Settings className="w-4 h-4" />
+                        <span>Override</span>
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      The directory within your project where your application code is located. Click Override to browse
+                      and select a different directory.
+                    </p>
+                  </div>
                 </div>
               </div>
 
@@ -486,7 +540,12 @@ export function DeployConfig() {
                     </p>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Switch id="advanced-settings" className="cursor-pointer" checked={advancedSettings} onCheckedChange={setAdvancedSettings} />
+                    <Switch
+                      id="advanced-settings"
+                      className="cursor-pointer"
+                      checked={advancedSettings}
+                      onCheckedChange={setAdvancedSettings}
+                    />
                     <Label htmlFor="advanced-settings" className="text-sm">
                       Override
                     </Label>
@@ -537,7 +596,7 @@ export function DeployConfig() {
                     <h3 className="text-lg font-medium">Environment Variables</h3>
                     <p className="text-sm text-muted-foreground">Add environment variables for your deployment.</p>
                   </div>
-                  <Button variant="outline" size="sm" onClick={addEnvVar} className="cursor-pointer">
+                  <Button variant="outline" size="sm" onClick={addEnvVar} className="cursor-pointer bg-transparent">
                     Add Variable
                   </Button>
                 </div>
@@ -569,9 +628,7 @@ export function DeployConfig() {
             <div className="px-6 py-4 bg-muted/50 rounded-b-lg">
               <Button
                 onClick={handleDeploy}
-                disabled={
-                  deploying || !projectName || (selectedFramework === "nextjs" && !nextjsValidationConfirmed)
-                }
+                disabled={deploying || !projectName || (selectedFramework === "nextjs" && !nextjsValidationConfirmed)}
                 className="w-full"
                 size="lg"
               >
@@ -597,6 +654,18 @@ export function DeployConfig() {
           </Card>
         </div>
       </div>
+
+      {repoDetails && (
+        <FolderBrowser
+          open={showFolderBrowser}
+          onOpenChange={setShowFolderBrowser}
+          onSelectPath={handleFolderSelect}
+          repoId={repoDetails.repository.id}
+          owner={repoDetails.repository.full_name.split("/")[0]}
+          repo={repoDetails.repository.full_name.split("/")[1]}
+          currentPath={rootDirectory}
+        />
+      )}
     </div>
   )
 }
