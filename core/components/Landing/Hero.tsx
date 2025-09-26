@@ -1,24 +1,32 @@
-"use client"
+"use client";
 
-import { ArrowRight, CheckCircle, Play, Zap, Sparkles, Star } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { motion, useScroll, useTransform, Variants } from "framer-motion"
-import { useRef } from "react"
-import { useRouter } from "next/navigation"
+import {
+  ArrowRight,
+  CheckCircle,
+  Play,
+  Zap,
+  Sparkles,
+  Star,
+  TriangleAlert,
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { motion, useScroll, useTransform, Variants } from "framer-motion";
+import { useRef } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Hero({ isVisible }: { isVisible: boolean }) {
-  const ref = useRef(null)
-  const router = useRouter()
+  const ref = useRef(null);
+  const router = useRouter();
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end start"],
-  })
+  });
 
-  const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"])
-  const opacity = useTransform(scrollYProgress, [0, 1], [1, 0])
+  const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
+  const opacity = useTransform(scrollYProgress, [0, 1], [1, 0]);
 
-  const containerVariants:Variants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -27,9 +35,9 @@ export default function Hero({ isVisible }: { isVisible: boolean }) {
         delayChildren: 0.1,
       },
     },
-  }
+  };
 
-  const itemVariants:Variants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 30 },
     visible: {
       opacity: 1,
@@ -39,10 +47,13 @@ export default function Hero({ isVisible }: { isVisible: boolean }) {
         ease: [0.4, 0, 0.2, 1], // This is the equivalent of "easeOut" in cubic-bezier form
       },
     },
-  }
+  };
 
   return (
-    <section ref={ref} className="relative overflow-hidden py-20 md:py-32 min-h-screen w-full flex items-center">
+    <section
+      ref={ref}
+      className="relative overflow-hidden py-20 md:py-32 min-h-screen w-full flex items-center"
+    >
       {/* Animated Background Grid */}
       <motion.div
         className="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] dark:bg-grid-slate-700/25 dark:[mask-image:linear-gradient(0deg,rgba(255,255,255,0.1),rgba(255,255,255,0.5))]"
@@ -132,6 +143,13 @@ export default function Hero({ isVisible }: { isVisible: boolean }) {
           initial="hidden"
           animate={isVisible ? "visible" : "hidden"}
         >
+            <Badge
+              variant="destructive"
+              className="mb-4 px-4 py-2 text-sm font-medium backdrop-blur-sm bg-red-900/80 border border-white/20 shadow-lg"
+            >
+              <TriangleAlert className="w-3 h-3 mr-1" />
+              Backend is down right now, please check back later
+            </Badge>
           <motion.div variants={itemVariants}>
             <Badge
               variant="secondary"
@@ -147,7 +165,10 @@ export default function Hero({ isVisible }: { isVisible: boolean }) {
             </Badge>
           </motion.div>
 
-          <motion.h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight" variants={itemVariants}>
+          <motion.h1
+            className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight"
+            variants={itemVariants}
+          >
             <motion.span
               className="block"
               initial={{ opacity: 0, scale: 0.8 }}
@@ -172,7 +193,8 @@ export default function Hero({ isVisible }: { isVisible: boolean }) {
                   ease: "linear",
                 }}
                 style={{
-                  background: "linear-gradient(90deg, #2563eb, #718096, #2563eb)",
+                  background:
+                    "linear-gradient(90deg, #2563eb, #718096, #2563eb)",
                   backgroundSize: "200% 100%",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
@@ -187,22 +209,30 @@ export default function Hero({ isVisible }: { isVisible: boolean }) {
             className="mt-6 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed"
             variants={itemVariants}
           >
-            Streamline your frontend deployment process with zero configuration. From repository to live site in
-            seconds.
+            Streamline your frontend deployment process with zero configuration.
+            From repository to live site in seconds.
           </motion.p>
 
-          <motion.div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center" variants={itemVariants}>
+          <motion.div
+            className="mt-8 flex flex-col sm:flex-row gap-4 justify-center"
+            variants={itemVariants}
+          >
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button
                 size="lg"
-                onClick={()=>{router.push("/new")}}
+                onClick={() => {
+                  router.push("/new");
+                }}
                 className="text-lg px-8 py-4 cursor-pointer bg-gradient-to-r text-white from-blue-600 to-gray-600 hover:from-blue-700 hover:to-gray-700 shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 <motion.span className="flex items-center">
                   Get Started Free
                   <motion.div
                     animate={{ x: [0, 5, 0] }}
-                    transition={{ duration: 1.5, repeat: Number.POSITIVE_INFINITY }}
+                    transition={{
+                      duration: 1.5,
+                      repeat: Number.POSITIVE_INFINITY,
+                    }}
                   >
                     <ArrowRight className="ml-2 w-5 h-5" />
                   </motion.div>
@@ -214,7 +244,9 @@ export default function Hero({ isVisible }: { isVisible: boolean }) {
               <Button
                 variant="outline"
                 size="lg"
-                onClick={() => { router.push("/demo.mp4") }}
+                onClick={() => {
+                  router.push("/demo.mp4");
+                }}
                 className="text-lg px-8 py-4 cursor-pointer backdrop-blur-sm bg-white/10 border-white/20 hover:bg-white/20 shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 <motion.div
@@ -239,7 +271,11 @@ export default function Hero({ isVisible }: { isVisible: boolean }) {
             >
               <motion.div
                 animate={{ scale: [1, 1.2, 1] }}
-                transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, delay: 0.5 }}
+                transition={{
+                  duration: 2,
+                  repeat: Number.POSITIVE_INFINITY,
+                  delay: 0.5,
+                }}
               >
                 <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
               </motion.div>
@@ -253,7 +289,11 @@ export default function Hero({ isVisible }: { isVisible: boolean }) {
             >
               <motion.div
                 animate={{ scale: [1, 1.2, 1] }}
-                transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, delay: 1 }}
+                transition={{
+                  duration: 2,
+                  repeat: Number.POSITIVE_INFINITY,
+                  delay: 1,
+                }}
               >
                 <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
               </motion.div>
@@ -266,5 +306,5 @@ export default function Hero({ isVisible }: { isVisible: boolean }) {
       {/* Bottom fade effect */}
       <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent" />
     </section>
-  )
+  );
 }
