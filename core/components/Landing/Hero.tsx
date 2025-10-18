@@ -1,14 +1,15 @@
 "use client"
 
-import { useMemo, useRef } from "react"
-import { motion, type Variants } from "framer-motion"
-import { ArrowRight, Play, TriangleAlert } from "lucide-react"
-import { Canvas, useFrame } from "@react-three/fiber"
-import { Float, Stars } from "@react-three/drei"
-import type { Group } from "three"
+import { useEffect, useRef, useState } from "react"
+import { motion, type Variants, useReducedMotion } from "framer-motion"
+import { ArrowRight, Play, TriangleAlert, MonitorCog, Volume2 } from "lucide-react"
+import dynamic from "next/dynamic"
 import { useRouter } from "next/navigation"
 
 import { PixelButton, PixelPanel, PixelProgress, PixelTag } from "@/components/ui/pixel-primitives"
+import { PixelToggle } from "@/components/ui/pixel-toggle"
+import PixelSprite from "@/components/pixel/PixelSprite"
+import { usePixelPreferences } from "@/hooks/usePixelPreferences"
 
 interface HeroProps {
   isVisible: boolean
@@ -40,8 +41,83 @@ const itemVariants: Variants = {
   },
 }
 
+// Lazy-load heavy R3F scene to keep LCP budget tight
+const DynamicCanvasScene = dynamic(() => import("./CanvasScene"), {
+  ssr: false,
+  loading: () => <div className="absolute inset-0" />,
+})
+
 export default function Hero({ isVisible }: HeroProps) {
   const router = useRouter()
+  const { prefs, toggleCRT, toggleSFX, hydrated } = usePixelPreferences()
+  const reducedMotion = useReducedMotion()
+  const isMobile = useIsMobile()
+
+  const show3D = hydrated && !reducedMotion && !isMobile
+
+  // SFX manager with graceful fallback
+  const audioRefs = useRef<{ hover?: HTMLAudioElement; click?: HTMLAudioElement }>({})
+  const [audioReady, setAudioReady] = useState(false)
+
+  useEffect(() => {
+    if (!prefs.sfx || reducedMotion) return
+    // Attempt to load audio assets from public/audio, fall back to WebAudio bleeps
+    const hover = new Audio("/audio/ui-hover.mp3")
+    const click = new Audio("/audio/ui-click.mp3")
+    audioRefs.current.hover = hover
+    audioRefs.current.click = click
+    const onCanPlay = () => setAudioReady(true)
+    const onError = () => setAudioReady(false)
+    hover.addEventListener("canplaythrough", onCanPlay)
+    click.addEventListener("canplaythrough", onCanPlay)
+    hover.addEventListener("error", onError)
+    click.addEventListener("error", onError)
+    return () => {
+      hover.pause()
+      click.pause()
+      hover.removeEventListener("canplaythrough", onCanPlay)
+      click.removeEventListener("canplaythrough", onCanPlay)
+      hover.removeEventListener("error", onError)
+      click.removeEventListener("error", onError)
+    }
+  }, [prefs.sfx, reducedMotion])
+
+  const playBeep = (freq = 880, duration = 0.06) => {
+    if (typeof window === "undefined") return
+    try {
+      const AudioCtx = (window as any).AudioContext || (window as any).webkitAudioContext
+      const ctx = new AudioCtx()
+      const o = ctx.createOscillator()
+      const g = ctx.createGain()
+      o.type = "square"
+      o.frequency.value = freq
+      o.connect(g)
+      g.connect(ctx.destination)
+      g.gain.setValueAtTime(0.08, ctx.currentTime)
+      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration)
+      o.start()
+      o.stop(ctx.currentTime + duration)
+    } catch (_) {}
+  }
+
+  const playHover = () => {
+    if (!prefs.sfx || reducedMotion) return
+    if (audioReady && audioRefs.current.hover) {
+      audioRefs.current.hover.currentTime = 0
+      audioRefs.current.hover.play().catch(() => playBeep(660))
+    } else {
+      playBeep(660)
+    }
+  }
+  const playClick = () => {
+    if (!prefs.sfx || reducedMotion) return
+    if (audioReady && audioRefs.current.click) {
+      audioRefs.current.click.currentTime = 0
+      audioRefs.current.click.play().catch(() => playBeep(220))
+    } else {
+      playBeep(220)
+    }
+  }
 
   return (
     <section className="relative overflow-hidden">
@@ -90,25 +166,35 @@ export default function Hero({ isVisible }: HeroProps) {
           </motion.p>
 
           <motion.div variants={itemVariants} className="flex flex-col gap-4 sm:flex-row">
-            <PixelButton
-              variant="primary"
-              size="lg"
-              type="button"
-              onClick={() => router.push("/new")}
-              className="w-full sm:w-auto"
-            >
-              Start quest
-              <ArrowRight className="h-4 w-4" />
+            <PixelButton asChild variant="primary" size="lg" type="button" className="w-full sm:w-auto">
+              <motion.button
+                onHoverStart={playHover}
+                onClick={() => {
+                  playClick()
+                  router.push("/new")
+                }}
+                whileHover={{ x: -8, y: -8 }}
+                whileFocus={{ x: -8, y: -8 }}
+                transition={{ type: "spring", stiffness: 600, damping: 30 }}
+              >
+                Start quest
+                <ArrowRight className="h-4 w-4" />
+              </motion.button>
             </PixelButton>
-            <PixelButton
-              variant="ghost"
-              size="lg"
-              type="button"
-              onClick={() => router.push("/demo.mp4")}
-              className="w-full sm:w-auto"
-            >
-              <Play className="h-4 w-4" />
-              Watch demo
+            <PixelButton asChild variant="ghost" size="lg" type="button" className="w-full sm:w-auto">
+              <motion.button
+                onHoverStart={playHover}
+                onClick={() => {
+                  playClick()
+                  router.push("/demo.mp4")
+                }}
+                whileHover={{ x: -8, y: -8 }}
+                whileFocus={{ x: -8, y: -8 }}
+                transition={{ type: "spring", stiffness: 600, damping: 30 }}
+              >
+                <Play className="h-4 w-4" />
+                Watch demo
+              </motion.button>
             </PixelButton>
           </motion.div>
 
@@ -136,9 +222,7 @@ export default function Hero({ isVisible }: HeroProps) {
                 <PixelTag tone="midnight" className="bg-[#0f2d2d] px-2 py-[2px] text-[9px] tracking-[0.3em] text-[#91f6d3]">
                   Quest stats
                 </PixelTag>
-                <span className="text-[10px] font-black uppercase tracking-[0.32em] text-[#91f6d3]">
-                  Run · 01
-                </span>
+                <span className="text-[10px] font-black uppercase tracking-[0.32em] text-[#91f6d3]">Run · 01</span>
               </div>
               <PixelProgress value={96} label="Deployment readiness" />
               <div className="space-y-1 text-[9px] font-black uppercase tracking-[0.28em] text-[#0f2d2d]">
@@ -149,22 +233,25 @@ export default function Hero({ isVisible }: HeroProps) {
           </motion.div>
         </motion.div>
 
+        {/* Right column: HUD + Scene */}
         <motion.div variants={itemVariants} className="relative">
           <PixelPanel tone="midnight" padding="none" pattern={false} className="relative h-[320px] overflow-hidden md:h-[400px] lg:h-[460px]">
-            <div className="absolute inset-0">
-              <Canvas
-                gl={{ antialias: false }}
-                camera={{ position: [4, 3.5, 6], fov: 40 }}
-                style={{ width: "100%", height: "100%", imageRendering: "pixelated" }}
-              >
-                <color attach="background" args={["#10061f"]} />
-                <ambientLight intensity={0.6} />
-                <directionalLight position={[4, 6, 5]} intensity={1.1} color="#ffe17d" />
-                <Stars radius={45} depth={22} count={280} factor={4} saturation={0} fade speed={0.4} />
-                <PixelLandscape />
-              </Canvas>
+            {/* Canvas or static fallback */}
+            {show3D ? (
+              <DynamicCanvasScene />
+            ) : (
+              <div className="absolute inset-0 grid place-items-center">
+                <PixelSprite src="/pixel/hero-fallback.svg" alt="Pixel scene illustration" width={800} height={450} crisp priority />
+              </div>
+            )}
+
+            {/* Sprite overlays (decorative) */}
+            <div aria-hidden className="pointer-events-none absolute inset-0">
+              <PixelSprite src="/pixel/sparkle.svg" alt="" width={16} height={16} className="absolute left-3 top-3" />
+              <PixelSprite src="/pixel/sparkle.svg" alt="" width={16} height={16} className="absolute right-5 bottom-4" />
             </div>
 
+            {/* HUD labels */}
             <div className="absolute left-4 top-4">
               <PixelTag tone="midnight" className="bg-[#201040] px-2 py-[3px] text-[9px] tracking-[0.28em] text-[#ffe17d]">
                 Scene · Deploy Valley
@@ -180,69 +267,51 @@ export default function Hero({ isVisible }: HeroProps) {
                 </span>
               </PixelPanel>
             </div>
+
+            {/* CRT overlay toggleable */}
+            {prefs.crt && !reducedMotion ? (
+              <motion.div
+                aria-hidden
+                className="pointer-events-none absolute inset-0 mix-blend-lighten opacity-40"
+                animate={{ opacity: [0.35, 0.5, 0.35] }}
+                transition={{ duration: 6, repeat: Infinity }}
+                style={{
+                  backgroundImage:
+                    "repeating-linear-gradient(to bottom, rgba(255,255,255,0.08) 0px, rgba(255,255,255,0.08) 1px, transparent 1px, transparent 3px), radial-gradient(ellipse at center, rgba(0,0,0,0) 60%, rgba(0,0,0,0.2) 100%)",
+                }}
+              />
+            ) : null}
           </PixelPanel>
+
+          {/* Preferences HUD */}
+          <div className="absolute right-0 top-0 z-20 m-4">
+            <PixelPanel tone="ghost" padding="xs" className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <MonitorCog className="h-4 w-4" aria-hidden />
+                <span className="text-[9px] font-black uppercase tracking-[0.28em]">FX</span>
+              </div>
+              <PixelToggle checked={!!prefs.crt} onChange={toggleCRT} label="CRT" />
+              <div className="h-5 w-[1px] bg-black/20 dark:bg-white/20" aria-hidden />
+              <Volume2 className="h-4 w-4" aria-hidden />
+              <PixelToggle checked={!!prefs.sfx} onChange={toggleSFX} label="SFX" />
+            </PixelPanel>
+          </div>
         </motion.div>
       </div>
     </section>
   )
 }
 
-type LandscapeBlock = {
-  position: [number, number, number]
-  scale: [number, number, number]
-  color: string
-}
-
-function PixelLandscape() {
-  const group = useRef<Group | null>(null)
-
-  const blocks = useMemo<LandscapeBlock[]>(
-    () => [
-      { position: [-1.6, -0.15, -1.2], scale: [1.3, 0.6, 1.3], color: "#ff6584" },
-      { position: [1.4, -0.05, -1.4], scale: [1.1, 0.5, 1.1], color: "#8fff65" },
-      { position: [-0.4, 0.3, 1.8], scale: [0.8, 1.2, 0.8], color: "#98c8ff" },
-      { position: [-1.9, 0.25, 1], scale: [0.6, 1.4, 0.6], color: "#ffe17d" },
-      { position: [0.9, 0.15, 0.6], scale: [0.9, 0.9, 0.9], color: "#ff9a62" },
-    ],
-    []
-  )
-
-  useFrame((_, delta) => {
-    if (group.current) {
-      group.current.rotation.y += delta * 0.18
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false)
+  useEffect(() => {
+    const mql = window.matchMedia("(max-width: 640px)")
+    const onChange = () => setIsMobile(mql.matches)
+    onChange()
+    mql.addEventListener ? mql.addEventListener("change", onChange) : mql.addListener(onChange)
+    return () => {
+      mql.removeEventListener ? mql.removeEventListener("change", onChange) : mql.removeListener(onChange)
     }
-  })
-
-  return (
-    <group ref={group} position={[0, -0.3, 0]} rotation={[0.3, 0.4, 0]}>
-      <mesh position={[0, -0.9, 0]} scale={[4.8, 0.3, 4.8]} receiveShadow>
-        <boxGeometry />
-        <meshStandardMaterial color="#201537" />
-      </mesh>
-      {blocks.map((block, index) => (
-        <mesh key={index} position={block.position} scale={block.scale} castShadow receiveShadow>
-          <boxGeometry />
-          <meshStandardMaterial color={block.color} />
-        </mesh>
-      ))}
-      <Float speed={1.4} rotationIntensity={0.3} floatIntensity={0.7}>
-        <mesh position={[0, 1.4, 0]}>
-          <boxGeometry args={[0.9, 0.9, 0.9]} />
-          <meshStandardMaterial color="#ffe17d" emissive="#ff9a62" emissiveIntensity={0.45} />
-        </mesh>
-        <mesh position={[0, 0.65, 0]}>
-          <boxGeometry args={[2.2, 0.18, 2.2]} />
-          <meshStandardMaterial color="#2d1f49" />
-        </mesh>
-      </Float>
-      <mesh position={[1.9, 0.1, 1.6]} scale={[0.3, 1.4, 0.3]}>
-        <boxGeometry />
-        <meshStandardMaterial color="#8fff65" />
-      </mesh>
-      <mesh position={[1.9, 1.2, 1.6]} scale={[0.5, 0.3, 0.5]}>
-        <boxGeometry />
-        <meshStandardMaterial color="#59f6bc" />
-      </mesh>
-    </group>
-  )
+  }, [])
+  return isMobile
 }
