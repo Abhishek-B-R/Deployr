@@ -1,398 +1,389 @@
 "use client"
 
-import { ChevronDown, GithubIcon, Rocket, Settings, Menu, X } from "lucide-react"
-import { ThemeToggle } from "./theme-toggle"
-import { Button } from "./ui/button"
-import { SessionProvider, signIn, useSession } from "next-auth/react"
-import { useRouter } from "next/navigation"
+import { useState } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { SessionProvider, signIn, useSession } from "next-auth/react"
+import { motion, AnimatePresence } from "framer-motion"
+import {
+  ChevronDown,
+  GithubIcon,
+  Menu,
+  Rocket,
+  Settings,
+  X,
+} from "lucide-react"
+
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu"
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
-import { motion, AnimatePresence } from "framer-motion"
-import { useState } from "react"
+} from "@/components/ui/dropdown-menu"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { PixelButton, PixelPanel, PixelTag } from "@/components/ui/pixel-primitives"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 function Header() {
   const session = useSession()
   const router = useRouter()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
-  const getInitials = (name: string) => {
-    return name
+  const getInitials = (name: string) =>
+    name
       .split(" ")
-      .map((n) => n[0])
+      .map((token) => token[0])
       .join("")
       .toUpperCase()
       .slice(0, 2)
+
+  const closeMobileMenu = () => setIsMobileMenuOpen(false)
+  const toggleMobileMenu = () => setIsMobileMenuOpen((prev) => !prev)
+
+  const handleNavigation = (href: string) => {
+    router.push(href)
+    closeMobileMenu()
   }
 
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen)
-  }
-
-  const closeMobileMenu = () => {
-    setIsMobileMenuOpen(false)
-  }
+  const dropdownItemClass =
+    "cursor-pointer border-[2px] border-transparent px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-[#1b1036] transition-colors hover:border-[#1b1036] hover:bg-[#ffe17d] focus:bg-[#ffe17d] focus:border-[#1b1036] dark:text-[#f6ecff] dark:hover:border-[#f6ecff] dark:hover:bg-[#291f4a] dark:focus:bg-[#291f4a]"
 
   return (
     <>
       <motion.header
-        className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:px-10"
-        initial={{ y: -100, opacity: 0 }}
+        className="sticky top-0 z-50 border-b-[4px] border-[#09031a] bg-[#13082a]/95 text-[#f6ecff] backdrop-blur"
+        initial={{ y: -80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+        transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
       >
-        <div className="container flex h-16 items-center justify-between px-4">
-          {/* Logo */}
-          <motion.div
-            className="flex items-center space-x-2 cursor-pointer"
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(255,225,125,0.05)_1px,transparent_1px),linear-gradient(rgba(255,225,125,0.05)_1px,transparent_1px)] bg-[size:22px_22px] opacity-60"
+        />
+        <div className="container relative flex h-20 items-center justify-between px-4 md:px-6">
+          <motion.button
+            type="button"
+            className="group flex cursor-pointer items-center gap-4 text-left focus:outline-none"
             onClick={() => {
               router.push("/")
               closeMobileMenu()
             }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
           >
-            <motion.div
-              className="flex items-center justify-center w-8 h-8 bg-gradient-to-br from-blue-500 to-gray-600 rounded-lg"
-              animate={{ rotate: [0, 360] }}
-              transition={{ duration: 1, ease: "linear" }}
+            <PixelPanel
+              tone="accent"
+              padding="xs"
+              pattern={false}
+              className="flex h-12 w-12 items-center justify-center transition-transform duration-150 group-hover:-translate-y-1 group-hover:-translate-x-1 group-hover:shadow-[6px_6px_0_0_rgba(35,23,63,0.7)]"
             >
-              <Rocket className="w-5 h-5 text-white" />
-            </motion.div>
-            <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-gray-600 bg-clip-text text-transparent">
-              Deployr
-            </span>
-          </motion.div>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-4">
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button
-                size="sm"
-                className="cursor-pointer bg-gradient-to-r text-white from-blue-600 to-gray-600 hover:from-blue-700 hover:to-gray-700"
-                onClick={() => router.push("/projects")}
+              <Rocket className="h-6 w-6 text-[#1f1338]" />
+            </PixelPanel>
+            <div className="flex flex-col items-start leading-[1.1]">
+              <span className="text-xl font-black uppercase tracking-[0.55em] text-[#ffe17d] md:text-2xl">
+                Deployr
+              </span>
+              <PixelTag
+                tone="neutral"
+                className="mt-1 px-2 py-[3px] text-[9px] tracking-[0.3em] text-[#1f1338] shadow-[2px_2px_0_0_rgba(35,23,63,0.35)]"
               >
-                Dashboard
-              </Button>
-            </motion.div>
+                Pixel Command
+              </PixelTag>
+            </div>
+          </motion.button>
+
+          <div className="hidden items-center gap-4 md:flex lg:gap-6">
+            <PixelButton
+              variant="secondary"
+              size="sm"
+              type="button"
+              className="normal-case tracking-[0.2em]"
+              onClick={() => router.push("/projects")}
+            >
+              Dashboard
+            </PixelButton>
 
             <DropdownMenu>
-              <DropdownMenuTrigger asChild className="cursor-pointer">
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Button size="sm" variant="outline">
-                    Add New... <ChevronDown className="ml-1 w-4 h-4" />
-                  </Button>
-                </motion.div>
+              <DropdownMenuTrigger asChild>
+                <PixelButton
+                  variant="ghost"
+                  size="sm"
+                  type="button"
+                  className="normal-case tracking-[0.2em]"
+                >
+                  Add New
+                  <ChevronDown className="h-4 w-4" />
+                </PixelButton>
               </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem asChild onClick={() => router.push("/new")}>
-                  <Button variant="ghost" size="sm" className="w-full justify-start cursor-pointer">
-                    Project
-                  </Button>
+              <DropdownMenuContent
+                sideOffset={10}
+                className="z-50 mt-2 min-w-[220px] rounded-none border-[3px] border-[#1b1036] bg-[#f8ecff] p-2 shadow-[6px_6px_0_0_rgba(27,16,54,0.6)] dark:border-[#7b6aff]/70 dark:bg-[#1a1330]"
+              >
+                <DropdownMenuItem
+                  className={dropdownItemClass}
+                  onSelect={(event) => {
+                    event.preventDefault()
+                    router.push("/new")
+                  }}
+                >
+                  Project
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  asChild
-                  className="cursor-pointer"
-                  onClick={() => {
+                  className={dropdownItemClass}
+                  onSelect={(event) => {
+                    event.preventDefault()
                     window.open("https://github.com/new", "_blank", "noopener,noreferrer")
                   }}
                 >
-                  <Button variant="ghost" size="sm" className="w-full justify-start">
-                    Repository
-                  </Button>
+                  Repository
+                </DropdownMenuItem>
+                <DropdownMenuSeparator className="my-2 border border-dashed border-[#1b1036]/40" />
+                <DropdownMenuItem
+                  className={dropdownItemClass}
+                  onSelect={(event) => {
+                    event.preventDefault()
+                    router.push("/new")
+                  }}
+                >
+                  Quick Deploy
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
             <ThemeToggle />
 
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button
-                className="bg-white dark:bg-black text-black dark:text-white hover:bg-gray-300 cursor-pointer"
-                onClick={() => {
-                  window.open("https://www.github.com/Abhishek-B-R/Deployr", "_blank", "noopener,noreferrer")
-                }}
-              >
-                <GithubIcon className="w-4 h-4" />
-              </Button>
-            </motion.div>
+            <PixelButton
+              variant="icon"
+              size="square"
+              type="button"
+              className="normal-case tracking-normal"
+              onClick={() => {
+                window.open("https://www.github.com/Abhishek-B-R/Deployr", "_blank", "noopener,noreferrer")
+              }}
+            >
+              <GithubIcon className="h-5 w-5" />
+            </PixelButton>
 
             {session.status === "authenticated" ? (
-              <div>
-                {session ? (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                        <Button variant="ghost" className="relative h-8 w-8 rounded-full cursor-pointer">
-                          <Avatar className="h-8 w-8">
-                            <AvatarImage src={session.data.user?.image || ""} alt={session.data.user?.name || ""} />
-                            <AvatarFallback>
-                              {getInitials(session.data.user?.name || session.data.user?.email || "U")}
-                            </AvatarFallback>
-                          </Avatar>
-                        </Button>
-                      </motion.div>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-56" align="end" forceMount>
-                      <div className="flex items-center justify-start gap-2 p-2">
-                        <div className="flex flex-col space-y-1 leading-none">
-                          {session.data.user?.name && <p className="font-medium">{session.data.user?.name}</p>}
-                          {session.data.user?.email && (
-                            <p className="w-[200px] truncate text-sm text-muted-foreground">
-                              {session.data.user?.email}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem asChild className="cursor-pointer">
-                        <Link href="/settings">
-                          <Settings className="mr-2 h-4 w-4" />
-                          Settings
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem className="cursor-pointer" onClick={() => router.push("/api/auth/signout")}>
-                        Sign out
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                ) : (
-                  <Button asChild>
-                    <Link href="/api/auth/signin">Sign In</Link>
-                  </Button>
-                )}
-              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button type="button" className="group relative rounded-none focus:outline-none">
+                    <PixelPanel
+                      tone="ghost"
+                      padding="xs"
+                      pattern={false}
+                      className="flex h-12 w-12 items-center justify-center transition-transform duration-150 group-hover:-translate-y-1 group-hover:-translate-x-1 group-hover:shadow-[6px_6px_0_0_rgba(34,21,56,0.25)]"
+                    >
+                      <Avatar className="h-10 w-10">
+                        <AvatarImage src={session.data?.user?.image ?? ""} alt={session.data?.user?.name ?? ""} />
+                        <AvatarFallback>
+                          {getInitials(session.data?.user?.name ?? session.data?.user?.email ?? "U")}
+                        </AvatarFallback>
+                      </Avatar>
+                    </PixelPanel>
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="end"
+                  sideOffset={10}
+                  className="z-50 min-w-[220px] rounded-none border-[3px] border-[#1b1036] bg-[#f6ecff] p-3 shadow-[6px_6px_0_0_rgba(27,16,54,0.5)] dark:border-[#7b6aff]/70 dark:bg-[#1a1330]"
+                >
+                  <div className="mb-2 space-y-1 text-xs uppercase tracking-[0.3em] text-[#1b1036] dark:text-[#f6ecff]">
+                    <p className="font-bold">
+                      {session.data?.user?.name ?? "Player One"}
+                    </p>
+                    {session.data?.user?.email ? <p className="truncate text-[9px] tracking-[0.28em]">{session.data.user.email}</p> : null}
+                  </div>
+                  <DropdownMenuSeparator className="my-2 border border-dashed border-[#1b1036]/40 dark:border-[#7b6aff]/40" />
+                  <DropdownMenuItem asChild className={dropdownItemClass}>
+                    <Link href="/settings" className="flex items-center gap-2">
+                      <Settings className="h-4 w-4" />
+                      Settings
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="my-2 border border-dashed border-[#1b1036]/40 dark:border-[#7b6aff]/40" />
+                  <DropdownMenuItem
+                    className={dropdownItemClass}
+                    onSelect={(event) => {
+                      event.preventDefault()
+                      router.push("/api/auth/signout")
+                    }}
+                  >
+                    Sign out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : (
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button variant="outline" size="sm" onClick={() => router.push("/signin")}>
-                  Sign In
-                </Button>
-              </motion.div>
+              <PixelButton
+                variant="ghost"
+                size="sm"
+                type="button"
+                className="normal-case tracking-[0.2em]"
+                onClick={() => router.push("/signin")}
+              >
+                Sign In
+              </PixelButton>
             )}
-          </nav>
+          </div>
 
-          {/* Mobile Menu Toggle */}
-          <motion.div className="md:hidden" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Button variant="ghost" size="icon" onClick={toggleMobileMenu} className="relative z-50">
-              <AnimatePresence mode="wait">
-                {isMobileMenuOpen ? (
-                  <motion.div
-                    key="close"
-                    initial={{ rotate: -90, opacity: 0 }}
-                    animate={{ rotate: 0, opacity: 1 }}
-                    exit={{ rotate: 90, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <X className="w-5 h-5" />
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="menu"
-                    initial={{ rotate: 90, opacity: 0 }}
-                    animate={{ rotate: 0, opacity: 1 }}
-                    exit={{ rotate: -90, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <Menu className="w-5 h-5" />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </Button>
-          </motion.div>
+          <PixelButton
+            variant="ghost"
+            size="square"
+            type="button"
+            className="md:hidden normal-case tracking-normal"
+            onClick={toggleMobileMenu}
+          >
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.span
+                key={isMobileMenuOpen ? "close" : "menu"}
+                initial={{ rotate: isMobileMenuOpen ? -90 : 90, opacity: 0 }}
+                animate={{ rotate: 0, opacity: 1 }}
+                exit={{ rotate: isMobileMenuOpen ? 90 : -90, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="flex items-center justify-center"
+              >
+                {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </motion.span>
+            </AnimatePresence>
+          </PixelButton>
         </div>
       </motion.header>
 
-      {/* Mobile Menu Overlay */}
       <AnimatePresence>
-        {isMobileMenuOpen && (
+        {isMobileMenuOpen ? (
           <>
-            {/* Backdrop */}
             <motion.div
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden"
+              className="fixed inset-0 z-40 bg-[#080318]/80 backdrop-blur-sm md:hidden"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={closeMobileMenu}
             />
-
-            {/* Mobile Menu */}
             <motion.div
-              className="fixed top-16 left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/90 border-b shadow-lg z-40 md:hidden"
-              initial={{ y: -100, opacity: 0 }}
+              className="fixed top-24 left-4 right-4 z-50 md:hidden"
+              initial={{ y: -40, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              exit={{ y: -100, opacity: 0 }}
-              transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+              exit={{ y: -40, opacity: 0 }}
+              transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
             >
-              <motion.nav
-                className="container px-4 py-6 space-y-4"
-                variants={{
-                  hidden: { opacity: 0 },
-                  visible: {
-                    opacity: 1,
-                    transition: {
-                      staggerChildren: 0.1,
-                      delayChildren: 0.1,
-                    },
-                  },
-                }}
-                initial="hidden"
-                animate="visible"
-              >
-                {/* Dashboard Button */}
-                <motion.div
-                  variants={{
-                    hidden: { opacity: 0, x: -20 },
-                    visible: { opacity: 1, x: 0 },
-                  }}
-                >
-                  <Button
-                    className="w-full justify-start bg-gradient-to-r from-blue-600 to-gray-600 hover:from-blue-700 hover:to-gray-700 text-white"
-                    onClick={() => {
-                      router.push("/projects")
-                      closeMobileMenu()
-                    }}
+              <PixelPanel tone="ghost" padding="sm" className="space-y-5">
+                <PixelTag tone="info" className="px-3 py-[3px] text-[9px] tracking-[0.3em]">
+                  Mission Control
+                </PixelTag>
+                <nav className="space-y-4">
+                  <PixelButton
+                    variant="secondary"
+                    size="sm"
+                    type="button"
+                    className="w-full justify-between normal-case tracking-[0.2em]"
+                    onClick={() => handleNavigation("/projects")}
                   >
                     Dashboard
-                  </Button>
-                </motion.div>
-
-                {/* Add New Section */}
-                <motion.div
-                  className="space-y-2"
-                  variants={{
-                    hidden: { opacity: 0, x: -20 },
-                    visible: { opacity: 1, x: 0 },
-                  }}
-                >
-                  <p className="text-sm font-medium text-muted-foreground px-2">Add New</p>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start bg-transparent"
-                    onClick={() => {
-                      router.push("/new")
-                      closeMobileMenu()
-                    }}
-                  >
-                    Project
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start bg-transparent"
-                    onClick={() => {
-                      window.open("https://github.com/new", "_blank", "noopener,noreferrer")
-                      closeMobileMenu()
-                    }}
-                  >
-                    Repository
-                  </Button>
-                </motion.div>
-
-                {/* Theme Toggle */}
-                <motion.div
-                  className="flex items-center justify-between px-2"
-                  variants={{
-                    hidden: { opacity: 0, x: -20 },
-                    visible: { opacity: 1, x: 0 },
-                  }}
-                >
-                  <span className="text-sm font-medium">Theme</span>
-                  <ThemeToggle />
-                </motion.div>
-
-                {/* GitHub Link */}
-                <motion.div
-                  variants={{
-                    hidden: { opacity: 0, x: -20 },
-                    visible: { opacity: 1, x: 0 },
-                  }}
-                >
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start bg-transparent"
+                  </PixelButton>
+                  <div className="grid gap-2">
+                    <PixelButton
+                      variant="ghost"
+                      size="sm"
+                      type="button"
+                      className="w-full justify-between normal-case tracking-[0.2em]"
+                      onClick={() => handleNavigation("/new")}
+                    >
+                      Project
+                    </PixelButton>
+                    <PixelButton
+                      variant="ghost"
+                      size="sm"
+                      type="button"
+                      className="w-full justify-between normal-case tracking-[0.2em]"
+                      onClick={() => {
+                        window.open("https://github.com/new", "_blank", "noopener,noreferrer")
+                        closeMobileMenu()
+                      }}
+                    >
+                      Repository
+                    </PixelButton>
+                  </div>
+                  <div className="flex items-center justify-between rounded-none border-[2px] border-dashed border-[#1b1036]/40 px-3 py-2 text-[10px] uppercase tracking-[0.3em] text-[#1b1036] dark:border-[#7b6aff]/40 dark:text-[#f6ecff]">
+                    <span>Theme</span>
+                    <ThemeToggle />
+                  </div>
+                  <PixelButton
+                    variant="ghost"
+                    size="sm"
+                    type="button"
+                    className="w-full justify-between normal-case tracking-[0.2em]"
                     onClick={() => {
                       window.open("https://www.github.com/Abhishek-B-R/Deployr", "_blank", "noopener,noreferrer")
                       closeMobileMenu()
                     }}
                   >
-                    <GithubIcon className="w-4 h-4 mr-2" />
                     View Source
-                  </Button>
-                </motion.div>
+                  </PixelButton>
+                </nav>
 
-                {/* User Section */}
-                <motion.div
-                  className="pt-4 border-t"
-                  variants={{
-                    hidden: { opacity: 0, x: -20 },
-                    visible: { opacity: 1, x: 0 },
-                  }}
-                >
+                <PixelPanel tone="terminal" padding="sm" pattern={false} className="space-y-3">
                   {session.status === "authenticated" ? (
-                    <div className="space-y-3">
-                      {/* User Info */}
-                      <div className="flex items-center space-x-3 px-2">
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage src={session.data?.user?.image || ""} alt={session.data?.user?.name || ""} />
+                    <>
+                      <div className="flex items-center gap-3">
+                        <Avatar className="h-10 w-10 border-2 border-[#91f6d3]">
+                          <AvatarImage src={session.data?.user?.image ?? ""} alt={session.data?.user?.name ?? ""} />
                           <AvatarFallback>
-                            {getInitials(session.data?.user?.name || session.data?.user?.email || "U")}
+                            {getInitials(session.data?.user?.name ?? session.data?.user?.email ?? "U")}
                           </AvatarFallback>
                         </Avatar>
-                        <div className="flex flex-col space-y-1 leading-none">
-                          {session.data?.user?.name && <p className="font-medium text-sm">{session.data.user.name}</p>}
-                          {session.data?.user?.email && (
-                            <p className="truncate text-xs text-muted-foreground">{session.data.user.email}</p>
-                          )}
+                        <div className="space-y-1">
+                          <p className="text-xs font-black uppercase tracking-[0.32em] text-[#0f2d2d]">
+                            {session.data?.user?.name ?? "Pilot"}
+                          </p>
+                          {session.data?.user?.email ? (
+                            <p className="text-[9px] uppercase tracking-[0.28em] text-[#0f2d2d]/80">
+                              {session.data.user.email}
+                            </p>
+                          ) : null}
                         </div>
                       </div>
-
-                      {/* User Actions */}
-                      <div className="space-y-2">
-                        <Button
-                          variant="outline"
-                          className="w-full justify-start bg-transparent"
-                          onClick={() => {
-                            router.push("/settings")
-                            closeMobileMenu()
-                          }}
-                        >
-                          <Settings className="mr-2 h-4 w-4" />
-                          Settings
-                        </Button>
-                        <Button
-                          variant="outline"
-                          className="w-full justify-start bg-transparent"
-                          onClick={() => {
-                            router.push("/api/auth/signout")
-                            closeMobileMenu()
-                          }}
-                        >
-                          Sign out
-                        </Button>
-                      </div>
-                    </div>
+                      <PixelButton
+                        variant="ghost"
+                        size="sm"
+                        type="button"
+                        className="w-full bg-[#0f2d2d] text-[#91f6d3] normal-case tracking-[0.2em] hover:bg-[#134040]"
+                        onClick={() => handleNavigation("/settings")}
+                      >
+                        Settings
+                      </PixelButton>
+                      <PixelButton
+                        variant="ghost"
+                        size="sm"
+                        type="button"
+                        className="w-full bg-[#0f2d2d] text-[#91f6d3] normal-case tracking-[0.2em] hover:bg-[#134040]"
+                        onClick={() => {
+                          router.push("/api/auth/signout")
+                          closeMobileMenu()
+                        }}
+                      >
+                        Sign out
+                      </PixelButton>
+                    </>
                   ) : (
-                    <Button
-                      className="w-full"
+                    <PixelButton
+                      variant="secondary"
+                      size="sm"
+                      type="button"
+                      className="w-full normal-case tracking-[0.2em]"
                       onClick={() => {
                         signIn("github")
                         closeMobileMenu()
                       }}
                     >
-                      Sign In with GitHub
-                    </Button>
+                      Sign in with GitHub
+                    </PixelButton>
                   )}
-                </motion.div>
-              </motion.nav>
+                </PixelPanel>
+              </PixelPanel>
             </motion.div>
           </>
-        )}
+        ) : null}
       </AnimatePresence>
     </>
   )
