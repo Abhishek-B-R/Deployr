@@ -4,7 +4,7 @@ import { useRef } from "react"
 import { motion, useInView } from "framer-motion"
 import { Globe, Settings, Shield } from "lucide-react"
 
-import { PixelButton, PixelPanel, PixelProgress, PixelTag } from "@/components/ui/pixel-primitives"
+import { PixelButton, PixelPanel, PixelProgress, PixelTag, PixelCard, RetroBadge } from "@/components/ui/pixel-primitives"
 
 const powerUps = [
   {
@@ -38,10 +38,10 @@ export default function AdditionalFeatures() {
   const isInView = useInView(ref, { once: true, margin: "-100px" })
 
   return (
-    <section ref={ref} className="relative overflow-hidden">
+    <section ref={ref} id="power-ups" className="relative overflow-hidden">
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(34,22,63,0.05)_1px,transparent_1px),linear-gradient(rgba(34,22,63,0.05)_1px,transparent_1px)] bg-[size:20px_20px] opacity-60"
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(34,22,63,0.05)_1px,transparent_1px),linear-gradient(rgba(34,22,63,0.05)_1px,transparent_1px)] bg-[size:24px_24px] opacity-60"
       />
       <div className="absolute right-[-80px] top-8 h-52 w-52 border-[3px] border-[#1b1036] bg-[#8fff65]/25 shadow-[6px_6px_0_0_rgba(27,16,54,0.2)]" />
 
@@ -52,9 +52,9 @@ export default function AdditionalFeatures() {
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
           transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
         >
-          <PixelTag tone="info" className="px-4 py-[4px] text-[9px] tracking-[0.32em]">
+          <RetroBadge tone="info" className="px-4 py-[4px] text-[9px] tracking-[0.32em]">
             Power-Ups · Optional Buffs
-          </PixelTag>
+          </RetroBadge>
           <h2 className="text-3xl font-black uppercase leading-tight tracking-[0.2em] text-[#1b1036] dark:text-[#f6ecff] md:text-4xl">
             Equip extra power-ups for the long run
           </h2>
@@ -71,12 +71,12 @@ export default function AdditionalFeatures() {
             transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
             <PixelPanel tone="ghost" padding="lg" className="space-y-6">
-              <PixelTag tone="neutral" className="inline-flex px-3 py-[4px] text-[9px] tracking-[0.3em]">
+              <RetroBadge tone="neutral" className="inline-flex px-3 py-[4px] text-[9px] tracking-[0.3em]">
                 Loadout inventory
-              </PixelTag>
+              </RetroBadge>
               <div className="grid gap-4 md:grid-cols-2">
                 {powerUps.map((item) => (
-                  <PixelPanel key={item.title} tone="ghost" padding="sm" className="flex flex-col gap-3 border-[3px] border-[#23173f]/40">
+                  <PixelCard key={item.title} tone="ghost" padding="sm" className="flex flex-col gap-3">
                     <div className="flex items-start gap-3">
                       <PixelPanel tone="accent" padding="xs" pattern={false} className="flex h-12 w-12 items-center justify-center">
                         <item.icon className="h-6 w-6 text-[#23173f]" />
@@ -90,10 +90,10 @@ export default function AdditionalFeatures() {
                         </p>
                       </div>
                     </div>
-                    <PixelTag tone="success" className="px-2 py-[2px] text-[9px] tracking-[0.28em]">
+                    <RetroBadge tone="success" size="xs">
                       {item.badge}
-                    </PixelTag>
-                  </PixelPanel>
+                    </RetroBadge>
+                  </PixelCard>
                 ))}
               </div>
               <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">

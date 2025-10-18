@@ -21,14 +21,14 @@ export default function Landing() {
       <div className="relative overflow-hidden">
         <span
           aria-hidden
-          className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(34,22,63,0.08)_1px,transparent_1px),linear-gradient(rgba(34,22,63,0.08)_1px,transparent_1px)] bg-[size:28px_28px] opacity-70 dark:opacity-40"
+          className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(34,22,63,0.08)_1px,transparent_1px),linear-gradient(rgba(34,22,63,0.08)_1px,transparent_1px)] bg-[size:24px_24px] opacity-70 dark:opacity-40"
         />
         <div className="relative z-10 pb-20">
           <NavBar />
-          <main className="space-y-24 pt-10">
+          <main className="space-y-20 pt-8">
             <Hero isVisible={isVisible} />
-            <Features />
             <HowItWorks />
+            <Features />
             <AdditionalFeatures />
           </main>
           <Footer />

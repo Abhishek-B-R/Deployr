@@ -192,4 +192,55 @@ export function PixelProgress({ value, label, className, ...props }: PixelProgre
   )
 }
 
+export interface PixelCardProps extends PixelPanelProps {
+  hover?: boolean
+}
+
+export function PixelCard({ className, tone = "ghost", padding = "sm", hover = true, ...props }: PixelCardProps) {
+  const hoverClasses = hover ? "hover:-translate-y-1 hover:-translate-x-1" : ""
+  const hoverShadow = hover
+    ? tone === "midnight"
+      ? "hover:shadow-[6px_6px_0_0_rgba(10,3,20,0.9)]"
+      : tone === "terminal"
+        ? "hover:shadow-[6px_6px_0_0_rgba(8,38,38,0.9)]"
+        : tone === "accent"
+          ? "hover:shadow-[6px_6px_0_0_rgba(35,23,63,0.9)]"
+          : "hover:shadow-[6px_6px_0_0_rgba(34,21,56,0.45)]"
+    : ""
+
+  return (
+    <PixelPanel tone={tone} padding={padding} className={cn("transition-transform duration-150", hoverClasses, hoverShadow, className)} {...props} />
+  )
+}
+
+export interface RetroBadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
+  tone?: "info" | "warning" | "success" | "neutral" | "midnight" | "accent"
+  icon?: React.ReactNode
+  size?: "xs" | "sm"
+}
+
+export function RetroBadge({ className, tone = "neutral", icon, size = "xs", children, ...props }: RetroBadgeProps) {
+  const base = "inline-flex items-center gap-2 border-[2px] px-2 py-[2px] font-black uppercase tracking-[0.32em] shadow-[2px_2px_0_0_rgba(34,22,63,0.45)]"
+  const sizes = size === "sm" ? "text-[10px] px-3 py-[3px]" : "text-[9px]"
+  const tones =
+    tone === "info"
+      ? "bg-[#98c8ff] text-[#15264c] border-[#15264c]"
+      : tone === "warning"
+        ? "bg-[#ff9a62] text-[#1a0922] border-[#1a0922]"
+        : tone === "success"
+          ? "bg-[#7bff9f] text-[#082822] border-[#082822]"
+          : tone === "midnight"
+            ? "bg-[#291f4a] text-[#ffe17d] border-[#ffe17d]"
+            : tone === "accent"
+              ? "bg-[#ffe17d] text-[#22163f] border-[#22163f]"
+              : "bg-[#f6ecff] text-[#23173f] border-[#23173f]"
+
+  return (
+    <span className={cn(base, sizes, tones, className)} {...props}>
+      {icon ? <span className="flex items-center justify-center" aria-hidden>{icon}</span> : null}
+      <span className="leading-none">{children}</span>
+    </span>
+  )
+}
+
 export { pixelButtonVariants, pixelTagVariants, pixelPanelVariants }

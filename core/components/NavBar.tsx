@@ -25,6 +25,22 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { PixelButton, PixelPanel, PixelTag } from "@/components/ui/pixel-primitives"
 import { ThemeToggle } from "@/components/theme-toggle"
 
+function PixelTooltip({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="group relative inline-flex">
+      {children}
+      <span
+        role="tooltip"
+        className="pointer-events-none absolute left-1/2 -translate-x-1/2 -top-2 -translate-y-full opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-150"
+      >
+        <span className="inline-flex items-center border-[2px] border-[#22163f] bg-[#ffe17d] px-2 py-[2px] text-[9px] font-black uppercase tracking-[0.32em] text-[#22163f] shadow-[2px_2px_0_0_rgba(34,22,63,0.45)]">
+          {label}
+        </span>
+      </span>
+    </div>
+  )
+}
+
 function Header() {
   const session = useSession()
   const router = useRouter()
@@ -59,7 +75,7 @@ function Header() {
       >
         <span
           aria-hidden
-          className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(255,225,125,0.05)_1px,transparent_1px),linear-gradient(rgba(255,225,125,0.05)_1px,transparent_1px)] bg-[size:22px_22px] opacity-60"
+          className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(255,225,125,0.05)_1px,transparent_1px),linear-gradient(rgba(255,225,125,0.05)_1px,transparent_1px)] bg-[size:24px_24px] opacity-60"
         />
         <div className="container relative flex h-20 items-center justify-between px-4 md:px-6">
           <motion.button
@@ -94,14 +110,24 @@ function Header() {
           </motion.button>
 
           <div className="hidden items-center gap-4 md:flex lg:gap-6">
+            <PixelButton asChild variant="ghost" size="sm" type="button" className="normal-case tracking-[0.2em]">
+              <Link href="/#how-it-works" aria-label="Jump to How it works">How it works</Link>
+            </PixelButton>
+            <PixelButton asChild variant="ghost" size="sm" type="button" className="normal-case tracking-[0.2em]">
+              <Link href="/#features" aria-label="Jump to Features">Features</Link>
+            </PixelButton>
+            <PixelButton asChild variant="ghost" size="sm" type="button" className="normal-case tracking-[0.2em]">
+              <Link href="/#power-ups" aria-label="Jump to Power-ups">Power-ups</Link>
+            </PixelButton>
             <PixelButton
               variant="secondary"
               size="sm"
               type="button"
               className="normal-case tracking-[0.2em]"
-              onClick={() => router.push("/projects")}
+              onClick={() => router.push("/new")}
+              aria-label="Start Deploy"
             >
-              Dashboard
+              Start Deploy
             </PixelButton>
 
             <DropdownMenu>
@@ -112,7 +138,7 @@ function Header() {
                   type="button"
                   className="normal-case tracking-[0.2em]"
                 >
-                  Add New
+                  Create
                   <ChevronDown className="h-4 w-4" />
                 </PixelButton>
               </DropdownMenuTrigger>
@@ -151,19 +177,24 @@ function Header() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <ThemeToggle />
+            <PixelTooltip label="Theme">
+              <ThemeToggle />
+            </PixelTooltip>
 
-            <PixelButton
-              variant="icon"
-              size="square"
-              type="button"
-              className="normal-case tracking-normal"
-              onClick={() => {
-                window.open("https://www.github.com/Abhishek-B-R/Deployr", "_blank", "noopener,noreferrer")
-              }}
-            >
-              <GithubIcon className="h-5 w-5" />
-            </PixelButton>
+            <PixelTooltip label="View Source">
+              <PixelButton
+                variant="icon"
+                size="square"
+                type="button"
+                aria-label="View Source"
+                className="normal-case tracking-normal"
+                onClick={() => {
+                  window.open("https://www.github.com/Abhishek-B-R/Deployr", "_blank", "noopener,noreferrer")
+                }}
+              >
+                <GithubIcon className="h-5 w-5" />
+              </PixelButton>
+            </PixelTooltip>
 
             {session.status === "authenticated" ? (
               <DropdownMenu>
@@ -233,6 +264,8 @@ function Header() {
             type="button"
             className="md:hidden normal-case tracking-normal"
             onClick={toggleMobileMenu}
+            aria-expanded={isMobileMenuOpen}
+            aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
           >
             <AnimatePresence mode="wait" initial={false}>
               <motion.span
@@ -277,10 +310,30 @@ function Header() {
                     size="sm"
                     type="button"
                     className="w-full justify-between normal-case tracking-[0.2em]"
+                    onClick={() => handleNavigation("/new")}
+                  >
+                    Start Deploy
+                  </PixelButton>
+                  <PixelButton
+                    variant="secondary"
+                    size="sm"
+                    type="button"
+                    className="w-full justify-between normal-case tracking-[0.2em]"
                     onClick={() => handleNavigation("/projects")}
                   >
-                    Dashboard
+                    Open Console
                   </PixelButton>
+                  <div className="grid gap-2">
+                    <PixelButton variant="ghost" size="sm" type="button" className="w-full justify-between normal-case tracking-[0.2em]" onClick={() => handleNavigation("/#how-it-works")}>
+                      How it works
+                    </PixelButton>
+                    <PixelButton variant="ghost" size="sm" type="button" className="w-full justify-between normal-case tracking-[0.2em]" onClick={() => handleNavigation("/#features")}>
+                      Features
+                    </PixelButton>
+                    <PixelButton variant="ghost" size="sm" type="button" className="w-full justify-between normal-case tracking-[0.2em]" onClick={() => handleNavigation("/#power-ups")}>
+                      Power-ups
+                    </PixelButton>
+                  </div>
                   <div className="grid gap-2">
                     <PixelButton
                       variant="ghost"

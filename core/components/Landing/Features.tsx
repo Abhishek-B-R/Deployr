@@ -6,6 +6,7 @@ import { Brain, Globe, Monitor, Zap } from "lucide-react"
 import { useRouter } from "next/navigation"
 
 import { PixelButton, PixelPanel, PixelProgress, PixelTag } from "@/components/ui/pixel-primitives"
+import QuestCard from "@/components/Landing/QuestCard"
 
 const quests = [
   {
@@ -81,7 +82,7 @@ export default function Features() {
     <section ref={ref} id="features" className="relative overflow-hidden">
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(34,22,63,0.05)_1px,transparent_1px),linear-gradient(rgba(34,22,63,0.05)_1px,transparent_1px)] bg-[size:18px_18px] opacity-70"
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(34,22,63,0.05)_1px,transparent_1px),linear-gradient(rgba(34,22,63,0.05)_1px,transparent_1px)] bg-[size:24px_24px] opacity-70"
       />
       <div className="absolute -right-24 top-16 h-40 w-40 border-[3px] border-[#1b1036] bg-[#98c8ff]/30 shadow-[6px_6px_0_0_rgba(27,16,54,0.25)]" />
       <div className="container relative z-10 space-y-12 py-20">
@@ -118,40 +119,15 @@ export default function Features() {
         >
           {quests.map((quest) => (
             <motion.div key={quest.id} variants={cardVariants}>
-              <PixelPanel tone="ghost" padding="sm" className="flex h-full flex-col gap-4">
-                <div className="flex items-center justify-between">
-                  <PixelTag tone="neutral" className="px-2 py-[2px] text-[9px] tracking-[0.28em]">
-                    {quest.id}
-                  </PixelTag>
-                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#1b1036] dark:text-[#f6ecff]">
-                    {quest.xp}
-                  </span>
-                </div>
-                <motion.div
-                  className="flex h-12 w-12 items-center justify-center"
-                  animate={{ y: [0, -6, 0] }}
-                  transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
-                >
-                  <PixelPanel
-                    tone="accent"
-                    padding="xs"
-                    pattern={false}
-                    className="flex h-12 w-12 items-center justify-center"
-                  >
-                    <quest.icon className="h-6 w-6 text-[#23173f]" />
-                  </PixelPanel>
-                </motion.div>
-                <h3 className="text-lg font-black uppercase tracking-[0.2em] text-[#1b1036] dark:text-[#f6ecff]">
-                  {quest.title}
-                </h3>
-                <p className="flex-1 text-sm uppercase tracking-[0.26em] text-[#332756] dark:text-[#d4cfff]">
-                  {quest.description}
-                </p>
-                <PixelProgress value={quest.progress} label="Completion" />
-                <span className="text-[10px] font-black uppercase tracking-[0.28em] text-[#1b1036] dark:text-[#f6ecff]">
-                  Reward · {quest.reward}
-                </span>
-              </PixelPanel>
+              <QuestCard
+                id={quest.id}
+                icon={quest.icon}
+                title={quest.title}
+                description={quest.description}
+                xp={quest.xp}
+                progress={quest.progress}
+                reward={quest.reward}
+              />
             </motion.div>
           ))}
         </motion.div>

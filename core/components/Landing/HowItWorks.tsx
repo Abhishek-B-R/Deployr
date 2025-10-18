@@ -5,7 +5,8 @@ import { motion, type Variants, useInView } from "framer-motion"
 import { Github, GitBranch, Rocket } from "lucide-react"
 import { useRouter } from "next/navigation"
 
-import { PixelButton, PixelPanel, PixelProgress, PixelTag } from "@/components/ui/pixel-primitives"
+import { PixelButton, PixelPanel, PixelProgress, PixelTag, RetroBadge, PixelCard } from "@/components/ui/pixel-primitives"
+import AchievementList from "@/components/Landing/AchievementList"
 
 const trackVariants: Variants = {
   hidden: { opacity: 0, y: 50 },
@@ -50,7 +51,7 @@ export default function HowItWorks() {
     <section ref={ref} id="how-it-works" className="relative overflow-hidden">
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(34,22,63,0.05)_1px,transparent_1px),linear-gradient(rgba(34,22,63,0.05)_1px,transparent_1px)] bg-[size:22px_22px] opacity-65"
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(34,22,63,0.05)_1px,transparent_1px),linear-gradient(rgba(34,22,63,0.05)_1px,transparent_1px)] bg-[size:24px_24px] opacity-65"
       />
       <div className="absolute -left-24 bottom-10 h-48 w-48 border-[3px] border-[#1b1036] bg-[#ffe17d]/25 shadow-[6px_6px_0_0_rgba(27,16,54,0.2)]" />
       <div className="container relative z-10 space-y-12 py-20">
@@ -60,9 +61,9 @@ export default function HowItWorks() {
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
           transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
         >
-          <PixelTag tone="info" className="mx-auto px-4 py-[4px] text-[9px] tracking-[0.32em]">
+          <RetroBadge tone="info" className="mx-auto px-4 py-[4px] text-[9px] tracking-[0.32em]">
             Campaign Path · Three Steps
-          </PixelTag>
+          </RetroBadge>
           <h2 className="text-3xl font-black uppercase leading-tight tracking-[0.2em] text-[#1b1036] dark:text-[#f6ecff] md:text-4xl">
             Deploy in three simple quests
           </h2>
@@ -80,7 +81,7 @@ export default function HowItWorks() {
           >
             {steps.map((step, index) => (
               <motion.div key={step.title} variants={trackVariants}>
-                <PixelPanel tone="ghost" padding="sm" className="flex flex-col gap-4 rounded-none sm:flex-row sm:items-center sm:justify-between">
+                <PixelCard tone="ghost" padding="sm" className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex items-start gap-4">
                     <PixelPanel
                       tone="accent"
@@ -91,9 +92,9 @@ export default function HowItWorks() {
                       <step.icon className="h-7 w-7 text-[#23173f]" />
                     </PixelPanel>
                     <div className="space-y-2">
-                      <PixelTag tone="neutral" className="inline-flex px-2 py-[2px] text-[9px] tracking-[0.3em]">
+                      <RetroBadge tone="neutral" className="inline-flex px-2 py-[2px] text-[9px] tracking-[0.3em]">
                         Step 0{index + 1}
-                      </PixelTag>
+                      </RetroBadge>
                       <h3 className="text-xl font-black uppercase tracking-[0.2em] text-[#1b1036] dark:text-[#f6ecff]">
                         {step.title}
                       </h3>
@@ -102,10 +103,10 @@ export default function HowItWorks() {
                       </p>
                     </div>
                   </div>
-                  <PixelTag tone="success" className="px-2 py-[2px] text-[9px] tracking-[0.3em]">
+                  <RetroBadge tone="success" size="xs">
                     {step.reward}
-                  </PixelTag>
-                </PixelPanel>
+                  </RetroBadge>
+                </PixelCard>
               </motion.div>
             ))}
           </motion.div>
@@ -129,32 +130,14 @@ export default function HowItWorks() {
                 </p>
               </div>
               <PixelProgress value={99} label="Quest completion" />
-              <div className="space-y-3 text-[10px] uppercase tracking-[0.28em] text-[#63dfbe]">
-                <div className="flex items-center justify-between">
-                  <span>Repository connected</span>
-                  <PixelTag tone="success" className="px-2 py-[1px] text-[9px] tracking-[0.28em]">
-                    Complete
-                  </PixelTag>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>Build auto-configured</span>
-                  <PixelTag tone="success" className="px-2 py-[1px] text-[9px] tracking-[0.28em]">
-                    Optimized
-                  </PixelTag>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>Shareable preview</span>
-                  <PixelTag tone="success" className="px-2 py-[1px] text-[9px] tracking-[0.28em]">
-                    Live
-                  </PixelTag>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>Production launch</span>
-                  <PixelTag tone="neutral" className="px-2 py-[1px] text-[9px] tracking-[0.28em] text-[#23173f]">
-                    Awaiting
-                  </PixelTag>
-                </div>
-              </div>
+              <AchievementList
+                items={[
+                  { label: "Repository connected", status: "complete" },
+                  { label: "Build auto-configured", status: "optimized" },
+                  { label: "Shareable preview", status: "live" },
+                  { label: "Production launch", status: "awaiting" },
+                ]}
+              />
               <PixelButton
                 variant="secondary"
                 size="lg"
