@@ -7,6 +7,7 @@ import AdditionalFeatures from "./AdditionalFeatures"
 import Footer from "../Footer"
 import NavBar from "../NavBar"
 import HowItWorks from "./HowItWorks"
+import PixelShowcase from "./PixelShowcase"
 
 export default function Landing() {
   const [isVisible, setIsVisible] = useState(false)
@@ -20,6 +21,7 @@ return (
       <NavBar/>
       <Hero isVisible={isVisible}/>
       <Features/>
+      <PixelShowcase/>
       <HowItWorks/>
       <AdditionalFeatures/>
       <Footer/>

@@ -1,0 +1,50 @@
+/* 8-bit Pixel Pattern Backgrounds */
+
+.pixel-pattern-bricks {
+  background-image: 
+    repeating-linear-gradient(0deg, transparent, transparent 15px, rgba(0,0,0,0.1) 15px, rgba(0,0,0,0.1) 16px),
+    repeating-linear-gradient(90deg, transparent, transparent 30px, rgba(0,0,0,0.1) 30px, rgba(0,0,0,0.1) 31px);
+  background-size: 100% 16px, 31px 100%;
+}
+
+.pixel-pattern-checkerboard {
+  background-image: 
+    linear-gradient(45deg, rgba(0,0,0,0.1) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(0,0,0,0.1) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(0,0,0,0.1) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(0,0,0,0.1) 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+}
+
+.pixel-pattern-diagonal {
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 10px,
+    rgba(0,0,0,0.05) 10px,
+    rgba(0,0,0,0.05) 20px
+  );
+}
+
+.pixel-pattern-dots-dense {
+  background-image: radial-gradient(circle at 50% 50%, rgba(0,0,0,0.2) 2px, transparent 2px);
+  background-size: 8px 8px;
+}
+
+.pixel-pattern-cross {
+  background-image: 
+    repeating-linear-gradient(0deg, transparent, transparent 15px, rgba(0,0,0,0.1) 15px, rgba(0,0,0,0.1) 17px),
+    repeating-linear-gradient(90deg, transparent, transparent 15px, rgba(0,0,0,0.1) 15px, rgba(0,0,0,0.1) 17px);
+}
+
+.pixel-pattern-circuit {
+  background-color: var(--background);
+  background-image: 
+    linear-gradient(transparent 1px, transparent 1px),
+    linear-gradient(90deg, transparent 1px, transparent 1px),
+    linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
+  background-size: 40px 40px, 40px 40px, 8px 8px, 8px 8px;
+  background-position: -1px -1px, -1px -1px, -1px -1px, -1px -1px;
+}
