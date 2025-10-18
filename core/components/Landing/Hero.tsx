@@ -49,7 +49,7 @@ export default function Hero({ isVisible }: HeroProps) {
       <div className="absolute -right-24 bottom-0 h-52 w-52 border-[3px] border-[#1b1036]/40 bg-[#8fff65]/20 shadow-[6px_6px_0_0_rgba(27,16,54,0.2)] blur-sm" />
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(34,22,63,0.06)_1px,transparent_1px),linear-gradient(rgba(34,22,63,0.06)_1px,transparent_1px)] bg-[size:20px_20px] opacity-70"
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(34,22,63,0.06)_1px,transparent_1px),linear-gradient(rgba(34,22,63,0.06)_1px,transparent_1px)] bg-[size:24px_24px] opacity-70"
       />
 
       <div className="container relative z-10 grid gap-12 py-16 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:items-center">
