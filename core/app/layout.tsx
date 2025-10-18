@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider"
 const geistSans = Geist({
@@ -31,8 +32,27 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+       <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[9999] focus:px-3 focus:py-2 focus:border-[3px] focus:border-[#1b1036] focus:bg-[#ffe17d] focus:text-[#1b1036]">Skip to content</a>
        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-        {children}
+         <main id="main-content" tabIndex={-1}>
+           {children}
+         </main>
+         {/* Load web-vitals via CDN and log metrics locally */}
+         <Script src="https://unpkg.com/web-vitals@4/dist/web-vitals.iife.js" strategy="afterInteractive" />
+         <Script id="log-web-vitals" strategy="afterInteractive">
+           {`
+             window.addEventListener('DOMContentLoaded', function(){
+               if (window.webVitals) {
+                 const log = (metric) => console.log('Web Vitals:', metric.name, Math.round(metric.value), metric);
+                 window.webVitals.getLCP(log);
+                 window.webVitals.getCLS(log);
+                 window.webVitals.getINP(log);
+                 window.webVitals.getFID && window.webVitals.getFID(log);
+                 window.webVitals.getTTFB(log);
+               }
+             });
+           `}
+         </Script>
         </ThemeProvider>
       </body>
     </html>

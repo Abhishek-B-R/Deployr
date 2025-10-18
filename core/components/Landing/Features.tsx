@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef } from "react"
-import { motion, type Variants, useInView } from "framer-motion"
+import { motion, type Variants, useInView, useReducedMotion } from "framer-motion"
 import { Brain, Globe, Monitor, Zap } from "lucide-react"
 import { useRouter } from "next/navigation"
 
@@ -76,6 +76,7 @@ export default function Features() {
   const ref = useRef(null)
   const router = useRouter()
   const isInView = useInView(ref, { once: true, margin: "-100px" })
+  const reduceMotion = useReducedMotion()
 
   return (
     <section ref={ref} id="features" className="relative overflow-hidden">
@@ -87,23 +88,23 @@ export default function Features() {
       <div className="container relative z-10 space-y-12 py-20">
         <motion.div
           className="mx-auto max-w-3xl space-y-4 text-center"
-          variants={headerVariants}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+          variants={reduceMotion ? undefined : headerVariants}
+          initial={reduceMotion ? undefined : "hidden"}
+          animate={reduceMotion ? undefined : isInView ? "visible" : "hidden"}
         >
-          <motion.div variants={headerVariants}>
+          <motion.div variants={reduceMotion ? undefined : headerVariants}>
             <PixelTag tone="info" className="mx-auto px-4 py-[4px] text-[9px] tracking-[0.32em]">
               Quest Log · Feature Drops
             </PixelTag>
           </motion.div>
           <motion.h2
-            variants={headerVariants}
+            variants={reduceMotion ? undefined : headerVariants}
             className="text-3xl font-black uppercase leading-tight tracking-[0.2em] text-[#1b1036] dark:text-[#f6ecff] md:text-4xl"
           >
             Complete the Deployr quest log with battle-tested power-ups
           </motion.h2>
           <motion.p
-            variants={headerVariants}
+            variants={reduceMotion ? undefined : headerVariants}
             className="text-sm uppercase tracking-[0.28em] text-[#332756] dark:text-[#d4cfff] md:text-base"
           >
             Powerful features that make frontend deployment simple, fast, and reliable for builders who like their releases with a side of nostalgia.
@@ -112,12 +113,12 @@ export default function Features() {
 
         <motion.div
           className="grid gap-6 md:grid-cols-2 lg:grid-cols-4"
-          variants={{ visible: { transition: { staggerChildren: 0.12 } }, hidden: {} }}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+          variants={reduceMotion ? undefined : { visible: { transition: { staggerChildren: 0.12 } }, hidden: {} }}
+          initial={reduceMotion ? undefined : "hidden"}
+          animate={reduceMotion ? undefined : isInView ? "visible" : "hidden"}
         >
           {quests.map((quest) => (
-            <motion.div key={quest.id} variants={cardVariants}>
+            <motion.div key={quest.id} variants={reduceMotion ? undefined : cardVariants}>
               <PixelPanel tone="ghost" padding="sm" className="flex h-full flex-col gap-4">
                 <div className="flex items-center justify-between">
                   <PixelTag tone="neutral" className="px-2 py-[2px] text-[9px] tracking-[0.28em]">
@@ -129,8 +130,8 @@ export default function Features() {
                 </div>
                 <motion.div
                   className="flex h-12 w-12 items-center justify-center"
-                  animate={{ y: [0, -6, 0] }}
-                  transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+                  animate={reduceMotion ? undefined : { y: [0, -6, 0] }}
+                  transition={reduceMotion ? undefined : { duration: 3, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
                 >
                   <PixelPanel
                     tone="accent"
@@ -158,8 +159,8 @@ export default function Features() {
 
         <motion.div
           className="mx-auto max-w-4xl"
-          initial={{ opacity: 0, y: 50 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+          initial={reduceMotion ? undefined : { opacity: 0, y: 50 }}
+          animate={reduceMotion ? undefined : isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
           transition={{ duration: 0.6, delay: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
         >
           <PixelPanel tone="terminal" padding="lg" pattern={false} className="space-y-6">
@@ -191,6 +192,7 @@ export default function Features() {
                 type="button"
                 className="normal-case tracking-[0.2em]"
                 onClick={() => router.push("/new")}
+                aria-label="Launch next deployment"
               >
                 Launch next deployment
               </PixelButton>
@@ -200,6 +202,7 @@ export default function Features() {
                 type="button"
                 className="normal-case tracking-[0.2em]"
                 onClick={() => router.push("/projects")}
+                aria-label="Review quest log"
               >
                 Review quest log
               </PixelButton>

@@ -4,7 +4,7 @@ import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { SessionProvider, signIn, useSession } from "next-auth/react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
 import {
   ChevronDown,
   GithubIcon,
@@ -29,6 +29,7 @@ function Header() {
   const session = useSession()
   const router = useRouter()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const reduceMotion = useReducedMotion()
 
   const getInitials = (name: string) =>
     name
@@ -53,8 +54,8 @@ function Header() {
     <>
       <motion.header
         className="sticky top-0 z-50 border-b-[4px] border-[#09031a] bg-[#13082a]/95 text-[#f6ecff] backdrop-blur"
-        initial={{ y: -80, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
+        initial={reduceMotion ? false : { y: -80, opacity: 0 }}
+        animate={reduceMotion ? undefined : { y: 0, opacity: 1 }}
         transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
       >
         <span
@@ -64,13 +65,14 @@ function Header() {
         <div className="container relative flex h-20 items-center justify-between px-4 md:px-6">
           <motion.button
             type="button"
+            aria-label="Go to home"
             className="group flex cursor-pointer items-center gap-4 text-left focus:outline-none"
             onClick={() => {
               router.push("/")
               closeMobileMenu()
             }}
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
+            whileHover={reduceMotion ? undefined : { scale: 1.03 }}
+            whileTap={reduceMotion ? undefined : { scale: 0.97 }}
           >
             <PixelPanel
               tone="accent"
@@ -93,7 +95,7 @@ function Header() {
             </div>
           </motion.button>
 
-          <div className="hidden items-center gap-4 md:flex lg:gap-6">
+          <nav className="hidden items-center gap-4 md:flex lg:gap-6" aria-label="Primary">
             <PixelButton
               variant="secondary"
               size="sm"
@@ -111,6 +113,7 @@ function Header() {
                   size="sm"
                   type="button"
                   className="normal-case tracking-[0.2em]"
+                  aria-label="Add new"
                 >
                   Add New
                   <ChevronDown className="h-4 w-4" />
@@ -157,6 +160,7 @@ function Header() {
               variant="icon"
               size="square"
               type="button"
+              aria-label="Open GitHub repository"
               className="normal-case tracking-normal"
               onClick={() => {
                 window.open("https://www.github.com/Abhishek-B-R/Deployr", "_blank", "noopener,noreferrer")
@@ -168,7 +172,7 @@ function Header() {
             {session.status === "authenticated" ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button type="button" className="group relative rounded-none focus:outline-none">
+                  <button type="button" aria-label="Open user menu" className="group relative rounded-none focus:outline-none">
                     <PixelPanel
                       tone="ghost"
                       padding="xs"
@@ -225,21 +229,24 @@ function Header() {
                 Sign In
               </PixelButton>
             )}
-          </div>
+          </nav>
 
           <PixelButton
             variant="ghost"
             size="square"
             type="button"
             className="md:hidden normal-case tracking-normal"
+            aria-label={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+            aria-expanded={isMobileMenuOpen}
+            aria-controls="mobile-menu"
             onClick={toggleMobileMenu}
           >
             <AnimatePresence mode="wait" initial={false}>
               <motion.span
                 key={isMobileMenuOpen ? "close" : "menu"}
-                initial={{ rotate: isMobileMenuOpen ? -90 : 90, opacity: 0 }}
-                animate={{ rotate: 0, opacity: 1 }}
-                exit={{ rotate: isMobileMenuOpen ? 90 : -90, opacity: 0 }}
+                initial={reduceMotion ? false : { rotate: isMobileMenuOpen ? -90 : 90, opacity: 0 }}
+                animate={reduceMotion ? undefined : { rotate: 0, opacity: 1 }}
+                exit={reduceMotion ? undefined : { rotate: isMobileMenuOpen ? 90 : -90, opacity: 0 }}
                 transition={{ duration: 0.2 }}
                 className="flex items-center justify-center"
               >
@@ -261,6 +268,7 @@ function Header() {
               onClick={closeMobileMenu}
             />
             <motion.div
+              id="mobile-menu"
               className="fixed top-24 left-4 right-4 z-50 md:hidden"
               initial={{ y: -40, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
@@ -271,7 +279,7 @@ function Header() {
                 <PixelTag tone="info" className="px-3 py-[3px] text-[9px] tracking-[0.3em]">
                   Mission Control
                 </PixelTag>
-                <nav className="space-y-4">
+                <nav className="space-y-4" aria-label="Mobile">
                   <PixelButton
                     variant="secondary"
                     size="sm"

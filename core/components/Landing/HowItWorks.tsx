@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef } from "react"
-import { motion, type Variants, useInView } from "framer-motion"
+import { motion, type Variants, useInView, useReducedMotion } from "framer-motion"
 import { Github, GitBranch, Rocket } from "lucide-react"
 import { useRouter } from "next/navigation"
 
@@ -45,6 +45,7 @@ export default function HowItWorks() {
   const ref = useRef(null)
   const router = useRouter()
   const isInView = useInView(ref, { once: true, margin: "-100px" })
+  const reduceMotion = useReducedMotion()
 
   return (
     <section ref={ref} id="how-it-works" className="relative overflow-hidden">
@@ -56,8 +57,8 @@ export default function HowItWorks() {
       <div className="container relative z-10 space-y-12 py-20">
         <motion.div
           className="mx-auto max-w-3xl space-y-4 text-center"
-          initial={{ opacity: 0, y: 40 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+          initial={reduceMotion ? undefined : { opacity: 0, y: 40 }}
+          animate={reduceMotion ? undefined : isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
           transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
         >
           <PixelTag tone="info" className="mx-auto px-4 py-[4px] text-[9px] tracking-[0.32em]">
@@ -74,12 +75,12 @@ export default function HowItWorks() {
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
           <motion.div
             className="space-y-4"
-            variants={trackVariants}
-            initial="hidden"
-            animate={isInView ? "visible" : "hidden"}
+            variants={reduceMotion ? undefined : trackVariants}
+            initial={reduceMotion ? undefined : "hidden"}
+            animate={reduceMotion ? undefined : isInView ? "visible" : "hidden"}
           >
             {steps.map((step, index) => (
-              <motion.div key={step.title} variants={trackVariants}>
+              <motion.div key={step.title} variants={reduceMotion ? undefined : trackVariants}>
                 <PixelPanel tone="ghost" padding="sm" className="flex flex-col gap-4 rounded-none sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex items-start gap-4">
                     <PixelPanel
@@ -112,8 +113,8 @@ export default function HowItWorks() {
 
           <motion.div
             className="space-y-4"
-            initial={{ opacity: 0, y: 50 }}
-            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+            initial={reduceMotion ? undefined : { opacity: 0, y: 50 }}
+            animate={reduceMotion ? undefined : isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
             transition={{ duration: 0.6, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
             <PixelPanel tone="terminal" padding="lg" pattern={false} className="space-y-6">
@@ -161,6 +162,7 @@ export default function HowItWorks() {
                 type="button"
                 className="normal-case tracking-[0.2em]"
                 onClick={() => router.push("/new")}
+                aria-label="Start quest now"
               >
                 Start quest now
               </PixelButton>
@@ -170,8 +172,8 @@ export default function HowItWorks() {
 
         <motion.div
           className="text-center"
-          initial={{ opacity: 0, y: 50 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+          initial={reduceMotion ? undefined : { opacity: 0, y: 50 }}
+          animate={reduceMotion ? undefined : isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
           transition={{ duration: 0.6, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
         >
           <p className="mb-4 text-sm uppercase tracking-[0.28em] text-[#332756] dark:text-[#d4cfff]">
@@ -183,6 +185,7 @@ export default function HowItWorks() {
             type="button"
             className="normal-case tracking-[0.2em]"
             onClick={() => router.push("/new")}
+            aria-label="Start deploying now"
           >
             Start deploying now
           </PixelButton>

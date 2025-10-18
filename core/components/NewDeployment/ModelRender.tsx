@@ -52,7 +52,7 @@ export default function ModelRender() {
         <section className="min-h-screen w-full flex flex-col relative px-10">
             <div className="w-full h-full absolute inset-0">
                 {/* <Leva/> */}
-                <Canvas className="w-full h-full overflow-hidden">
+                <Canvas className="w-full h-full overflow-hidden" style={{ imageRendering: "pixelated" }}>
                     <Suspense fallback={<CanvasLoader/>}>
                         <PerspectiveCamera makeDefault position={[0,0,30]}/>
                         <HeroCamera isMobile={isMobile} >

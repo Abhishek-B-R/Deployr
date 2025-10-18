@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef } from "react"
-import { motion, useInView } from "framer-motion"
+import { motion, useInView, useReducedMotion } from "framer-motion"
 import { Globe, Settings, Shield } from "lucide-react"
 
 import { PixelButton, PixelPanel, PixelProgress, PixelTag } from "@/components/ui/pixel-primitives"
@@ -36,6 +36,7 @@ const gauges = [
 export default function AdditionalFeatures() {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
+  const reduceMotion = useReducedMotion()
 
   return (
     <section ref={ref} className="relative overflow-hidden">
@@ -48,8 +49,8 @@ export default function AdditionalFeatures() {
       <div className="container relative z-10 space-y-12 py-20">
         <motion.div
           className="max-w-3xl space-y-4"
-          initial={{ opacity: 0, y: 40 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+          initial={reduceMotion ? undefined : { opacity: 0, y: 40 }}
+          animate={reduceMotion ? undefined : isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
           transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
         >
           <PixelTag tone="info" className="px-4 py-[4px] text-[9px] tracking-[0.32em]">
@@ -66,8 +67,8 @@ export default function AdditionalFeatures() {
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
           <motion.div
             className="space-y-6"
-            initial={{ opacity: 0, x: -40 }}
-            animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -40 }}
+            initial={reduceMotion ? undefined : { opacity: 0, x: -40 }}
+            animate={reduceMotion ? undefined : isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -40 }}
             transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
             <PixelPanel tone="ghost" padding="lg" className="space-y-6">
@@ -108,6 +109,7 @@ export default function AdditionalFeatures() {
                   onClick={() => {
                     window.open("https://www.github.com/Abhishek-B-R/Deployr", "_blank", "noopener,noreferrer")
                   }}
+                  aria-label="View full spec sheet"
                 >
                   View full spec sheet
                 </PixelButton>
@@ -117,8 +119,8 @@ export default function AdditionalFeatures() {
 
           <motion.div
             className="space-y-6"
-            initial={{ opacity: 0, x: 40 }}
-            animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 40 }}
+            initial={reduceMotion ? undefined : { opacity: 0, x: 40 }}
+            animate={reduceMotion ? undefined : isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 40 }}
             transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94], delay: 0.1 }}
           >
             <PixelPanel tone="midnight" padding="lg" pattern={false} className="space-y-6 text-[#f6ecff]">

@@ -1,8 +1,8 @@
 "use client"
 
-import Image from "next/image"
 import { LinkedinIcon, Rocket } from "lucide-react"
 
+import PixelSprite from "@/components/PixelSprite"
 import { PixelButton, PixelPanel, PixelTag } from "@/components/ui/pixel-primitives"
 
 export default function Footer() {
@@ -32,6 +32,7 @@ export default function Footer() {
               variant="icon"
               size="square"
               type="button"
+              aria-label="Open LinkedIn profile"
               className="normal-case tracking-normal"
               onClick={() => {
                 window.open("https://www.linkedin.com/in/abhishek-b-r-b232ba2a2/", "_blank", "noopener,noreferrer")
@@ -43,12 +44,13 @@ export default function Footer() {
               variant="icon"
               size="square"
               type="button"
+              aria-label="Open X profile"
               className="normal-case tracking-normal"
               onClick={() => {
                 window.open("https://x.com/AbhiCodes01", "_blank", "noopener,noreferrer")
               }}
             >
-              <Image src="/x.svg" alt="X logo" width={18} height={18} className="h-[18px] w-[18px]" />
+              <PixelSprite src="/x.svg" alt="X logo" width={18} height={18} className="h-[18px] w-[18px]" />
             </PixelButton>
           </div>
         </div>

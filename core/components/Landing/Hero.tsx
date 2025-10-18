@@ -1,7 +1,7 @@
 "use client"
 
-import { useMemo, useRef } from "react"
-import { motion, type Variants } from "framer-motion"
+import { useEffect, useMemo, useRef } from "react"
+import { motion, type Variants, useReducedMotion } from "framer-motion"
 import { ArrowRight, Play, TriangleAlert } from "lucide-react"
 import { Canvas, useFrame } from "@react-three/fiber"
 import { Float, Stars } from "@react-three/drei"
@@ -42,6 +42,18 @@ const itemVariants: Variants = {
 
 export default function Hero({ isVisible }: HeroProps) {
   const router = useRouter()
+  const reduceMotion = useReducedMotion()
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.key === "s" || e.key === "S") && !e.altKey && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault()
+        router.push("/new")
+      }
+    }
+    window.addEventListener("keydown", onKey)
+    return () => window.removeEventListener("keydown", onKey)
+  }, [router])
 
   return (
     <section className="relative overflow-hidden">
@@ -55,11 +67,11 @@ export default function Hero({ isVisible }: HeroProps) {
       <div className="container relative z-10 grid gap-12 py-16 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:items-center">
         <motion.div
           className="space-y-8"
-          variants={containerVariants}
-          initial="hidden"
-          animate={isVisible ? "visible" : "hidden"}
+          variants={reduceMotion ? undefined : containerVariants}
+          initial={reduceMotion ? undefined : "hidden"}
+          animate={reduceMotion ? undefined : isVisible ? "visible" : "hidden"}
         >
-          <motion.div variants={itemVariants} className="flex flex-wrap items-center gap-3">
+          <motion.div variants={reduceMotion ? undefined : itemVariants} className="flex flex-wrap items-center gap-3">
             <PixelTag
               tone="warning"
               className="px-3 py-[4px] text-[9px] tracking-[0.32em]"
@@ -69,7 +81,7 @@ export default function Hero({ isVisible }: HeroProps) {
             </PixelTag>
           </motion.div>
 
-          <motion.div variants={itemVariants} className="space-y-4">
+          <motion.div variants={reduceMotion ? undefined : itemVariants} className="space-y-4">
             <PixelTag tone="info" className="px-3 py-[4px] text-[9px] tracking-[0.32em]">
               Quest 01 · Launch Sequence
             </PixelTag>
@@ -82,20 +94,22 @@ export default function Hero({ isVisible }: HeroProps) {
           </motion.div>
 
           <motion.p
-            variants={itemVariants}
+            variants={reduceMotion ? undefined : itemVariants}
             className="max-w-2xl text-sm uppercase tracking-[0.28em] text-[#332756] dark:text-[#d4cfff] md:text-base"
           >
             Streamline your frontend deployment process with zero configuration. From repository to live site in seconds,
             now wrapped in an 8-bit adventure.
           </motion.p>
 
-          <motion.div variants={itemVariants} className="flex flex-col gap-4 sm:flex-row">
+          <motion.div variants={reduceMotion ? undefined : itemVariants} className="flex flex-col gap-4 sm:flex-row">
             <PixelButton
               variant="primary"
               size="lg"
               type="button"
               onClick={() => router.push("/new")}
               className="w-full sm:w-auto"
+              accessKey="s"
+              aria-label="Start quest (shortcut: S)"
             >
               Start quest
               <ArrowRight className="h-4 w-4" />
@@ -106,13 +120,14 @@ export default function Hero({ isVisible }: HeroProps) {
               type="button"
               onClick={() => router.push("/demo.mp4")}
               className="w-full sm:w-auto"
+              aria-label="Watch demo"
             >
               <Play className="h-4 w-4" />
               Watch demo
             </PixelButton>
           </motion.div>
 
-          <motion.div variants={itemVariants} className="grid gap-4 md:grid-cols-2">
+          <motion.div variants={reduceMotion ? undefined : itemVariants} className="grid gap-4 md:grid-cols-2">
             <PixelPanel tone="ghost" padding="sm" className="space-y-3">
               <div className="flex items-center gap-3">
                 <span className="h-3 w-3 bg-[#7bff9f] shadow-[2px_2px_0_0_rgba(34,22,63,0.4)]" aria-hidden />
@@ -149,7 +164,7 @@ export default function Hero({ isVisible }: HeroProps) {
           </motion.div>
         </motion.div>
 
-        <motion.div variants={itemVariants} className="relative">
+        <motion.div variants={reduceMotion ? undefined : itemVariants} className="relative">
           <PixelPanel tone="midnight" padding="none" pattern={false} className="relative h-[320px] overflow-hidden md:h-[400px] lg:h-[460px]">
             <div className="absolute inset-0">
               <Canvas
@@ -160,8 +175,8 @@ export default function Hero({ isVisible }: HeroProps) {
                 <color attach="background" args={["#10061f"]} />
                 <ambientLight intensity={0.6} />
                 <directionalLight position={[4, 6, 5]} intensity={1.1} color="#ffe17d" />
-                <Stars radius={45} depth={22} count={280} factor={4} saturation={0} fade speed={0.4} />
-                <PixelLandscape />
+                <Stars radius={45} depth={22} count={280} factor={4} saturation={0} fade speed={!!reduceMotion ? 0 : 0.4} />
+                <PixelLandscape reduceMotion={!!reduceMotion} />
               </Canvas>
             </div>
 
@@ -193,7 +208,7 @@ type LandscapeBlock = {
   color: string
 }
 
-function PixelLandscape() {
+function PixelLandscape({ reduceMotion = false }: { reduceMotion?: boolean }) {
   const group = useRef<Group | null>(null)
 
   const blocks = useMemo<LandscapeBlock[]>(
@@ -208,7 +223,7 @@ function PixelLandscape() {
   )
 
   useFrame((_, delta) => {
-    if (group.current) {
+    if (group.current && !reduceMotion) {
       group.current.rotation.y += delta * 0.18
     }
   })
@@ -225,7 +240,7 @@ function PixelLandscape() {
           <meshStandardMaterial color={block.color} />
         </mesh>
       ))}
-      <Float speed={1.4} rotationIntensity={0.3} floatIntensity={0.7}>
+      <Float speed={reduceMotion ? 0 : 1.4} rotationIntensity={reduceMotion ? 0 : 0.3} floatIntensity={reduceMotion ? 0 : 0.7}>
         <mesh position={[0, 1.4, 0]}>
           <boxGeometry args={[0.9, 0.9, 0.9]} />
           <meshStandardMaterial color="#ffe17d" emissive="#ff9a62" emissiveIntensity={0.45} />
