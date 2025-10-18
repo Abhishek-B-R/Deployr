@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const pixelPanelVariants = cva(
-  "relative overflow-hidden rounded-none border-[3px] border-[#1f163b] bg-[#f8edff] text-[#1b1236] shadow-[4px_4px_0_0_rgba(24,18,58,0.75)] transition-transform duration-200 dark:border-[#8575ff] dark:bg-[#130c25] dark:text-[#f7edff] dark:shadow-[4px_4px_0_0_rgba(115,99,255,0.35)]",
+  "relative overflow-hidden rounded-none border-[var(--pixel-border)] border-[#1f163b] bg-[#f8edff] text-[#1b1236] shadow-sm transition-transform duration-200 dark:border-[#8575ff] dark:bg-[#130c25] dark:text-[#f7edff]",
   {
     variants: {
       tone: {
@@ -76,18 +76,18 @@ export function PixelPanel({
 }
 
 const pixelButtonVariants = cva(
-  "relative inline-flex items-center justify-center gap-2 whitespace-nowrap border-[3px] px-5 py-3 text-xs font-extrabold uppercase tracking-[0.32em] transition-transform duration-150 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#ffe17d]/50 active:translate-x-0 active:translate-y-0 disabled:pointer-events-none disabled:opacity-60",
+  "relative inline-flex items-center justify-center gap-2 whitespace-nowrap border-[var(--pixel-border)] px-5 py-3 text-xs font-extrabold uppercase tracking-[0.32em] transition-transform duration-150 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring/60 active:translate-x-0 active:translate-y-0 disabled:pointer-events-none disabled:opacity-60 shadow-sm",
   {
     variants: {
       variant: {
         primary:
-          "bg-[#ff6584] text-[#1b1036] border-[#1b1036] shadow-[4px_4px_0_0_rgba(27,17,54,0.8)] hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[6px_6px_0_0_rgba(27,17,54,0.8)]",
+          "bg-[#ff6584] text-[#1b1036] border-[#1b1036] shadow-sm hover:-translate-y-1 hover:-translate-x-1 hover:shadow-md",
         secondary:
-          "bg-[#8fff65] text-[#13241f] border-[#13241f] shadow-[4px_4px_0_0_rgba(19,36,31,0.75)] hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[6px_6px_0_0_rgba(19,36,31,0.75)]",
+          "bg-[#8fff65] text-[#13241f] border-[#13241f] shadow-sm hover:-translate-y-1 hover:-translate-x-1 hover:shadow-md",
         ghost:
-          "bg-[#f8ecff] text-[#1c1441] border-[#1c1441] shadow-[4px_4px_0_0_rgba(28,20,65,0.45)] hover:bg-[#ffe17d] hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[6px_6px_0_0_rgba(28,20,65,0.45)] dark:bg-[#211a34] dark:text-[#f6ecff]",
+          "bg-[#f8ecff] text-[#1c1441] border-[#1c1441] shadow-xs hover:bg-[#ffe17d] hover:-translate-y-1 hover:-translate-x-1 hover:shadow-sm dark:bg-[#211a34] dark:text-[#f6ecff]",
         icon:
-          "bg-[#1f1633] text-[#f6ecff] border-[#f6ecff] shadow-[4px_4px_0_0_rgba(246,236,255,0.35)] hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[6px_6px_0_0_rgba(246,236,255,0.35)]",
+          "bg-[#1f1633] text-[#f6ecff] border-[#f6ecff] shadow-xs hover:-translate-y-1 hover:-translate-x-1 hover:shadow-sm",
       },
       size: {
         sm: "h-9 px-4 text-[10px]",
@@ -122,7 +122,7 @@ export function PixelButton({ className, variant, size, asChild = false, ...prop
 }
 
 const pixelTagVariants = cva(
-  "inline-flex items-center gap-2 border-[2px] border-[#22163f] bg-[#ffe17d] px-3 py-1 text-[10px] font-black uppercase tracking-[0.4em] text-[#22163f] shadow-[2px_2px_0_0_rgba(34,22,63,0.6)]",
+  "inline-flex items-center gap-2 border-[var(--pixel-border)] border-[#22163f] bg-[#ffe17d] px-3 py-1 text-[10px] font-black uppercase tracking-[0.4em] text-[#22163f] shadow-xs",
   {
     variants: {
       tone: {
@@ -174,7 +174,7 @@ export function PixelProgress({ value, label, className, ...props }: PixelProgre
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={safeValue}
-        className="relative h-5 border-[3px] border-[#21153f] bg-[#f8ecff] dark:border-[#8f79ff] dark:bg-[#1a1430]"
+        className="relative h-5 border-[var(--pixel-border)] border-[#21153f] bg-[#f8ecff] dark:border-[#8f79ff] dark:bg-[#1a1430]"
       >
         <span className="absolute inset-[2px] border border-black/10 dark:border-white/10 pointer-events-none" aria-hidden />
         <div
