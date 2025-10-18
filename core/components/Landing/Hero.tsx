@@ -1,7 +1,7 @@
 "use client"
 
 import { useMemo, useRef } from "react"
-import { motion, type Variants } from "framer-motion"
+import { motion, type Variants, useReducedMotion } from "framer-motion"
 import { ArrowRight, Play, TriangleAlert } from "lucide-react"
 import { Canvas, useFrame } from "@react-three/fiber"
 import { Float, Stars } from "@react-three/drei"
@@ -42,9 +42,17 @@ const itemVariants: Variants = {
 
 export default function Hero({ isVisible }: HeroProps) {
   const router = useRouter()
+  const prefersReducedMotion = useReducedMotion()
+
+  const starCount = prefersReducedMotion ? 0 : 220
+  const starSpeed = prefersReducedMotion ? 0 : 0.35
+  const rotationSpeed = prefersReducedMotion ? 0 : 0.18
+  const floatSpeed = prefersReducedMotion ? 0 : 1.4
+  const rotationIntensity = prefersReducedMotion ? 0 : 0.3
+  const floatIntensity = prefersReducedMotion ? 0 : 0.7
 
   return (
-    <section className="relative overflow-hidden">
+    <section className="relative overflow-hidden" role="region" aria-labelledby="hero-heading">
       <div className="absolute -left-16 top-10 hidden h-24 w-24 border-[3px] border-[#1b1036] bg-[#ffe17d]/40 shadow-[6px_6px_0_0_rgba(27,16,54,0.35)] lg:block" />
       <div className="absolute -right-24 bottom-0 h-52 w-52 border-[3px] border-[#1b1036]/40 bg-[#8fff65]/20 shadow-[6px_6px_0_0_rgba(27,16,54,0.2)] blur-sm" />
       <span
@@ -64,6 +72,8 @@ export default function Hero({ isVisible }: HeroProps) {
               tone="warning"
               className="px-3 py-[4px] text-[9px] tracking-[0.32em]"
               icon={<TriangleAlert className="h-3 w-3" />}
+              role="status"
+              aria-live="polite"
             >
               Backend is down right now, please check back later
             </PixelTag>
@@ -73,7 +83,7 @@ export default function Hero({ isVisible }: HeroProps) {
             <PixelTag tone="info" className="px-3 py-[4px] text-[9px] tracking-[0.32em]">
               Quest 01 · Launch Sequence
             </PixelTag>
-            <motion.h1 className="text-4xl font-black uppercase leading-none tracking-tight md:text-6xl">
+            <motion.h1 id="hero-heading" className="text-4xl font-black uppercase leading-none tracking-tight md:text-6xl">
               <span className="block text-[#1b1036] dark:text-[#f6ecff]">Deploy your frontend</span>
               <span className="mt-2 block text-3xl text-[#ff6584] drop-shadow-[2px_2px_0_rgba(27,16,54,0.35)] md:text-5xl">
                 faster than a speedrun
@@ -96,6 +106,7 @@ export default function Hero({ isVisible }: HeroProps) {
               type="button"
               onClick={() => router.push("/new")}
               className="w-full sm:w-auto"
+              aria-label="Start quest: configure a new deployment"
             >
               Start quest
               <ArrowRight className="h-4 w-4" />
@@ -106,6 +117,7 @@ export default function Hero({ isVisible }: HeroProps) {
               type="button"
               onClick={() => router.push("/demo.mp4")}
               className="w-full sm:w-auto"
+              aria-label="Watch demo video"
             >
               <Play className="h-4 w-4" />
               Watch demo
@@ -160,8 +172,13 @@ export default function Hero({ isVisible }: HeroProps) {
                 <color attach="background" args={["#10061f"]} />
                 <ambientLight intensity={0.6} />
                 <directionalLight position={[4, 6, 5]} intensity={1.1} color="#ffe17d" />
-                <Stars radius={45} depth={22} count={280} factor={4} saturation={0} fade speed={0.4} />
-                <PixelLandscape />
+                <Stars radius={45} depth={22} count={starCount} factor={4} saturation={0} fade speed={starSpeed} />
+                <PixelLandscape
+                  rotationSpeed={rotationSpeed}
+                  floatSpeed={floatSpeed}
+                  rotationIntensity={rotationIntensity}
+                  floatIntensity={floatIntensity}
+                />
               </Canvas>
             </div>
 
@@ -193,7 +210,19 @@ type LandscapeBlock = {
   color: string
 }
 
-function PixelLandscape() {
+type PixelLandscapeProps = {
+  rotationSpeed?: number
+  floatSpeed?: number
+  rotationIntensity?: number
+  floatIntensity?: number
+}
+
+function PixelLandscape({
+  rotationSpeed = 0.18,
+  floatSpeed = 1.4,
+  rotationIntensity = 0.3,
+  floatIntensity = 0.7,
+}: PixelLandscapeProps) {
   const group = useRef<Group | null>(null)
 
   const blocks = useMemo<LandscapeBlock[]>(
@@ -209,7 +238,7 @@ function PixelLandscape() {
 
   useFrame((_, delta) => {
     if (group.current) {
-      group.current.rotation.y += delta * 0.18
+      group.current.rotation.y += delta * rotationSpeed
     }
   })
 
@@ -225,7 +254,7 @@ function PixelLandscape() {
           <meshStandardMaterial color={block.color} />
         </mesh>
       ))}
-      <Float speed={1.4} rotationIntensity={0.3} floatIntensity={0.7}>
+      <Float speed={floatSpeed} rotationIntensity={rotationIntensity} floatIntensity={floatIntensity}>
         <mesh position={[0, 1.4, 0]}>
           <boxGeometry args={[0.9, 0.9, 0.9]} />
           <meshStandardMaterial color="#ffe17d" emissive="#ff9a62" emissiveIntensity={0.45} />
