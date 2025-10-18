@@ -1,350 +1,210 @@
 "use client"
 
-import { Brain, Globe, Monitor, Zap, Sparkles, Star, Code, Rocket } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent } from "@/components/ui/card"
-import { motion, useInView, Variants } from "framer-motion"
 import { useRef } from "react"
+import { motion, type Variants, useInView } from "framer-motion"
+import { Brain, Globe, Monitor, Zap } from "lucide-react"
 import { useRouter } from "next/navigation"
+
+import { PixelButton, PixelPanel, PixelProgress, PixelTag } from "@/components/ui/pixel-primitives"
+
+const quests = [
+  {
+    id: "Quest 02",
+    icon: Zap,
+    title: "One-Click Deploy",
+    description: "From repository to live site in seconds. Zero configuration required for popular frameworks.",
+    xp: "+320 XP",
+    progress: 100,
+    reward: "Instant launch unlocked",
+  },
+  {
+    id: "Quest 03",
+    icon: Globe,
+    title: "Instant Preview Links",
+    description: "Shareable preview URLs for every deployment and pull request. Perfect for client reviews.",
+    xp: "+210 XP",
+    progress: 92,
+    reward: "Preview portals activated",
+  },
+  {
+    id: "Quest 04",
+    icon: Brain,
+    title: "Smart Build Detection",
+    description: "Automatically detects React, Vue, Angular, and other frameworks. Optimizes builds automatically.",
+    xp: "+260 XP",
+    progress: 95,
+    reward: "Auto-config perks equipped",
+  },
+  {
+    id: "Quest 05",
+    icon: Monitor,
+    title: "Live Deployment Logs",
+    description: "Real-time visibility into your deployment process with detailed build logs and error reporting.",
+    xp: "+280 XP",
+    progress: 98,
+    reward: "Diagnostics visor synced",
+  },
+]
+
+const headerVariants: Variants = {
+  hidden: { opacity: 0, y: 40 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.7,
+      ease: [0.25, 0.46, 0.45, 0.94],
+      staggerChildren: 0.12,
+    },
+  },
+}
+
+const cardVariants: Variants = {
+  hidden: { opacity: 0, y: 50, scale: 0.96 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      duration: 0.55,
+      ease: [0.25, 0.46, 0.45, 0.94],
+    },
+  },
+}
 
 export default function Features() {
   const ref = useRef(null)
   const router = useRouter()
   const isInView = useInView(ref, { once: true, margin: "-100px" })
 
-  const containerVariants:Variants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-        delayChildren: 0.3,
-      },
-    },
-  }
-
-  const itemVariants:Variants = {
-    hidden: { opacity: 0, y: 50, scale: 0.9 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: {
-        duration: 0.6,
-        ease: [0.25, 0.46, 0.45, 0.94],
-      },
-    },
-  }
-
-  const headerVariants:Variants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.8,
-        ease: [0.25, 0.46, 0.45, 0.94],
-      },
-    },
-  }
-
-  const features = [
-    {
-      icon: Zap,
-      title: "One-Click Deploy",
-      description: "From repository to live site in seconds. Zero configuration required for popular frameworks.",
-      gradient: "from-blue-500 to-blue-600",
-      hoverBorder: "hover:border-blue-200 dark:hover:border-blue-800",
-      glowColor: "blue",
-    },
-    {
-      icon: Globe,
-      title: "Instant Preview Links",
-      description: "Shareable preview URLs for every deployment and pull request. Perfect for client reviews.",
-      gradient: "from-green-500 to-green-600",
-      hoverBorder: "hover:border-green-200 dark:hover:border-green-800",
-      glowColor: "green",
-    },
-    {
-      icon: Brain,
-      title: "Smart Build Detection",
-      description: "Automatically detects React, Vue, Angular, and other frameworks. Optimizes builds automatically.",
-      gradient: "from-gray-500 to-gray-600",
-      hoverBorder: "hover:border-gray-200 dark:hover:border-gray-800",
-      glowColor: "gray",
-    },
-    {
-      icon: Monitor,
-      title: "Live Deployment Logs",
-      description: "Real-time visibility into your deployment process with detailed build logs and error reporting.",
-      gradient: "from-orange-500 to-orange-600",
-      hoverBorder: "hover:border-orange-200 dark:hover:border-orange-800",
-      glowColor: "orange",
-    },
-  ]
-
   return (
-    <section ref={ref} id="features" className="py-20 relative overflow-hidden">
-      {/* Animated Background Elements */}
-      <motion.div
-        className="absolute top-10 left-10 text-blue-500/10"
-        animate={{
-          y: [-20, 20, -20],
-          rotate: [0, 180, 360],
-        }}
-        transition={{
-          duration: 20,
-          repeat: Number.POSITIVE_INFINITY,
-          ease: "linear",
-        }}
-      >
-        <Code className="w-16 h-16" />
-      </motion.div>
-
-      <motion.div
-        className="absolute top-1/3 right-10 text-gray-500/10"
-        animate={{
-          y: [20, -20, 20],
-          rotate: [360, 180, 0],
-        }}
-        transition={{
-          duration: 25,
-          repeat: Number.POSITIVE_INFINITY,
-          ease: "linear",
-        }}
-      >
-        <Rocket className="w-12 h-12" />
-      </motion.div>
-
-      <motion.div
-        className="absolute bottom-20 left-1/4 text-green-500/10"
-        animate={{
-          x: [-10, 10, -10],
-          y: [-10, 10, -10],
-          rotate: [0, 90, 180, 270, 360],
-        }}
-        transition={{
-          duration: 30,
-          repeat: Number.POSITIVE_INFINITY,
-          ease: "easeInOut",
-        }}
-      >
-        <Sparkles className="w-14 h-14" />
-      </motion.div>
-
-      {/* Gradient Orbs */}
-      <motion.div
-        className="absolute top-1/4 right-1/3 w-64 h-64 bg-gradient-to-r from-blue-400/20 to-gray-600/20 rounded-full blur-3xl"
-        animate={{
-          scale: [1, 1.3, 1],
-          opacity: [0.2, 0.4, 0.2],
-        }}
-        transition={{
-          duration: 12,
-          repeat: Number.POSITIVE_INFINITY,
-          ease: "easeInOut",
-        }}
+    <section ref={ref} id="features" className="relative overflow-hidden">
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(34,22,63,0.05)_1px,transparent_1px),linear-gradient(rgba(34,22,63,0.05)_1px,transparent_1px)] bg-[size:18px_18px] opacity-70"
       />
-
-      <motion.div
-        className="absolute bottom-1/3 left-1/3 w-80 h-80 bg-gradient-to-r from-green-400/15 to-blue-600/15 rounded-full blur-3xl"
-        animate={{
-          scale: [1.2, 1, 1.2],
-          opacity: [0.15, 0.3, 0.15],
-        }}
-        transition={{
-          duration: 15,
-          repeat: Number.POSITIVE_INFINITY,
-          ease: "easeInOut",
-          delay: 3,
-        }}
-      />
-
-      <div className="container relative z-10">
+      <div className="absolute -right-24 top-16 h-40 w-40 border-[3px] border-[#1b1036] bg-[#98c8ff]/30 shadow-[6px_6px_0_0_rgba(27,16,54,0.25)]" />
+      <div className="container relative z-10 space-y-12 py-20">
         <motion.div
-          className="text-center mb-16"
+          className="mx-auto max-w-3xl space-y-4 text-center"
           variants={headerVariants}
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
         >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <Badge
-              variant="outline"
-              className="mb-4 px-4 py-2 backdrop-blur-sm bg-white/80 dark:bg-gray-800/80 border border-white/20 shadow-lg"
-            >
-              <motion.div
-                animate={{ rotate: [0, 360] }}
-                transition={{ duration: 1.5, ease: "linear" }}
-              >
-                <Star className="w-3 h-3 mr-1" />
-              </motion.div>
-              Features
-            </Badge>
+          <motion.div variants={headerVariants}>
+            <PixelTag tone="info" className="mx-auto px-4 py-[4px] text-[9px] tracking-[0.32em]">
+              Quest Log · Feature Drops
+            </PixelTag>
           </motion.div>
-
           <motion.h2
-            className="text-3xl md:text-4xl font-bold mb-4"
-            initial={{ opacity: 0, y: 30 }}
-            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
+            variants={headerVariants}
+            className="text-3xl font-black uppercase leading-tight tracking-[0.2em] text-[#1b1036] dark:text-[#f6ecff] md:text-4xl"
           >
-            Everything you need to deploy with{" "}
-            <motion.span
-              className="bg-gradient-to-r from-blue-600 via-gray-600 to-indigo-600 bg-clip-text text-transparent"
-              animate={{
-                backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
-              }}
-              transition={{
-                duration: 4,
-                repeat: Number.POSITIVE_INFINITY,
-                ease: "linear",
-              }}
-              style={{
-                background: "linear-gradient(90deg, #2563eb, #718096, #2563eb)",
-                backgroundSize: "200% 100%",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-            >
-              confidence
-            </motion.span>
+            Complete the Deployr quest log with battle-tested power-ups
           </motion.h2>
-
           <motion.p
-            className="text-lg text-muted-foreground max-w-2xl mx-auto"
-            initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
+            variants={headerVariants}
+            className="text-sm uppercase tracking-[0.28em] text-[#332756] dark:text-[#d4cfff] md:text-base"
           >
-            Powerful features that make frontend deployment simple, fast, and reliable for developers.
+            Powerful features that make frontend deployment simple, fast, and reliable for builders who like their releases with a side of nostalgia.
           </motion.p>
         </motion.div>
 
         <motion.div
-          className="grid md:grid-cols-2 lg:grid-cols-4 gap-6"
-          variants={containerVariants}
+          className="grid gap-6 md:grid-cols-2 lg:grid-cols-4"
+          variants={{ visible: { transition: { staggerChildren: 0.12 } }, hidden: {} }}
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
         >
-          {features.map((feature, index) => (
-            <motion.div key={index} variants={itemVariants}>
-              <Card
-                className={`group hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-2 ${feature.hoverBorder} relative overflow-hidden backdrop-blur-sm bg-white/80 dark:bg-gray-800/80`}
-              >
-                {/* Glow effect on hover */}
+          {quests.map((quest) => (
+            <motion.div key={quest.id} variants={cardVariants}>
+              <PixelPanel tone="ghost" padding="sm" className="flex h-full flex-col gap-4">
+                <div className="flex items-center justify-between">
+                  <PixelTag tone="neutral" className="px-2 py-[2px] text-[9px] tracking-[0.28em]">
+                    {quest.id}
+                  </PixelTag>
+                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#1b1036] dark:text-[#f6ecff]">
+                    {quest.xp}
+                  </span>
+                </div>
                 <motion.div
-                  className={`absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-20 transition-opacity duration-500 ${
-                    feature.glowColor === "blue"
-                      ? "from-blue-400/20 to-blue-600/20"
-                      : feature.glowColor === "green"
-                        ? "from-green-400/20 to-green-600/20"
-                        : feature.glowColor === "gray"
-                          ? "from-gray-400/20 to-gray-600/20"
-                          : "from-orange-400/20 to-orange-600/20"
-                  }`}
-                />
-
-                <CardContent className="p-6 relative z-10">
-                  <motion.div
-                    className={`w-12 h-12 bg-gradient-to-br ${feature.gradient} rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg`}
-                    whileHover={{
-                      x: [-2, 2, -2, 2, 0],
-                      y: [-2, 2, -2, 2, 0],
-                      scale: 1.15,
-                    }}
-                    transition={{ duration: 0.4 }}
+                  className="flex h-12 w-12 items-center justify-center"
+                  animate={{ y: [0, -6, 0] }}
+                  transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+                >
+                  <PixelPanel
+                    tone="accent"
+                    padding="xs"
+                    pattern={false}
+                    className="flex h-12 w-12 items-center justify-center"
                   >
-                    <motion.div
-                      animate={{
-                        y: [-1, 1, -1],
-                      }}
-                      transition={{
-                        duration: 3,
-                        repeat: Number.POSITIVE_INFINITY,
-                        ease: "easeInOut",
-                        delay: index * 0.5,
-                      }}
-                    >
-                      <feature.icon className="w-6 h-6 text-white" />
-                    </motion.div>
-                  </motion.div>
-
-                  <motion.h3
-                    className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors"
-                    whileHover={{ x: 5 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                  >
-                    {feature.title}
-                  </motion.h3>
-
-                  <motion.p
-                    className="text-muted-foreground text-sm leading-relaxed"
-                    initial={{ opacity: 0.8 }}
-                    whileHover={{ opacity: 1 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    {feature.description}
-                  </motion.p>
-
-                  {/* Animated border on hover */}
-                  <motion.div
-                    className="absolute inset-0 border-2 border-transparent rounded-lg"
-                    whileHover={{
-                      borderColor:
-                        feature.glowColor === "blue"
-                          ? "#3b82f6"
-                          : feature.glowColor === "green"
-                            ? "#10b981"
-                            : feature.glowColor === "gray"
-                              ? "#8b5cf6"
-                              : "#f97316",
-                      boxShadow: `0 0 20px ${
-                        feature.glowColor === "blue"
-                          ? "#3b82f620"
-                          : feature.glowColor === "green"
-                            ? "#10b98120"
-                            : feature.glowColor === "gray"
-                              ? "#8b5cf620"
-                              : "#f9731620"
-                      }`,
-                    }}
-                    transition={{ duration: 0.3 }}
-                  />
-                </CardContent>
-              </Card>
+                    <quest.icon className="h-6 w-6 text-[#23173f]" />
+                  </PixelPanel>
+                </motion.div>
+                <h3 className="text-lg font-black uppercase tracking-[0.2em] text-[#1b1036] dark:text-[#f6ecff]">
+                  {quest.title}
+                </h3>
+                <p className="flex-1 text-sm uppercase tracking-[0.26em] text-[#332756] dark:text-[#d4cfff]">
+                  {quest.description}
+                </p>
+                <PixelProgress value={quest.progress} label="Completion" />
+                <span className="text-[10px] font-black uppercase tracking-[0.28em] text-[#1b1036] dark:text-[#f6ecff]">
+                  Reward · {quest.reward}
+                </span>
+              </PixelPanel>
             </motion.div>
           ))}
         </motion.div>
 
-        {/* Bottom CTA Section */}
         <motion.div
-          className="text-center mt-16"
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-          transition={{ duration: 0.8, delay: 1.2 }}
+          className="mx-auto max-w-4xl"
+          initial={{ opacity: 0, y: 50 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+          transition={{ duration: 0.6, delay: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
         >
-          <motion.p
-            className="text-muted-foreground mb-4"
-            animate={{ opacity: [0.7, 1, 0.7] }}
-            transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY }}
-          >
-            Ready to experience the future of deployment?
-          </motion.p>
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Badge
-              variant="secondary"
-              onClick={()=>{router.push("/new")}}
-              className="px-6 py-2 text-sm cursor-pointer bg-gradient-to-r from-blue-500/10 to-gray-500/10 hover:from-blue-500/20 hover:to-gray-500/20 transition-all duration-300"
-            >
-              <motion.div animate={{ x: [0, 5, 0] }} transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}>
-                Get started for free →
-              </motion.div>
-            </Badge>
-          </motion.div>
+          <PixelPanel tone="terminal" padding="lg" pattern={false} className="space-y-6">
+            <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+              <div className="space-y-3 text-left md:max-w-lg">
+                <PixelTag tone="midnight" className="bg-[#0f2d2d] px-3 py-[4px] text-[9px] tracking-[0.28em] text-[#91f6d3]">
+                  Milestone reward
+                </PixelTag>
+                <h3 className="text-2xl font-black uppercase tracking-[0.2em] text-[#91f6d3]">
+                  Ready to experience the future of deployment?
+                </h3>
+                <p className="text-sm uppercase tracking-[0.26em] text-[#63dfbe]">
+                  Lock in your next quest line and ship with confidence across every build.
+                </p>
+              </div>
+              <div className="w-full md:w-72">
+                <PixelProgress value={92} label="Campaign progress" />
+              </div>
+            </div>
+            <div className="flex flex-col gap-3 text-[10px] uppercase tracking-[0.28em] text-[#63dfbe] md:flex-row md:items-center md:justify-between">
+              <span>⚙️ Framework auto-detection calibrated</span>
+              <span>🚀 Preview portals synced</span>
+              <span>🛡️ Guard rails ready</span>
+            </div>
+            <div className="flex flex-wrap gap-4">
+              <PixelButton
+                variant="secondary"
+                size="lg"
+                type="button"
+                className="normal-case tracking-[0.2em]"
+                onClick={() => router.push("/new")}
+              >
+                Launch next deployment
+              </PixelButton>
+              <PixelButton
+                variant="ghost"
+                size="lg"
+                type="button"
+                className="normal-case tracking-[0.2em]"
+                onClick={() => router.push("/projects")}
+              >
+                Review quest log
+              </PixelButton>
+            </div>
+          </PixelPanel>
         </motion.div>
       </div>
     </section>

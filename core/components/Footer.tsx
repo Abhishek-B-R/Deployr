@@ -1,50 +1,83 @@
-"use client";
-import { LinkedinIcon, Rocket } from "lucide-react";
-import { Button } from "./ui/button";
-import Image from "next/image";
+"use client"
+
+import Image from "next/image"
+import { LinkedinIcon, Rocket } from "lucide-react"
+
+import { PixelButton, PixelPanel, PixelTag } from "@/components/ui/pixel-primitives"
 
 export default function Footer() {
-    return (
-      <footer className="py-12 bg-white dark:bg-slate-900 text-black dark:text-white flex justify-center">
-        <div className="container">
-          <div className="flex flex-col md:flex-row items-center justify-between">
-            <div className="flex items-center space-x-2 mb-4 md:mb-0">
-              <div className="flex items-center justify-center w-8 h-8 bg-gradient-to-br from-blue-500 to-gray-600 rounded-lg">
-                <Rocket className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-xl font-bold">Deployr</span>
-              <div className="md:hidden flex justify-center gap-3"><Medias/></div>
-            </div>
-            <div className="flex items-center space-x-6 text-sm text-slate-900">
-              <div className="hidden md:flex md:justify-center gap-3"><Medias/></div>
-              <span className="dark:text-white">Made with ❤️ for developers</span>
+  const year = new Date().getFullYear()
+
+  return (
+    <footer className="relative border-t-[4px] border-[#09031a] bg-[#120822] text-[#f6ecff]">
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(255,225,125,0.05)_1px,transparent_1px),linear-gradient(rgba(255,225,125,0.05)_1px,transparent_1px)] bg-[size:22px_22px] opacity-60"
+      />
+      <div className="container relative z-10 space-y-10 py-12">
+        <div className="flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
+          <div className="flex items-center gap-4">
+            <PixelPanel tone="accent" padding="xs" pattern={false} className="flex h-12 w-12 items-center justify-center">
+              <Rocket className="h-7 w-7 text-[#23173f]" />
+            </PixelPanel>
+            <div className="space-y-2">
+              <h3 className="text-2xl font-black uppercase tracking-[0.35em] text-[#ffe17d]">Deployr</h3>
+              <PixelTag tone="midnight" className="bg-[#291f4a] px-2 py-[2px] text-[9px] tracking-[0.3em] text-[#ffe17d]">
+                Pixel Ops Studio
+              </PixelTag>
             </div>
           </div>
-          <div className="border-t border-slate-800 mt-8 pt-8 text-center">
-            <p className="text-slate-400 text-sm">
-              © {new Date().getFullYear()} Deployr. A side project by Abhishek BR
-            </p>
+          <div className="flex items-center gap-3">
+            <PixelButton
+              variant="icon"
+              size="square"
+              type="button"
+              className="normal-case tracking-normal"
+              onClick={() => {
+                window.open("https://www.linkedin.com/in/abhishek-b-r-b232ba2a2/", "_blank", "noopener,noreferrer")
+              }}
+            >
+              <LinkedinIcon className="h-5 w-5" />
+            </PixelButton>
+            <PixelButton
+              variant="icon"
+              size="square"
+              type="button"
+              className="normal-case tracking-normal"
+              onClick={() => {
+                window.open("https://x.com/AbhiCodes01", "_blank", "noopener,noreferrer")
+              }}
+            >
+              <Image src="/x.svg" alt="X logo" width={18} height={18} className="h-[18px] w-[18px]" />
+            </PixelButton>
           </div>
         </div>
-      </footer>
-    )
-};
 
-function Medias(){
-  return (
-    <>
-      <Button className="cursor-pointer bg-white  dark:bg-white text-black hover:bg-gray-300" onClick={() => {
-          window.open('https://www.linkedin.com/in/abhishek-b-r-b232ba2a2/', '_blank', 'noopener,noreferrer');
-          }
-        }>
-            <LinkedinIcon/>
-      </Button>
-      <Button className="cursor-pointer bg-white  dark:bg-white text-black hover:bg-gray-300" onClick={() => {
-            window.open('https://x.com/AbhiCodes01', '_blank', 'noopener,noreferrer');
-            }
-        }>
-            <Image src="/x.svg" alt="X Logo" width={20} height={20} className="inline-block" />
-      </Button>
-    </>
+        <PixelPanel tone="ghost" padding="sm" className="space-y-4 text-[#1b1036] dark:text-[#f6ecff]">
+          <div className="grid gap-3 text-[10px] font-black uppercase tracking-[0.28em] md:grid-cols-3">
+            <div className="flex items-center justify-between">
+              <span>Players online</span>
+              <span>128</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span>Deployments saved</span>
+              <span>2048</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span>Pixel mode</span>
+              <span>Enabled</span>
+            </div>
+          </div>
+          <PixelTag tone="neutral" className="inline-flex px-3 py-[3px] text-[9px] tracking-[0.3em] text-[#1b1036]">
+            Made with ❤️ for developers
+          </PixelTag>
+        </PixelPanel>
+
+        <PixelPanel tone="ghost" padding="sm" className="flex flex-col gap-2 text-[10px] font-black uppercase tracking-[0.28em] text-[#1b1036] dark:text-[#f6ecff] md:flex-row md:items-center md:justify-between">
+          <span>© {year} Deployr · A side project by Abhishek BR</span>
+          <span>Retro landing rebuild · v2.0</span>
+        </PixelPanel>
+      </div>
+    </footer>
   )
 }
