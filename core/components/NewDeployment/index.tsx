@@ -14,7 +14,7 @@ export default async function AddNew() {
   const session = await getServerSession(authOptions)
 
   return (
-    <div className="min-h-screen px-16 min-w-full bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800">
+    <div className="min-h-screen px-16 min-w-full bg-linear-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800">
       {/* Header */}
       <NavBar />
 
