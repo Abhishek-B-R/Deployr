@@ -44,12 +44,12 @@
 }
 
 @layer base {
-  * {
+  /* * {
     @apply border-neo-black outline-neo-black/50;
-  }
+  } */
   
   body {
-    @apply bg-[#F3F0E6] text-[#1A1A1A] antialiased;
+    @apply bg-neo-bg text-neo-black antialiased;
     font-family: "Space Grotesk", var(--font-geist-sans), sans-serif;
   }
   
@@ -177,4 +177,38 @@ html.lenis body {
 
 .lenis.lenis-scrolling iframe {
   pointer-events: none;
+}
+
+/* Neobrutalism Custom Scrollbar */
+.neo-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #1A1A1A #F3F0E6;
+}
+
+.neo-scrollbar::-webkit-scrollbar {
+  width: 14px;
+}
+
+.neo-scrollbar::-webkit-scrollbar-track {
+  background: #F3F0E6;
+  border-left: 3px solid #1A1A1A;
+  border-right: 1px solid #1A1A1A;
+}
+
+.neo-scrollbar::-webkit-scrollbar-thumb {
+  background: #1A1A1A;
+  border: 3px solid #F3F0E6;
+  box-shadow: 3px 0px 0px 0px rgba(0, 0, 0, 1);
+  min-height: 60px;
+}
+
+.neo-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #FFDE59;
+  border: 3px solid #1A1A1A;
+  box-shadow: 3px 0px 0px 0px rgba(0, 0, 0, 1);
+}
+
+.neo-scrollbar::-webkit-scrollbar-thumb:active {
+  background: #FF90E8;
+  border: 3px solid #1A1A1A;
 }

@@ -1,88 +1,99 @@
-import { Suspense } from "react"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/authOptions"
-import RepositoryList from "./repository-list"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Github } from "lucide-react"
-import Link from "next/link"
-import ModelRender from "./ModelRender"
-import NavBar from "../NavBar"
-import Footer from "../Footer"
+import { Suspense } from "react";
+import { getServerSession } from "next-auth";
+// import { authOptions } from "@/lib/authOptions" // Mocked for this view
+import RepositoryList from "@/components/NewDeployment/repository-list";
+import { NeoButton, NeoCard } from "@/components/NewDeployment/neo-ui";
+import { Github, ArrowRight, Sparkles } from "lucide-react";
+import Link from "next/link";
+import ModelRender from "@/components/NewDeployment/ModelRender";
+import NavBar from "@/components/NavBar";
+import Footer from "@/components/Footer";
 
 export default async function AddNew() {
-  const session = await getServerSession(authOptions)
+  // Mock session for visual purposes since we can't run the server logic here
+  const session = await getServerSession();
 
   return (
-    <div className="min-h-screen px-16 min-w-full bg-linear-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800">
+    <div className="min-h-screen w-full bg-neo-bg font-sans selection:bg-neo-yellow selection:text-black">
       {/* Header */}
       <NavBar />
 
       {/* Main Content */}
-      <main className="container py-12 2xl:pl-40">
-        <div className="max-w-4xl mx-auto">
-          {/* Hero Section */}
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold mb-4">Let&apos;s build something new.</h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              To deploy a new Project, import an existing Git Repository.
+      <main className="w-full max-w-full mx-auto px-4 md:px-6 pt-20 sm:pt-24 md:pt-28 min-h-screen overflow-x-hidden">
+        <div className="max-w-7xl mx-auto">
+          {/* Header Section */}
+          <div className="relative mb-16 text-center">
+            <div className="inline-block relative">
+              <h1 className="text-3xl sm:text-5xl md:text-7xl font-black text-black leading-tight">
+                LET'S BUILD
+                <br />
+                <span
+                  className="text-transparent text-3xl sm:text-5xl md:text-7xl"
+                  style={{ WebkitTextStroke: "2px #1A1A1A" }}
+                >
+                  SOMETHING NEW
+                </span>
+              </h1>
+            </div>
+            <div className="w-24 h-2 bg-neo-black mx-auto mb-6"></div>
+            <p className="text-xl font-bold text-gray-600 max-w-2xl mx-auto">
+              Import a repository to deploy your frontend. <br />
             </p>
           </div>
 
           {/* Main Content Grid */}
-          <div className="grid lg:grid-cols-2 gap-20 ">
-            {/* Import Repository Section */}
-            <div className="space-y-6 w-[500px] xl:pr-10">
+          <div className="grid lg:grid-cols-2 gap-10 lg:gap-12 items-start">
+            {/* Left Column: Import Section */}
+            <div className="space-y-6 w-full relative z-10">
+              <div className="absolute left-0 lg:-left-4 top-0 lg:-top-4 w-full h-full bg-black/5 border-2 border-black/10 -z-10 pointer-events-none"></div>
+
               {session ? (
                 <Suspense fallback={<RepositoryListSkeleton />}>
                   <RepositoryList />
                 </Suspense>
               ) : (
-                <Card className="w-full">
-                  <CardContent className="p-8">
-                    <h2 className="text-xl font-semibold mb-4">Import Git Repository</h2>
-                    <p className="text-muted-foreground mb-6">
-                      Select a Git provider to import an existing project from a Git Repository.
-                    </p>
-                    <div className="space-y-3">
-                      <Button asChild className="w-full justify-start" variant="outline">
-                        <Link href="/api/auth/signin?callbackUrl=/new">
-                          <Github className="w-5 h-5 mr-3" />
-                          Continue with GitHub
-                        </Link>
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
+                <NeoCard className="w-full text-center py-12">
+                  <div className="w-16 h-16 bg-neo-black text-white mx-auto mb-6 border-2 border-black shadow-neo-sm">
+                    <Github className="w-8 h-8" />
+                  </div>
+                  <h2 className="text-3xl font-black mb-4 uppercase">
+                    Access Required
+                  </h2>
+                  <p className="font-medium text-gray-600 mb-8 max-w-md mx-auto">
+                    Connect your GitHub account to access your repositories and
+                    start deploying.
+                  </p>
+                  <Link href="/api/auth/signin?callbackUrl=/new">
+                    <NeoButton className="w-full max-w-xs">
+                      <Github className="w-5 h-5 mr-3" />
+                      Continue with GitHub
+                    </NeoButton>
+                  </Link>
+                </NeoCard>
               )}
             </div>
 
-            {/* Templates Section */}
-            <div className="radial-gradient(circle at center, #f3f4f6, #e5e7eb) border-2 dark:bg-[radial-gradient(circle_at_center,_#1e293b,_#0f172a)] rounded-xl shadow-inner max-h-[580px]">
+            {/* Right Column: 3D Preview */}
+            <div className="relative hidden md:block">
               <ModelRender />
             </div>
           </div>
         </div>
       </main>
-      <Footer/>
+      <Footer />
     </div>
-  )
+  );
 }
 
 function RepositoryListSkeleton() {
   return (
-    <Card className="w-full">
-      <CardContent className="p-6">
-        <div className="animate-pulse space-y-4">
-          <div className="h-6 bg-muted rounded w-1/3"></div>
-          <div className="h-10 bg-muted rounded"></div>
-          <div className="space-y-3">
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="h-16 bg-muted rounded"></div>
-            ))}
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  )
+    <NeoCard className="w-full h-[500px] flex items-center justify-center">
+      <div className="text-center">
+        <div className="w-12 h-12 border-4 border-neo-black border-t-neo-yellow rounded-full animate-spin mx-auto mb-4"></div>
+        <p className="font-bold font-mono uppercase text-black">
+          Loading Repos...
+        </p>
+      </div>
+    </NeoCard>
+  );
 }

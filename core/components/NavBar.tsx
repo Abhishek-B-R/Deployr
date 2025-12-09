@@ -32,7 +32,7 @@ const Button = ({
 
   const variants: any = {
     primary:
-      "bg-neo-blue text-white border-2 border-neo-black shadow-neo-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] active:bg-blue-600",
+      "bg-neo-blue text-black border-2 border-neo-black shadow-neo-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] active:bg-blue-600",
     outline:
       "bg-white text-neo-black border-2 border-neo-black shadow-neo-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] hover:bg-gray-50",
     ghost:
@@ -98,8 +98,8 @@ function Header() {
             closeMobileMenu();
           }}
         >
-          <motion.div className="flex items-center justify-center w-10 h-10 bg-neo-blue border-2 border-neo-black shadow-neo-sm group-hover:rotate-12 transition-transform">
-            <Rocket className="w-6 h-6 text-white" />
+          <motion.div className="flex items-center justify-center w-10 h-10 bg-neo-yellow border-2 border-neo-black shadow-neo-sm group-hover:rotate-12 transition-transform">
+            <Rocket className="w-6 h-6 text-black" />
           </motion.div>
           <span className="text-2xl font-black tracking-tighter text-neo-black">
             Deployr
@@ -113,6 +113,7 @@ function Header() {
               size="sm"
               variant="primary"
               onClick={() => router.push("/projects")}
+              className="bg-neo-yellow"
             >
               Dashboard
             </Button>

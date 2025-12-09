@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { ArrowRight, Github, Zap } from "lucide-react";
+import { ArrowRight, CreditCard, DollarSign, Github, Zap } from "lucide-react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import FileSVG from "./SVG/FileSVG";
 import GithubSVG from "./SVG/Github";
@@ -169,19 +169,19 @@ export default function Hero({ isVisible }: { isVisible: boolean }) {
           <div className="mt-20 pt-8 border-t-2 border-dashed border-gray-400 flex flex-wrap justify-center gap-6 md:gap-12 text-sm font-bold opacity-100">
             <div className="flex items-center gap-2 group cursor-default">
               <div className="bg-neo-black text-white p-1.5 border border-black group-hover:bg-neo-pink group-hover:text-black transition-colors">
-                <Zap size={14} strokeWidth={3} />
+                <DollarSign size={14} strokeWidth={3} />
               </div>
               <span className="uppercase tracking-wide">Always Free</span>
             </div>
             <div className="flex items-center gap-2 group cursor-default">
               <div className="bg-neo-black text-white p-1.5 border border-black group-hover:bg-neo-blue group-hover:text-black transition-colors">
-                <Zap size={14} strokeWidth={3} />
+                <Github size={14} strokeWidth={3} />
               </div>
               <span className="uppercase tracking-wide">Open Source</span>
             </div>
             <div className="flex items-center gap-2 group cursor-default">
               <div className="bg-neo-black text-white p-1.5 border border-black group-hover:bg-neo-yellow group-hover:text-black transition-colors">
-                <Zap size={14} strokeWidth={3} />
+                <CreditCard size={14} strokeWidth={3} />
               </div>
               <span className="uppercase tracking-wide">No Credit Card</span>
             </div>
