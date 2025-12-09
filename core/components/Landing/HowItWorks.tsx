@@ -1,15 +1,15 @@
-"use client"
+"use client";
 
-import { Github, GitBranch, Rocket, Sparkles, Star, Zap } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { motion, useInView, Variants } from "framer-motion"
-import { useRef } from "react"
-import { useRouter } from "next/navigation"
+import { Github, GitBranch, Rocket, Sparkles, Star, Zap } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { motion, useInView, Variants } from "framer-motion";
+import { useRef } from "react";
+import { useRouter } from "next/navigation";
 
 export default function HowItWorks() {
-  const ref = useRef(null)
-  const router = useRouter()
-  const isInView = useInView(ref, { once: true, margin: "-100px" })
+  const ref = useRef(null);
+  const router = useRouter();
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -20,9 +20,9 @@ export default function HowItWorks() {
         delayChildren: 0.2,
       },
     },
-  }
+  };
 
-  const itemVariants:Variants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 60, scale: 0.8 },
     visible: {
       opacity: 1,
@@ -33,14 +33,15 @@ export default function HowItWorks() {
         ease: [0.25, 0.46, 0.45, 0.94],
       },
     },
-  }
+  };
 
   const steps = [
     {
       icon: Github,
       number: 1,
       title: "Connect Repository",
-      description: "Link your GitHub, GitLab, or Bitbucket repository containing your frontend project.",
+      description:
+        "Link your GitHub, GitLab, or Bitbucket repository containing your frontend project.",
       gradient: "from-blue-500 to-gray-600",
       glowColor: "blue",
     },
@@ -48,7 +49,8 @@ export default function HowItWorks() {
       icon: GitBranch,
       number: 2,
       title: "Auto-Configure Build",
-      description: "We detect your framework (React, Vue, Angular, etc.) and configure optimal build settings.",
+      description:
+        "We detect your framework (React, Vue, Angular, etc.) and configure optimal build settings.",
       gradient: "from-green-500 to-blue-600",
       glowColor: "green",
     },
@@ -56,14 +58,19 @@ export default function HowItWorks() {
       icon: Rocket,
       number: 3,
       title: "Deploy & Share",
-      description: "Your frontend goes live instantly with a custom URL ready to share with clients and users.",
+      description:
+        "Your frontend goes live instantly with a custom URL ready to share with clients and users.",
       gradient: "from-gray-500 to-pink-600",
       glowColor: "gray",
     },
-  ]
+  ];
 
   return (
-    <section ref={ref} id="how-it-works" className="py-20 bg-muted/30 relative overflow-hidden">
+    <section
+      ref={ref}
+      id="how-it-works"
+      className="py-20 bg-muted/30 relative overflow-hidden"
+    >
       {/* Animated Background Elements */}
       <motion.div
         className="absolute top-20 right-20 text-blue-500/10"
@@ -98,7 +105,7 @@ export default function HowItWorks() {
 
       {/* Gradient Orbs */}
       <motion.div
-        className="absolute top-1/3 left-1/4 w-72 h-72 bg-gradient-to-r from-gray-400/20 to-blue-600/20 rounded-full blur-3xl"
+        className="absolute top-1/3 left-1/4 w-72 h-72 bg-linear-to-r from-gray-400/20 to-blue-600/20 rounded-full blur-3xl"
         animate={{
           scale: [1, 1.4, 1],
           opacity: [0.2, 0.4, 0.2],
@@ -119,7 +126,9 @@ export default function HowItWorks() {
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
-            animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
+            animate={
+              isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }
+            }
             transition={{ duration: 0.6, delay: 0.2 }}
           >
             <Badge
@@ -144,7 +153,7 @@ export default function HowItWorks() {
           >
             Deploy in{" "}
             <motion.span
-              className="bg-gradient-to-r from-blue-600 via-gray-600 to-pink-600 bg-clip-text text-transparent"
+              className="bg-linear-to-r from-blue-600 via-gray-600 to-pink-600 bg-clip-text text-transparent"
               animate={{
                 backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
               }}
@@ -154,7 +163,8 @@ export default function HowItWorks() {
                 ease: "linear",
               }}
               style={{
-                background: "linear-gradient(90deg, #2563eb, #2563eb, #718096, #2563eb)",
+                background:
+                  "linear-gradient(90deg, #2563eb, #2563eb, #718096, #2563eb)",
                 backgroundSize: "200% 100%",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
@@ -170,7 +180,8 @@ export default function HowItWorks() {
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
             transition={{ duration: 0.8, delay: 0.6 }}
           >
-            Get your frontend project live in minutes with our streamlined deployment process.
+            Get your frontend project live in minutes with our streamlined
+            deployment process.
           </motion.p>
         </motion.div>
 
@@ -181,9 +192,13 @@ export default function HowItWorks() {
           animate={isInView ? "visible" : "hidden"}
         >
           {steps.map((step, index) => (
-            <motion.div key={index} className="text-center group" variants={itemVariants}>
+            <motion.div
+              key={index}
+              className="text-center group"
+              variants={itemVariants}
+            >
               <motion.div
-                className={`w-16 h-16 bg-gradient-to-br ${step.gradient} rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg relative`}
+                className={`w-16 h-16 bg-linear-to-br ${step.gradient} rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg relative`}
                 whileHover={{
                   scale: 1.15,
                   x: [-3, 3, -3, 3, 0],
@@ -197,8 +212,8 @@ export default function HowItWorks() {
                     step.glowColor === "blue"
                       ? "bg-blue-400/30"
                       : step.glowColor === "green"
-                        ? "bg-green-400/30"
-                        : "bg-gray-400/30"
+                      ? "bg-green-400/30"
+                      : "bg-gray-400/30"
                   } blur-xl`}
                   whileHover={{ scale: 1.5 }}
                 />
@@ -239,7 +254,7 @@ export default function HowItWorks() {
                 {/* Connecting line to next step */}
                 {index < steps.length - 1 && (
                   <motion.div
-                    className="absolute left-full top-1/2 w-8 h-0.5 bg-gradient-to-r from-primary/40 to-transparent hidden md:block"
+                    className="absolute left-full top-1/2 w-8 h-0.5 bg-linear-to-r from-primary/40 to-transparent hidden md:block"
                     initial={{ scaleX: 0 }}
                     animate={isInView ? { scaleX: 1 } : { scaleX: 0 }}
                     transition={{ duration: 0.8, delay: 0.8 + index * 0.3 }}
@@ -286,9 +301,12 @@ export default function HowItWorks() {
             <Badge
               variant="secondary"
               onClick={() => router.push("/new")}
-              className="px-6 py-2 text-sm cursor-pointer bg-gradient-to-r from-gray-500/10 to-pink-500/10 hover:from-gray-500/20 hover:to-pink-500/20 transition-all duration-300"
+              className="px-6 py-2 text-sm cursor-pointer bg-linear-to-r from-gray-500/10 to-pink-500/10 hover:from-gray-500/20 hover:to-pink-500/20 transition-all duration-300"
             >
-              <motion.div animate={{ x: [0, 5, 0] }} transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}>
+              <motion.div
+                animate={{ x: [0, 5, 0] }}
+                transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
+              >
                 Start deploying now →
               </motion.div>
             </Badge>
@@ -296,5 +314,5 @@ export default function HowItWorks() {
         </motion.div>
       </div>
     </section>
-  )
+  );
 }

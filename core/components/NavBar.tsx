@@ -1,26 +1,33 @@
-"use client"
+"use client";
 
-import { ChevronDown, GithubIcon, Rocket, Settings, Menu, X } from "lucide-react"
-import { ThemeToggle } from "./theme-toggle"
-import { Button } from "./ui/button"
-import { SessionProvider, signIn, useSession } from "next-auth/react"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
+import {
+  ChevronDown,
+  GithubIcon,
+  Rocket,
+  Settings,
+  Menu,
+  X,
+} from "lucide-react";
+import { ThemeToggle } from "./theme-toggle";
+import { Button } from "./ui/button";
+import { SessionProvider, signIn, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu"
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
-import { motion, AnimatePresence } from "framer-motion"
-import { useState } from "react"
+} from "./ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
 
 function Header() {
-  const session = useSession()
-  const router = useRouter()
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const session = useSession();
+  const router = useRouter();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const getInitials = (name: string) => {
     return name
@@ -28,21 +35,21 @@ function Header() {
       .map((n) => n[0])
       .join("")
       .toUpperCase()
-      .slice(0, 2)
-  }
+      .slice(0, 2);
+  };
 
   const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen)
-  }
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
 
   const closeMobileMenu = () => {
-    setIsMobileMenuOpen(false)
-  }
+    setIsMobileMenuOpen(false);
+  };
 
   return (
     <>
       <motion.header
-        className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:px-10"
+        className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 md:px-10"
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
@@ -52,20 +59,20 @@ function Header() {
           <motion.div
             className="flex items-center space-x-2 cursor-pointer"
             onClick={() => {
-              router.push("/")
-              closeMobileMenu()
+              router.push("/");
+              closeMobileMenu();
             }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
             <motion.div
-              className="flex items-center justify-center w-8 h-8 bg-gradient-to-br from-blue-500 to-gray-600 rounded-lg"
+              className="flex items-center justify-center w-8 h-8 bg-linear-to-br from-blue-500 to-gray-600 rounded-lg"
               animate={{ rotate: [0, 360] }}
               transition={{ duration: 1, ease: "linear" }}
             >
               <Rocket className="w-5 h-5 text-white" />
             </motion.div>
-            <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-gray-600 bg-clip-text text-transparent">
+            <span className="text-xl font-bold bg-linear-to-r from-blue-600 to-gray-600 bg-clip-text text-transparent">
               Deployr
             </span>
           </motion.div>
@@ -75,7 +82,7 @@ function Header() {
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button
                 size="sm"
-                className="cursor-pointer bg-gradient-to-r text-white from-blue-600 to-gray-600 hover:from-blue-700 hover:to-gray-700"
+                className="cursor-pointer bg-linear-to-r text-white from-blue-600 to-gray-600 hover:from-blue-700 hover:to-gray-700"
                 onClick={() => router.push("/projects")}
               >
                 Dashboard
@@ -84,7 +91,10 @@ function Header() {
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild className="cursor-pointer">
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
                   <Button size="sm" variant="outline">
                     Add New... <ChevronDown className="ml-1 w-4 h-4" />
                   </Button>
@@ -92,7 +102,11 @@ function Header() {
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuItem asChild onClick={() => router.push("/new")}>
-                  <Button variant="ghost" size="sm" className="w-full justify-start cursor-pointer">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full justify-start cursor-pointer"
+                  >
                     Project
                   </Button>
                 </DropdownMenuItem>
@@ -100,10 +114,18 @@ function Header() {
                   asChild
                   className="cursor-pointer"
                   onClick={() => {
-                    window.open("https://github.com/new", "_blank", "noopener,noreferrer")
+                    window.open(
+                      "https://github.com/new",
+                      "_blank",
+                      "noopener,noreferrer"
+                    );
                   }}
                 >
-                  <Button variant="ghost" size="sm" className="w-full justify-start">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full justify-start"
+                  >
                     Repository
                   </Button>
                 </DropdownMenuItem>
@@ -116,7 +138,11 @@ function Header() {
               <Button
                 className="bg-white dark:bg-black text-black dark:text-white hover:bg-gray-300 cursor-pointer"
                 onClick={() => {
-                  window.open("https://www.github.com/Abhishek-B-R/Deployr", "_blank", "noopener,noreferrer")
+                  window.open(
+                    "https://www.github.com/Abhishek-B-R/Deployr",
+                    "_blank",
+                    "noopener,noreferrer"
+                  );
                 }}
               >
                 <GithubIcon className="w-4 h-4" />
@@ -128,21 +154,42 @@ function Header() {
                 {session ? (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                        <Button variant="ghost" className="relative h-8 w-8 rounded-full cursor-pointer">
+                      <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <Button
+                          variant="ghost"
+                          className="relative h-8 w-8 rounded-full cursor-pointer"
+                        >
                           <Avatar className="h-8 w-8">
-                            <AvatarImage src={session.data.user?.image || ""} alt={session.data.user?.name || ""} />
+                            <AvatarImage
+                              src={session.data.user?.image || ""}
+                              alt={session.data.user?.name || ""}
+                            />
                             <AvatarFallback>
-                              {getInitials(session.data.user?.name || session.data.user?.email || "U")}
+                              {getInitials(
+                                session.data.user?.name ||
+                                  session.data.user?.email ||
+                                  "U"
+                              )}
                             </AvatarFallback>
                           </Avatar>
                         </Button>
                       </motion.div>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-56" align="end" forceMount>
+                    <DropdownMenuContent
+                      className="w-56"
+                      align="end"
+                      forceMount
+                    >
                       <div className="flex items-center justify-start gap-2 p-2">
                         <div className="flex flex-col space-y-1 leading-none">
-                          {session.data.user?.name && <p className="font-medium">{session.data.user?.name}</p>}
+                          {session.data.user?.name && (
+                            <p className="font-medium">
+                              {session.data.user?.name}
+                            </p>
+                          )}
                           {session.data.user?.email && (
                             <p className="w-[200px] truncate text-sm text-muted-foreground">
                               {session.data.user?.email}
@@ -158,7 +205,10 @@ function Header() {
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem className="cursor-pointer" onClick={() => router.push("/api/auth/signout")}>
+                      <DropdownMenuItem
+                        className="cursor-pointer"
+                        onClick={() => router.push("/api/auth/signout")}
+                      >
                         Sign out
                       </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -170,8 +220,15 @@ function Header() {
                 )}
               </div>
             ) : (
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button variant="outline" size="sm" onClick={() => router.push("/signin")}>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => router.push("/signin")}
+                >
                   Sign In
                 </Button>
               </motion.div>
@@ -179,8 +236,17 @@ function Header() {
           </nav>
 
           {/* Mobile Menu Toggle */}
-          <motion.div className="md:hidden" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Button variant="ghost" size="icon" onClick={toggleMobileMenu} className="relative z-50">
+          <motion.div
+            className="md:hidden"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleMobileMenu}
+              className="relative z-50"
+            >
               <AnimatePresence mode="wait">
                 {isMobileMenuOpen ? (
                   <motion.div
@@ -224,7 +290,7 @@ function Header() {
 
             {/* Mobile Menu */}
             <motion.div
-              className="fixed top-16 left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/90 border-b shadow-lg z-40 md:hidden"
+              className="fixed top-16 left-0 right-0 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/90 border-b shadow-lg z-40 md:hidden"
               initial={{ y: -100, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: -100, opacity: 0 }}
@@ -253,10 +319,10 @@ function Header() {
                   }}
                 >
                   <Button
-                    className="w-full justify-start bg-gradient-to-r from-blue-600 to-gray-600 hover:from-blue-700 hover:to-gray-700 text-white"
+                    className="w-full justify-start bg-linear-to-r from-blue-600 to-gray-600 hover:from-blue-700 hover:to-gray-700 text-white"
                     onClick={() => {
-                      router.push("/projects")
-                      closeMobileMenu()
+                      router.push("/projects");
+                      closeMobileMenu();
                     }}
                   >
                     Dashboard
@@ -271,13 +337,15 @@ function Header() {
                     visible: { opacity: 1, x: 0 },
                   }}
                 >
-                  <p className="text-sm font-medium text-muted-foreground px-2">Add New</p>
+                  <p className="text-sm font-medium text-muted-foreground px-2">
+                    Add New
+                  </p>
                   <Button
                     variant="outline"
                     className="w-full justify-start bg-transparent"
                     onClick={() => {
-                      router.push("/new")
-                      closeMobileMenu()
+                      router.push("/new");
+                      closeMobileMenu();
                     }}
                   >
                     Project
@@ -286,8 +354,12 @@ function Header() {
                     variant="outline"
                     className="w-full justify-start bg-transparent"
                     onClick={() => {
-                      window.open("https://github.com/new", "_blank", "noopener,noreferrer")
-                      closeMobileMenu()
+                      window.open(
+                        "https://github.com/new",
+                        "_blank",
+                        "noopener,noreferrer"
+                      );
+                      closeMobileMenu();
                     }}
                   >
                     Repository
@@ -317,8 +389,12 @@ function Header() {
                     variant="outline"
                     className="w-full justify-start bg-transparent"
                     onClick={() => {
-                      window.open("https://www.github.com/Abhishek-B-R/Deployr", "_blank", "noopener,noreferrer")
-                      closeMobileMenu()
+                      window.open(
+                        "https://www.github.com/Abhishek-B-R/Deployr",
+                        "_blank",
+                        "noopener,noreferrer"
+                      );
+                      closeMobileMenu();
                     }}
                   >
                     <GithubIcon className="w-4 h-4 mr-2" />
@@ -339,15 +415,28 @@ function Header() {
                       {/* User Info */}
                       <div className="flex items-center space-x-3 px-2">
                         <Avatar className="h-8 w-8">
-                          <AvatarImage src={session.data?.user?.image || ""} alt={session.data?.user?.name || ""} />
+                          <AvatarImage
+                            src={session.data?.user?.image || ""}
+                            alt={session.data?.user?.name || ""}
+                          />
                           <AvatarFallback>
-                            {getInitials(session.data?.user?.name || session.data?.user?.email || "U")}
+                            {getInitials(
+                              session.data?.user?.name ||
+                                session.data?.user?.email ||
+                                "U"
+                            )}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col space-y-1 leading-none">
-                          {session.data?.user?.name && <p className="font-medium text-sm">{session.data.user.name}</p>}
+                          {session.data?.user?.name && (
+                            <p className="font-medium text-sm">
+                              {session.data.user.name}
+                            </p>
+                          )}
                           {session.data?.user?.email && (
-                            <p className="truncate text-xs text-muted-foreground">{session.data.user.email}</p>
+                            <p className="truncate text-xs text-muted-foreground">
+                              {session.data.user.email}
+                            </p>
                           )}
                         </div>
                       </div>
@@ -358,8 +447,8 @@ function Header() {
                           variant="outline"
                           className="w-full justify-start bg-transparent"
                           onClick={() => {
-                            router.push("/settings")
-                            closeMobileMenu()
+                            router.push("/settings");
+                            closeMobileMenu();
                           }}
                         >
                           <Settings className="mr-2 h-4 w-4" />
@@ -369,8 +458,8 @@ function Header() {
                           variant="outline"
                           className="w-full justify-start bg-transparent"
                           onClick={() => {
-                            router.push("/api/auth/signout")
-                            closeMobileMenu()
+                            router.push("/api/auth/signout");
+                            closeMobileMenu();
                           }}
                         >
                           Sign out
@@ -381,8 +470,8 @@ function Header() {
                     <Button
                       className="w-full"
                       onClick={() => {
-                        signIn("github")
-                        closeMobileMenu()
+                        signIn("github");
+                        closeMobileMenu();
                       }}
                     >
                       Sign In with GitHub
@@ -395,7 +484,7 @@ function Header() {
         )}
       </AnimatePresence>
     </>
-  )
+  );
 }
 
 export default function NavBar() {
@@ -403,5 +492,5 @@ export default function NavBar() {
     <SessionProvider>
       <Header />
     </SessionProvider>
-  )
+  );
 }

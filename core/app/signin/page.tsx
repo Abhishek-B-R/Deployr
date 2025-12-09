@@ -1,6 +1,6 @@
-"use client"
-import { Suspense } from "react"
-import SignInForm from "@/components/signin-form"
+"use client";
+import { Suspense } from "react";
+import SignInForm from "@/components/signin-form";
 
 function SignInPageSkeleton() {
   return (
@@ -44,12 +44,12 @@ function SignInPageSkeleton() {
         <div className="h-12 w-full bg-muted rounded animate-pulse" />
       </div>
     </div>
-  )
+  );
 }
 
 export default function SignInPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800 p-4">
       <Suspense fallback={<SignInPageSkeleton />}>
         <SignInForm />
       </Suspense>
@@ -60,5 +60,5 @@ export default function SignInPage() {
         <div className="absolute -bottom-40 -left-32 h-80 w-80 rounded-full bg-secondary/5 blur-3xl" />
       </div>
     </div>
-  )
+  );
 }

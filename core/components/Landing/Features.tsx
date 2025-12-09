@@ -1,18 +1,27 @@
-"use client"
+"use client";
 
-import { Brain, Globe, Monitor, Zap, Sparkles, Star, Code, Rocket } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent } from "@/components/ui/card"
-import { motion, useInView, Variants } from "framer-motion"
-import { useRef } from "react"
-import { useRouter } from "next/navigation"
+import {
+  Brain,
+  Globe,
+  Monitor,
+  Zap,
+  Sparkles,
+  Star,
+  Code,
+  Rocket,
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { motion, useInView, Variants } from "framer-motion";
+import { useRef } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Features() {
-  const ref = useRef(null)
-  const router = useRouter()
-  const isInView = useInView(ref, { once: true, margin: "-100px" })
+  const ref = useRef(null);
+  const router = useRouter();
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
 
-  const containerVariants:Variants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -21,9 +30,9 @@ export default function Features() {
         delayChildren: 0.3,
       },
     },
-  }
+  };
 
-  const itemVariants:Variants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 50, scale: 0.9 },
     visible: {
       opacity: 1,
@@ -34,9 +43,9 @@ export default function Features() {
         ease: [0.25, 0.46, 0.45, 0.94],
       },
     },
-  }
+  };
 
-  const headerVariants:Variants = {
+  const headerVariants: Variants = {
     hidden: { opacity: 0, y: 30 },
     visible: {
       opacity: 1,
@@ -46,13 +55,14 @@ export default function Features() {
         ease: [0.25, 0.46, 0.45, 0.94],
       },
     },
-  }
+  };
 
   const features = [
     {
       icon: Zap,
       title: "One-Click Deploy",
-      description: "From repository to live site in seconds. Zero configuration required for popular frameworks.",
+      description:
+        "From repository to live site in seconds. Zero configuration required for popular frameworks.",
       gradient: "from-blue-500 to-blue-600",
       hoverBorder: "hover:border-blue-200 dark:hover:border-blue-800",
       glowColor: "blue",
@@ -60,7 +70,8 @@ export default function Features() {
     {
       icon: Globe,
       title: "Instant Preview Links",
-      description: "Shareable preview URLs for every deployment and pull request. Perfect for client reviews.",
+      description:
+        "Shareable preview URLs for every deployment and pull request. Perfect for client reviews.",
       gradient: "from-green-500 to-green-600",
       hoverBorder: "hover:border-green-200 dark:hover:border-green-800",
       glowColor: "green",
@@ -68,7 +79,8 @@ export default function Features() {
     {
       icon: Brain,
       title: "Smart Build Detection",
-      description: "Automatically detects React, Vue, Angular, and other frameworks. Optimizes builds automatically.",
+      description:
+        "Automatically detects React, Vue, Angular, and other frameworks. Optimizes builds automatically.",
       gradient: "from-gray-500 to-gray-600",
       hoverBorder: "hover:border-gray-200 dark:hover:border-gray-800",
       glowColor: "gray",
@@ -76,12 +88,13 @@ export default function Features() {
     {
       icon: Monitor,
       title: "Live Deployment Logs",
-      description: "Real-time visibility into your deployment process with detailed build logs and error reporting.",
+      description:
+        "Real-time visibility into your deployment process with detailed build logs and error reporting.",
       gradient: "from-orange-500 to-orange-600",
       hoverBorder: "hover:border-orange-200 dark:hover:border-orange-800",
       glowColor: "orange",
     },
-  ]
+  ];
 
   return (
     <section ref={ref} id="features" className="py-20 relative overflow-hidden">
@@ -134,7 +147,7 @@ export default function Features() {
 
       {/* Gradient Orbs */}
       <motion.div
-        className="absolute top-1/4 right-1/3 w-64 h-64 bg-gradient-to-r from-blue-400/20 to-gray-600/20 rounded-full blur-3xl"
+        className="absolute top-1/4 right-1/3 w-64 h-64 bg-linear-to-r from-blue-400/20 to-gray-600/20 rounded-full blur-3xl"
         animate={{
           scale: [1, 1.3, 1],
           opacity: [0.2, 0.4, 0.2],
@@ -147,7 +160,7 @@ export default function Features() {
       />
 
       <motion.div
-        className="absolute bottom-1/3 left-1/3 w-80 h-80 bg-gradient-to-r from-green-400/15 to-blue-600/15 rounded-full blur-3xl"
+        className="absolute bottom-1/3 left-1/3 w-80 h-80 bg-linear-to-r from-green-400/15 to-blue-600/15 rounded-full blur-3xl"
         animate={{
           scale: [1.2, 1, 1.2],
           opacity: [0.15, 0.3, 0.15],
@@ -169,7 +182,9 @@ export default function Features() {
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
-            animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
+            animate={
+              isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }
+            }
             transition={{ duration: 0.6, delay: 0.2 }}
           >
             <Badge
@@ -194,7 +209,7 @@ export default function Features() {
           >
             Everything you need to deploy with{" "}
             <motion.span
-              className="bg-gradient-to-r from-blue-600 via-gray-600 to-indigo-600 bg-clip-text text-transparent"
+              className="bg-linear-to-r from-blue-600 via-gray-600 to-indigo-600 bg-clip-text text-transparent"
               animate={{
                 backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
               }}
@@ -220,7 +235,8 @@ export default function Features() {
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
             transition={{ duration: 0.8, delay: 0.6 }}
           >
-            Powerful features that make frontend deployment simple, fast, and reliable for developers.
+            Powerful features that make frontend deployment simple, fast, and
+            reliable for developers.
           </motion.p>
         </motion.div>
 
@@ -237,20 +253,20 @@ export default function Features() {
               >
                 {/* Glow effect on hover */}
                 <motion.div
-                  className={`absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-20 transition-opacity duration-500 ${
+                  className={`absolute inset-0 bg-linear-to-r opacity-0 group-hover:opacity-20 transition-opacity duration-500 ${
                     feature.glowColor === "blue"
                       ? "from-blue-400/20 to-blue-600/20"
                       : feature.glowColor === "green"
-                        ? "from-green-400/20 to-green-600/20"
-                        : feature.glowColor === "gray"
-                          ? "from-gray-400/20 to-gray-600/20"
-                          : "from-orange-400/20 to-orange-600/20"
+                      ? "from-green-400/20 to-green-600/20"
+                      : feature.glowColor === "gray"
+                      ? "from-gray-400/20 to-gray-600/20"
+                      : "from-orange-400/20 to-orange-600/20"
                   }`}
                 />
 
                 <CardContent className="p-6 relative z-10">
                   <motion.div
-                    className={`w-12 h-12 bg-gradient-to-br ${feature.gradient} rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg`}
+                    className={`w-12 h-12 bg-linear-to-br ${feature.gradient} rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg`}
                     whileHover={{
                       x: [-2, 2, -2, 2, 0],
                       y: [-2, 2, -2, 2, 0],
@@ -298,18 +314,18 @@ export default function Features() {
                         feature.glowColor === "blue"
                           ? "#3b82f6"
                           : feature.glowColor === "green"
-                            ? "#10b981"
-                            : feature.glowColor === "gray"
-                              ? "#8b5cf6"
-                              : "#f97316",
+                          ? "#10b981"
+                          : feature.glowColor === "gray"
+                          ? "#8b5cf6"
+                          : "#f97316",
                       boxShadow: `0 0 20px ${
                         feature.glowColor === "blue"
                           ? "#3b82f620"
                           : feature.glowColor === "green"
-                            ? "#10b98120"
-                            : feature.glowColor === "gray"
-                              ? "#8b5cf620"
-                              : "#f9731620"
+                          ? "#10b98120"
+                          : feature.glowColor === "gray"
+                          ? "#8b5cf620"
+                          : "#f9731620"
                       }`,
                     }}
                     transition={{ duration: 0.3 }}
@@ -337,10 +353,15 @@ export default function Features() {
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Badge
               variant="secondary"
-              onClick={()=>{router.push("/new")}}
-              className="px-6 py-2 text-sm cursor-pointer bg-gradient-to-r from-blue-500/10 to-gray-500/10 hover:from-blue-500/20 hover:to-gray-500/20 transition-all duration-300"
+              onClick={() => {
+                router.push("/new");
+              }}
+              className="px-6 py-2 text-sm cursor-pointer bg-linear-to-r from-blue-500/10 to-gray-500/10 hover:from-blue-500/20 hover:to-gray-500/20 transition-all duration-300"
             >
-              <motion.div animate={{ x: [0, 5, 0] }} transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}>
+              <motion.div
+                animate={{ x: [0, 5, 0] }}
+                transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
+              >
                 Get started for free →
               </motion.div>
             </Badge>
@@ -348,5 +369,5 @@ export default function Features() {
         </motion.div>
       </div>
     </section>
-  )
+  );
 }

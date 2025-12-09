@@ -1,12 +1,18 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Globe,
   Github,
@@ -24,101 +30,129 @@ import {
   XCircle,
   CheckIcon,
   Ban,
-} from "lucide-react"
-import { getTimeAgo } from "@/lib/utils"
-import { ProjectLogs } from "@/components/ProjectOverview/project-logs"
-import NavBar from "../NavBar"
-import Footer from "../Footer"
+} from "lucide-react";
+import { getTimeAgo } from "@/lib/utils";
+import { ProjectLogs } from "@/components/ProjectOverview/project-logs";
+import NavBar from "../NavBar";
+import Footer from "../Footer";
 
 interface ProjectOverviewProps {
   project: {
-    id: string
-    name: string
-    repo_name: string | null
-    repo_url: string | null
-    branch: string | null
-    slug: string
-    status: string
-    logs: string | null
-    createdAt: Date
-    updatedAt: Date
-    views: number
-    size: number | null
-    private: boolean
-    envVars: Array<{ key: string; value: string }>
+    id: string;
+    name: string;
+    repo_name: string | null;
+    repo_url: string | null;
+    branch: string | null;
+    slug: string;
+    status: string;
+    logs: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+    views: number;
+    size: number | null;
+    private: boolean;
+    envVars: Array<{ key: string; value: string }>;
     user: {
-      name: string | null
-      email: string
-    }
-  }
+      name: string | null;
+      email: string;
+    };
+  };
 }
 
 const statusConfig = {
-  PENDING: { color: "bg-yellow-500", icon: Clock, variant: "secondary" as const },
-  BUILDING: { color: "bg-blue-500", icon: RefreshCw, variant: "default" as const },
-  DEPLOYED: { color: "bg-green-500", icon: CheckCircle, variant: "default" as const },
-  FAILED: { color: "bg-red-500", icon: XCircle, variant: "destructive" as const },
-}
+  PENDING: {
+    color: "bg-yellow-500",
+    icon: Clock,
+    variant: "secondary" as const,
+  },
+  BUILDING: {
+    color: "bg-blue-500",
+    icon: RefreshCw,
+    variant: "default" as const,
+  },
+  DEPLOYED: {
+    color: "bg-green-500",
+    icon: CheckCircle,
+    variant: "default" as const,
+  },
+  FAILED: {
+    color: "bg-red-500",
+    icon: XCircle,
+    variant: "destructive" as const,
+  },
+};
 
-export function ProjectOverview({ project: initialProject }: ProjectOverviewProps) {
-  const [project, setProject] = useState(initialProject)
-  const [copied, setCopied] = useState(false)
-  const [activeTab, setActiveTab] = useState("overview")
-  const [redeploy, setRedeploy] = useState(false)
+export function ProjectOverview({
+  project: initialProject,
+}: ProjectOverviewProps) {
+  const [project, setProject] = useState(initialProject);
+  const [copied, setCopied] = useState(false);
+  const [activeTab, setActiveTab] = useState("overview");
+  const [redeploy, setRedeploy] = useState(false);
 
-  const status = statusConfig[project.status as keyof typeof statusConfig] || statusConfig.PENDING
-  const StatusIcon = status.icon
-  const deploymentUrl = `https://${project.slug}.deployr.live`
+  const status =
+    statusConfig[project.status as keyof typeof statusConfig] ||
+    statusConfig.PENDING;
+  const StatusIcon = status.icon;
+  const deploymentUrl = `https://${project.slug}.deployr.live`;
   const isLive = project.status === "BUILDING";
 
   // Poll for status updates if building
   useEffect(() => {
     if (project.status === "BUILDING" || project.status === "PENDING") {
-      setActiveTab("deployments")
+      setActiveTab("deployments");
       const interval = setInterval(async () => {
         try {
-          const response = await fetch(`/api/deployments/${project.id}`)
+          const response = await fetch(`/api/deployments/${project.id}`);
           if (response.ok) {
-            const updated = await response.json()
-            setProject(updated)
+            const updated = await response.json();
+            setProject(updated);
 
-            if (updated.status === "BUILD_SUCCESS" || updated.status === "FAILED") {
-              clearInterval(interval)
+            if (
+              updated.status === "BUILD_SUCCESS" ||
+              updated.status === "FAILED"
+            ) {
+              clearInterval(interval);
             }
           }
         } catch (error) {
-          console.error("Failed to fetch project status:", error)
+          console.error("Failed to fetch project status:", error);
         }
-      }, 5000)
+      }, 5000);
 
-      return () => clearInterval(interval)
+      return () => clearInterval(interval);
     }
-  }, [project.status, project.id])
+  }, [project.status, project.id]);
 
   const copyToClipboard = async (text: string) => {
-    await navigator.clipboard.writeText(text)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
+    await navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const formatBytes = (bytes: number) => {
-    if (bytes === 0) return "0 Bytes"
-    const k = 1024
-    const sizes = ["Bytes", "KB", "MB", "GB"]
-    const i = Math.floor(Math.log(bytes) / Math.log(k))
-    return Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
-  }
+    if (bytes === 0) return "0 Bytes";
+    const k = 1024;
+    const sizes = ["Bytes", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return (
+      Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
+    );
+  };
 
-    // Update the handleDeploy function to use selectedFramework
+  // Update the handleDeploy function to use selectedFramework
   const handleRedeploy = async () => {
-    setRedeploy(true)
+    setRedeploy(true);
     try {
       const deploymentData = {
-        repository: project.repo_url?.split("/")[3]+"/"+project.repo_url?.split("/")[4],
+        repository:
+          project.repo_url?.split("/")[3] +
+          "/" +
+          project.repo_url?.split("/")[4],
         branch: project.branch,
-        projectName: project.name
-      }
-      console.log(deploymentData)
+        projectName: project.name,
+      };
+      console.log(deploymentData);
 
       const response = await fetch("/api/redeploy", {
         method: "POST",
@@ -126,25 +160,25 @@ export function ProjectOverview({ project: initialProject }: ProjectOverviewProp
           "Content-Type": "application/json",
         },
         body: JSON.stringify(deploymentData),
-      })
+      });
 
-      const result = await response.json()
+      const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error || "Deployment failed")
+        throw new Error(result.error || "Deployment failed");
       }
     } catch (err) {
-      console.error("Deployment error:", err)
-    } finally{
-      setRedeploy(false)
-      setActiveTab("deployments")
+      console.error("Deployment error:", err);
+    } finally {
+      setRedeploy(false);
+      setActiveTab("deployments");
     }
-  }
+  };
 
   return (
-    <div className="min-h-screen px-16 bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800">
+    <div className="min-h-screen px-16 bg-linear-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800">
       {/* Header */}
-      <NavBar/>
+      <NavBar />
 
       {/* Main Content */}
       <main className="container py-8 min-h-[750px] 2xl:pl-46 pt-20">
@@ -155,12 +189,19 @@ export function ProjectOverview({ project: initialProject }: ProjectOverviewProp
               <CardContent className="flex items-center space-x-3 p-4">
                 <XCircle className="w-5 h-5 text-red-500" />
                 <div>
-                  <p className="font-medium text-red-900 dark:text-red-100">Deployment Failed</p>
+                  <p className="font-medium text-red-900 dark:text-red-100">
+                    Deployment Failed
+                  </p>
                   <p className="text-sm text-red-700 dark:text-red-300">
-                    There was an error deploying your project. Check the logs below for details.
+                    There was an error deploying your project. Check the logs
+                    below for details.
                   </p>
                 </div>
-                <Button variant="outline" size="sm" className="ml-auto bg-transparent">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="ml-auto bg-transparent"
+                >
                   Retry Deployment
                 </Button>
               </CardContent>
@@ -172,7 +213,9 @@ export function ProjectOverview({ project: initialProject }: ProjectOverviewProp
               <CardContent className="flex items-center space-x-3 p-4">
                 <RefreshCw className="w-5 h-5 text-blue-500 animate-spin" />
                 <div>
-                  <p className="font-medium text-blue-900 dark:text-blue-100">Deployment in Progress</p>
+                  <p className="font-medium text-blue-900 dark:text-blue-100">
+                    Deployment in Progress
+                  </p>
                   <p className="text-sm text-blue-700 dark:text-blue-300">
                     Your project is currently being built and deployed.
                   </p>
@@ -189,7 +232,9 @@ export function ProjectOverview({ project: initialProject }: ProjectOverviewProp
                   <Globe className="w-5 h-5 text-blue-500" />
                   <div className="space-y-1">
                     <p className="text-sm font-medium leading-none">Domain</p>
-                    <p className="text-sm text-muted-foreground">{project.slug}.deployr.live</p>
+                    <p className="text-sm text-muted-foreground">
+                      {project.slug}.deployr.live
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -201,7 +246,9 @@ export function ProjectOverview({ project: initialProject }: ProjectOverviewProp
                   <Eye className="w-5 h-5 text-green-500" />
                   <div className="space-y-1">
                     <p className="text-sm font-medium leading-none">Views</p>
-                    <p className="text-sm text-muted-foreground">{project.views.toLocaleString()}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {project.views.toLocaleString()}
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -212,8 +259,15 @@ export function ProjectOverview({ project: initialProject }: ProjectOverviewProp
                 <div className="flex items-center space-x-2">
                   <Activity className="w-5 h-5 text-gray-500" />
                   <div className="space-y-1">
-                    <p className="text-sm font-medium leading-none">Last Updated</p>
-                    <p className="text-sm text-muted-foreground" suppressHydrationWarning>{getTimeAgo(project.updatedAt)}</p>
+                    <p className="text-sm font-medium leading-none">
+                      Last Updated
+                    </p>
+                    <p
+                      className="text-sm text-muted-foreground"
+                      suppressHydrationWarning
+                    >
+                      {getTimeAgo(project.updatedAt)}
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -235,12 +289,22 @@ export function ProjectOverview({ project: initialProject }: ProjectOverviewProp
           </div>
 
           {/* Main Content Tabs */}
-          <Tabs value={activeTab} onValueChange={setActiveTab} defaultValue="overview" className="space-y-6">
+          <Tabs
+            value={activeTab}
+            onValueChange={setActiveTab}
+            defaultValue="overview"
+            className="space-y-6"
+          >
             <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="deployments" className="flex items-center space-x-2">
+              <TabsTrigger
+                value="deployments"
+                className="flex items-center space-x-2"
+              >
                 <span>Deployments</span>
-                {isLive && <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />}
+                {isLive && (
+                  <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                )}
               </TabsTrigger>
               <TabsTrigger value="analytics">Analytics</TabsTrigger>
               <TabsTrigger value="settings">Settings</TabsTrigger>
@@ -267,12 +331,19 @@ export function ProjectOverview({ project: initialProject }: ProjectOverviewProp
                             rel="noopener noreferrer"
                             className="text-sm text-blue-600 hover:underline flex items-center"
                           >
-                            {project.repo_url.replace("https://github.com/", "")}
+                            {project.repo_url.replace(
+                              "https://github.com/",
+                              ""
+                            )}
                             <ExternalLink className="w-3 h-3 ml-1" />
                           </a>
                         </div>
                         <Button variant="outline" size="sm" asChild>
-                          <a href={project.repo_url} target="_blank" rel="noopener noreferrer">
+                          <a
+                            href={project.repo_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
                             <Github className="w-4 h-4" />
                           </a>
                         </Button>
@@ -286,7 +357,9 @@ export function ProjectOverview({ project: initialProject }: ProjectOverviewProp
                         <p className="text-sm font-medium">Branch</p>
                         <div className="flex items-center space-x-1">
                           <GitBranch className="w-3 h-3" />
-                          <span className="text-sm text-muted-foreground">{project.branch || "main"}</span>
+                          <span className="text-sm text-muted-foreground">
+                            {project.branch || "main"}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -296,14 +369,20 @@ export function ProjectOverview({ project: initialProject }: ProjectOverviewProp
                     <div className="space-y-1">
                       <p className="text-sm font-medium">Project ID</p>
                       <div className="flex items-center justify-between">
-                        <code className="text-xs bg-muted px-2 py-1 rounded">{project.id}</code>
+                        <code className="text-xs bg-muted px-2 py-1 rounded">
+                          {project.id}
+                        </code>
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => copyToClipboard(project.id)}
                           className="h-6 px-2"
                         >
-                          {copied ? <CheckCircle className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                          {copied ? (
+                            <CheckCircle className="w-3 h-3" />
+                          ) : (
+                            <Copy className="w-3 h-3" />
+                          )}
                         </Button>
                       </div>
                     </div>
@@ -325,8 +404,16 @@ export function ProjectOverview({ project: initialProject }: ProjectOverviewProp
                         <div className="flex-1 p-3 bg-muted rounded-lg">
                           <code className="text-sm">{deploymentUrl}</code>
                         </div>
-                        <Button variant="outline" size="sm" onClick={() => copyToClipboard(deploymentUrl)}>
-                          {copied ? <CheckCircle className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => copyToClipboard(deploymentUrl)}
+                        >
+                          {copied ? (
+                            <CheckCircle className="w-4 h-4" />
+                          ) : (
+                            <Copy className="w-4 h-4" />
+                          )}
                         </Button>
                       </div>
                     </div>
@@ -336,29 +423,63 @@ export function ProjectOverview({ project: initialProject }: ProjectOverviewProp
                     <div className="flex items-center justify-between">
                       <div className="space-y-1">
                         <p className="text-sm font-medium">Status</p>
-                        <Badge variant={status.variant} className="flex items-center space-x-1 w-fit">
+                        <Badge
+                          variant={status.variant}
+                          className="flex items-center space-x-1 w-fit"
+                        >
                           <StatusIcon
-                            className={`w-3 h-3 ${project.status === "BUILDING" ? "animate-spin" : "hidden"}`}
+                            className={`w-3 h-3 ${
+                              project.status === "BUILDING"
+                                ? "animate-spin"
+                                : "hidden"
+                            }`}
                           />
                           <CheckIcon
-                            className={`w-3 h-3 ${project.status === "BUILD_SUCCESS" ? "block text-green-500" : "hidden"}`}
+                            className={`w-3 h-3 ${
+                              project.status === "BUILD_SUCCESS"
+                                ? "block text-green-500"
+                                : "hidden"
+                            }`}
                           />
                           <Ban
-                            className={`w-3 h-3 ${project.status === "BUILD_FAILED" ? "block text-red-500" : "hidden"}`}
+                            className={`w-3 h-3 ${
+                              project.status === "BUILD_FAILED"
+                                ? "block text-red-500"
+                                : "hidden"
+                            }`}
                           />
-                          <span>{project.status==="BUILD_SUCCESS"?"Deployed":project.status==="BUILD_FAILED"?"Failed":project.status}</span>
+                          <span>
+                            {project.status === "BUILD_SUCCESS"
+                              ? "Deployed"
+                              : project.status === "BUILD_FAILED"
+                              ? "Failed"
+                              : project.status}
+                          </span>
                         </Badge>
                       </div>
 
                       <div className="flex items-center gap-3">
-                        <Button onClick={handleRedeploy} disabled={project.status === "BUILDING"}
-                        className={`flex ${redeploy?"cursor-not-allowed":""}`}>
-                            <RefreshCw className={`w-4 h-4 ${redeploy ? "animate-spin" : "disable"}`} />
-                            Redeploy
+                        <Button
+                          onClick={handleRedeploy}
+                          disabled={project.status === "BUILDING"}
+                          className={`flex ${
+                            redeploy ? "cursor-not-allowed" : ""
+                          }`}
+                        >
+                          <RefreshCw
+                            className={`w-4 h-4 ${
+                              redeploy ? "animate-spin" : "disable"
+                            }`}
+                          />
+                          Redeploy
                         </Button>
 
                         {project.status === "BUILD_SUCCESS" && (
-                          <a href={deploymentUrl} target="_blank" rel="noopener noreferrer">
+                          <a
+                            href={deploymentUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
                             <Button asChild>
                               <span>
                                 <ExternalLink className="w-4 h-4 mr-2" />
@@ -387,12 +508,17 @@ export function ProjectOverview({ project: initialProject }: ProjectOverviewProp
                 <Card>
                   <CardHeader>
                     <CardTitle>Environment Variables</CardTitle>
-                    <CardDescription>Variables configured for this deployment</CardDescription>
+                    <CardDescription>
+                      Variables configured for this deployment
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-2">
                       {project.envVars.map((env, index) => (
-                        <div key={index} className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                        <div
+                          key={index}
+                          className="flex items-center justify-between p-3 bg-muted rounded-lg"
+                        >
                           <code className="text-sm font-medium">{env.key}</code>
                           <Badge variant="secondary">Set</Badge>
                         </div>
@@ -411,13 +537,20 @@ export function ProjectOverview({ project: initialProject }: ProjectOverviewProp
               <Card>
                 <CardHeader>
                   <CardTitle>Analytics</CardTitle>
-                  <CardDescription>View your project&apos;s performance metrics</CardDescription>
+                  <CardDescription>
+                    View your project&apos;s performance metrics
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="text-center py-12">
                     <Activity className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">Analytics Coming Soon</h3>
-                    <p className="text-muted-foreground">We&apos;re working on detailed analytics for your deployments.</p>
+                    <h3 className="text-lg font-semibold mb-2">
+                      Analytics Coming Soon
+                    </h3>
+                    <p className="text-muted-foreground">
+                      We&apos;re working on detailed analytics for your
+                      deployments.
+                    </p>
                   </div>
                 </CardContent>
               </Card>
@@ -427,7 +560,9 @@ export function ProjectOverview({ project: initialProject }: ProjectOverviewProp
               <Card>
                 <CardHeader>
                   <CardTitle>Quick Settings</CardTitle>
-                  <CardDescription>Manage your project configuration</CardDescription>
+                  <CardDescription>
+                    Manage your project configuration
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <Button asChild>
@@ -442,7 +577,7 @@ export function ProjectOverview({ project: initialProject }: ProjectOverviewProp
           </Tabs>
         </div>
       </main>
-      <Footer/>
+      <Footer />
     </div>
-  )
+  );
 }
