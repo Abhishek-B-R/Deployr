@@ -1,72 +1,116 @@
-"use client";
-import { LinkedinIcon, Rocket } from "lucide-react";
-import { Button } from "./ui/button";
-import Image from "next/image";
+import React from "react";
+import { Zap, Github, Twitter, Linkedin, Heart } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="py-12 bg-white dark:bg-slate-900 text-black dark:text-white flex justify-center">
-      <div className="container">
-        <div className="flex flex-col md:flex-row items-center justify-between">
-          <div className="flex items-center space-x-2 mb-4 md:mb-0">
-            <div className="flex items-center justify-center w-8 h-8 bg-linear-to-br from-blue-500 to-gray-600 rounded-lg">
-              <Rocket className="w-5 h-5 text-white" />
+    <footer className="bg-neo-black text-neo-white pt-24 pb-12 px-6 border-t-4 border-neo-black">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+        <div className="space-y-4 col-span-1 md:col-span-2">
+          <div className="flex items-center gap-2 mb-6">
+            <div className="bg-neo-yellow p-1 border-2 border-white shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
+              <Zap className="w-5 h-5 text-neo-black" fill="currentColor" />
             </div>
-            <span className="text-xl font-bold">Deployr</span>
-            <div className="md:hidden flex justify-center gap-3">
-              <Medias />
-            </div>
+            <span className="text-2xl font-black tracking-tighter">
+              deployr.
+            </span>
           </div>
-          <div className="flex items-center space-x-6 text-sm text-slate-900">
-            <div className="hidden md:flex md:justify-center gap-3">
-              <Medias />
-            </div>
-            <span className="dark:text-white">Made with ❤️ for developers</span>
-          </div>
-        </div>
-        <div className="border-t border-slate-800 mt-8 pt-8 text-center">
-          <p className="text-slate-400 text-sm">
-            © {new Date().getFullYear()} Deployr. A side project by Abhishek BR
+          <p className="text-gray-400 max-w-md font-medium text-lg">
+            The open-source deployment platform for the rest of us. Deploy
+            static sites and frontend frameworks in seconds, not minutes.
+            <br />
+            <br />
+            Built with ❤️ and too much coffee.
           </p>
+        </div>
+
+        {/* Simplified columns for a free tool */}
+        <div>
+          <h4 className="font-bold text-neo-green mb-6 text-lg uppercase tracking-wider border-b-2 border-neo-green inline-block">
+            Platform
+          </h4>
+          <ul className="space-y-3 font-medium text-gray-300">
+            <li>
+              <a
+                href="#howitworks"
+                className="hover:text-neo-yellow hover:translate-x-1 inline-block transition-all"
+              >
+                How it works
+              </a>
+            </li>
+            <li>
+              <a
+                href="#frameworks-supported"
+                className="hover:text-neo-yellow hover:translate-x-1 inline-block transition-all"
+              >
+                Supported Frameworks
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 className="font-bold text-neo-pink mb-6 text-lg uppercase tracking-wider border-b-2 border-neo-pink inline-block">
+            Community
+          </h4>
+          <ul className="space-y-3 font-medium text-gray-300">
+            <li>
+              <a
+                href="https://github.com/Abhishek-B-R"
+                className="hover:text-neo-yellow hover:translate-x-1 inline-block transition-all"
+              >
+                GitHub
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://discord.gg/abhishekbr01"
+                className="hover:text-neo-yellow hover:translate-x-1 inline-block transition-all"
+              >
+                Discord
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://x.com/abhi__br"
+                className="hover:text-neo-yellow hover:translate-x-1 inline-block transition-all"
+              >
+                Twitter
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center border-t-2 border-gray-800 pt-8 gap-6">
+        <p className="text-gray-500 font-mono text-sm">
+          © 2024 Deployr OSS. MIT License.
+        </p>
+        <div className="flex gap-4">
+          <div
+            onClick={() => {
+              window.open(
+                "https://github.com/Abhishek-B-R",
+                "_blank",
+                "noopener,noreferrer"
+              );
+            }}
+            className="p-3 bg-white text-black border-2 border-black hover:bg-neo-yellow hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] cursor-pointer transition-all"
+          >
+            <Github size={20} />
+          </div>
+          <div 
+            onClick={() => {
+              window.open(
+                "https://x.com/abhi__br",
+                "_blank",
+                "noopener,noreferrer"
+              );
+            }}
+            className="p-3 bg-white text-black border-2 border-black hover:bg-neo-blue hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] cursor-pointer transition-all">
+            <Twitter size={20} />
+          </div>
         </div>
       </div>
     </footer>
-  );
-}
-
-function Medias() {
-  return (
-    <>
-      <Button
-        className="cursor-pointer bg-white  dark:bg-white text-black hover:bg-gray-300"
-        onClick={() => {
-          window.open(
-            "https://www.linkedin.com/in/abhishek-b-r-b232ba2a2/",
-            "_blank",
-            "noopener,noreferrer"
-          );
-        }}
-      >
-        <LinkedinIcon />
-      </Button>
-      <Button
-        className="cursor-pointer bg-white  dark:bg-white text-black hover:bg-gray-300"
-        onClick={() => {
-          window.open(
-            "https://x.com/AbhiCodes01",
-            "_blank",
-            "noopener,noreferrer"
-          );
-        }}
-      >
-        <Image
-          src="/x.svg"
-          alt="X Logo"
-          width={20}
-          height={20}
-          className="inline-block"
-        />
-      </Button>
-    </>
   );
 }

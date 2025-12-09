@@ -1,302 +1,221 @@
-"use client";
-
-import {
-  ArrowRight,
-  CheckCircle,
-  Play,
-  Zap,
-  Sparkles,
-  Star,
-} from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { motion, useScroll, useTransform, Variants } from "framer-motion";
 import { useRef } from "react";
-import { useRouter } from "next/navigation";
+import { ArrowRight, Github, Zap } from "lucide-react";
+import { motion, useScroll, useTransform } from "framer-motion";
+import FileSVG from "./SVG/FileSVG";
+import GithubSVG from "./SVG/Github";
+import JsSvg from "./SVG/JS";
 
 export default function Hero({ isVisible }: { isVisible: boolean }) {
   const ref = useRef(null);
-  const router = useRouter();
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end start"],
   });
 
-  const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
-  const opacity = useTransform(scrollYProgress, [0, 1], [1, 0]);
-
-  const containerVariants: Variants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-        delayChildren: 0.1,
-      },
-    },
-  };
-
-  const itemVariants: Variants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.8,
-        ease: [0.4, 0, 0.2, 1], // This is the equivalent of "easeOut" in cubic-bezier form
-      },
-    },
-  };
+  const y = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
 
   return (
     <section
       ref={ref}
-      className="relative overflow-hidden py-20 md:py-32 min-h-screen w-full flex items-center"
+      className="relative overflow-hidden pt-32 pb-0 w-full flex flex-col items-center justify-center bg-neo-bg border-b-4 border-neo-black min-h-[90vh]"
     >
-      {/* Animated Background Grid */}
-      <motion.div
-        className="absolute inset-0 bg-grid-slate-100 mask-[linear-gradient(0deg,white,rgba(255,255,255,0.6))] dark:bg-grid-slate-700/25 dark:mask-[linear-gradient(0deg,rgba(255,255,255,0.1),rgba(255,255,255,0.5))]"
-        style={{ y, opacity }}
-      />
+      <div
+        className="absolute inset-0 z-0 opacity-10"
+        style={{
+          backgroundImage:
+            "linear-gradient(#1a1a1a 1px, transparent 1px), linear-gradient(90deg, #1a1a1a 1px, transparent 1px)",
+          backgroundSize: "40px 40px",
+        }}
+      ></div>
 
-      {/* Floating Elements */}
+      {/* --- Floating Sticker: Arrow Box (Top Left) --- */}
       <motion.div
-        className="absolute top-20 left-10 text-blue-500/20"
-        animate={{
-          y: [-10, 10, -10],
-          rotate: [0, 5, -5, 0],
-        }}
-        transition={{
-          duration: 6,
-          repeat: Number.POSITIVE_INFINITY,
-          ease: "easeInOut",
-        }}
+        className="absolute top-32 left-[5%] lg:left-[10%] hidden lg:block cursor-grab active:cursor-grabbing z-10"
+        drag
+        dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+        animate={{ rotate: [0, 5, -5, 0], y: [0, -10, 0] }}
+        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+        whileHover={{ scale: 1.1, rotate: 0 }}
       >
-        <Sparkles className="w-8 h-8" />
+        <FileSVG />
       </motion.div>
 
+      {/* --- Floating Sticker: Github Icon (Bottom Left) --- */}
       <motion.div
-        className="absolute top-40 right-20 text-gray-500/20"
-        animate={{
-          y: [-10, 10, -10],
-          rotate: [0, 5, -5, 0],
-        }}
+        className="absolute top-40 right-[5%] hidden lg:block cursor-grab active:cursor-grabbing z-10"
+        drag
+        dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+        animate={{ rotate: [0, -5, 5, 0], y: [0, 15, 0] }}
         transition={{
-          duration: 6,
-          repeat: Number.POSITIVE_INFINITY,
+          duration: 7,
+          repeat: Infinity,
           ease: "easeInOut",
           delay: 1,
         }}
+        whileHover={{ scale: 1.1, rotate: 0 }}
       >
-        <Star className="w-6 h-6" />
+        <GithubSVG />
       </motion.div>
 
+      {/* --- Floating Sticker: JS Icon (Bottom Right) --- */}
       <motion.div
-        className="absolute bottom-40 left-20 text-indigo-500/20"
-        animate={{
-          y: [-10, 10, -10],
-          rotate: [0, 5, -5, 0],
-        }}
-        transition={{
-          duration: 6,
-          repeat: Number.POSITIVE_INFINITY,
-          ease: "easeInOut",
-          delay: 2,
-        }}
+        className="absolute bottom-40 right-[10%] hidden lg:block cursor-grab active:cursor-grabbing z-10"
+        drag
+        dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+        animate={{ rotate: [0, -5, 5, 0], y: [0, 15, 0] }}
+        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+        whileHover={{ scale: 1.1, rotate: 0 }}
       >
-        <Zap className="w-10 h-10" />
+        <JsSvg />
       </motion.div>
 
-      {/* Gradient Orbs */}
-      <motion.div
-        className="absolute top-1/4 left-1/4 w-72 h-72 bg-linear-to-r from-blue-400/30 to-gray-600/30 rounded-full blur-3xl"
-        animate={{
-          scale: [1, 1.2, 1],
-          opacity: [0.3, 0.5, 0.3],
-        }}
-        transition={{
-          duration: 8,
-          repeat: Number.POSITIVE_INFINITY,
-          ease: "easeInOut",
-        }}
-      />
-
-      <motion.div
-        className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-linear-to-r from-gray-400/20 to-indigo-600/20 rounded-full blur-3xl"
-        animate={{
-          scale: [1.2, 1, 1.2],
-          opacity: [0.2, 0.4, 0.2],
-        }}
-        transition={{
-          duration: 10,
-          repeat: Number.POSITIVE_INFINITY,
-          ease: "easeInOut",
-          delay: 2,
-        }}
-      />
-
-      <div className="container relative z-10">
+      <div className="container relative z-10 mx-auto px-4 text-center mb-24">
         <motion.div
-          className="mx-auto max-w-4xl text-center"
-          variants={containerVariants}
-          initial="hidden"
-          animate={isVisible ? "visible" : "hidden"}
+          initial={{ opacity: 0, y: 50 }}
+          animate={isVisible ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="max-w-5xl mx-auto"
         >
-          <motion.div variants={itemVariants}>
-            <Badge
-              variant="secondary"
-              className="mb-4 px-4 py-2 text-sm font-medium backdrop-blur-sm bg-white/80 dark:bg-gray-800/80 border border-white/20 shadow-lg"
-            >
-              <motion.div
-                animate={{ rotate: [0, 360] }}
-                transition={{ duration: 1.5, ease: "linear" }}
-              >
-                <Zap className="w-3 h-3 mr-1" />
-              </motion.div>
-              Deploy frontend projects in seconds
-            </Badge>
-          </motion.div>
-
-          <motion.h1
-            className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight"
-            variants={itemVariants}
-          >
-            <motion.span
-              className="block"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 1, delay: 0.5 }}
-            >
-              Deploy Your Frontend
-            </motion.span>
-            <motion.span
-              className="block bg-linear-to-r from-blue-600 via-gray-600 to-indigo-600 bg-clip-text text-transparent"
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.8 }}
-            >
-              <motion.span
-                animate={{
-                  backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
-                }}
-                transition={{
-                  duration: 5,
-                  repeat: Number.POSITIVE_INFINITY,
-                  ease: "linear",
-                }}
-                style={{
-                  background:
-                    "linear-gradient(90deg, #2563eb, #718096, #2563eb)",
-                  backgroundSize: "200% 100%",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                }}
-              >
-                Projects Easily
-              </motion.span>
-            </motion.span>
-          </motion.h1>
-
-          <motion.p
-            className="mt-6 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed"
-            variants={itemVariants}
-          >
-            Streamline your frontend deployment process with zero configuration.
-            From repository to live site in seconds.
-          </motion.p>
-
+          {/* Version Badge */}
           <motion.div
-            className="mt-8 flex flex-col sm:flex-row gap-4 justify-center"
-            variants={itemVariants}
+            whileHover={{ scale: 1.05 }}
+            className="inline-block mb-8 cursor-default"
           >
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button
-                size="lg"
-                onClick={() => {
-                  router.push("/new");
-                }}
-                className="text-lg px-8 py-4 cursor-pointer bg-linear-to-r text-white from-blue-600 to-gray-600 hover:from-blue-700 hover:to-gray-700 shadow-lg hover:shadow-xl transition-all duration-300"
-              >
-                <motion.span className="flex items-center">
-                  Get Started Free
-                  <motion.div
-                    animate={{ x: [0, 5, 0] }}
-                    transition={{
-                      duration: 1.5,
-                      repeat: Number.POSITIVE_INFINITY,
-                    }}
-                  >
-                    <ArrowRight className="ml-2 w-5 h-5" />
-                  </motion.div>
-                </motion.span>
-              </Button>
-            </motion.div>
-
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button
-                variant="outline"
-                size="lg"
-                onClick={() => {
-                  router.push("/demo.mp4");
-                }}
-                className="text-lg px-8 py-4 cursor-pointer backdrop-blur-sm bg-white/10 border-white/20 hover:bg-white/20 shadow-lg hover:shadow-xl transition-all duration-300"
-              >
-                <motion.div
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
-                >
-                  <Play className="mr-2 w-5 h-5" />
-                </motion.div>
-                Watch Demo
-              </Button>
-            </motion.div>
+            <div className="bg-white border-2 border-neo-black px-4 py-1 shadow-neo flex items-center gap-2 font-mono font-bold text-sm transform -rotate-2">
+              <span className="w-2 h-2 bg-neo-green rounded-full animate-pulse border border-black"></span>
+              completely self-hostable
+            </div>
           </motion.div>
 
-          <motion.div
-            className="mt-12 flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-8 text-sm text-muted-foreground"
-            variants={itemVariants}
-          >
-            <motion.div
-              className="flex items-center"
-              whileHover={{ scale: 1.05 }}
-              transition={{ type: "spring", stiffness: 400, damping: 10 }}
-            >
-              <motion.div
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{
-                  duration: 2,
-                  repeat: Number.POSITIVE_INFINITY,
-                  delay: 0.5,
-                }}
+          {/* Headline */}
+          <h1 className="text-6xl md:text-8xl lg:text-[7.5rem] font-black tracking-tighter leading-[0.85] text-neo-black mb-8 select-none">
+            <span className="font-sans italic tracking-normal block mb-4">
+              DEPLOY YOUR
+            </span>
+            <span className="relative inline-block mt-2 md:mt-4">
+              <span className="relative z-10 text-neo-black">
+                FRONTENDS EASILY
+              </span>
+              <span
+                className="absolute top-1 left-1 md:top-2 md:left-2 -z-10 text-transparent w-full h-full"
+                style={{ WebkitTextStroke: "2px #54A0FF" }}
               >
-                <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
-              </motion.div>
-              No credit card required
-            </motion.div>
+                FRONTENDS EASILY
+              </span>
+              <svg
+                className="absolute -bottom-4 w-[110%] -left-[5%] h-6 text-neo-yellow z-0"
+                viewBox="0 0 100 10"
+                preserveAspectRatio="none"
+              >
+                <path
+                  d="M0 5 Q 50 15 100 5"
+                  stroke="currentColor"
+                  strokeWidth="8"
+                  fill="none"
+                />
+              </svg>
+            </span>
+          </h1>
 
-            <motion.div
-              className="flex items-center"
-              whileHover={{ scale: 1.05 }}
-              transition={{ type: "spring", stiffness: 400, damping: 10 }}
+          <p className="mt-10 text-xl md:text-2xl font-medium text-gray-800 max-w-2xl mx-auto leading-relaxed">
+            Deploy projects in seconds.
+            <span className="bg-neo-yellow px-1 border border-black mx-1 font-bold shadow-sm">
+              Zero config
+            </span>
+            , unlimited hobby projects, and pure adrenaline.
+          </p>
+
+          {/* CTA Buttons */}
+          <div className="mt-12 flex flex-col sm:flex-row gap-6 justify-center items-center">
+            <motion.button
+              whileHover={{
+                x: 4,
+                y: 4,
+                boxShadow: "0px 0px 0px 0px rgba(0,0,0,1)",
+              }}
+              whileTap={{ scale: 0.98 }}
+              className="group relative bg-neo-yellow text-neo-black text-xl font-bold px-10 py-5 border-4 border-neo-black shadow-neo-lg transition-all"
             >
-              <motion.div
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{
-                  duration: 2,
-                  repeat: Number.POSITIVE_INFINITY,
-                  delay: 1,
-                }}
-              >
-                <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
-              </motion.div>
-              Free tier available
-            </motion.div>
-          </motion.div>
+              <span className="flex items-center gap-3 uppercase tracking-wider">
+                Start Deploying
+                <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+              </span>
+            </motion.button>
+
+            <motion.button
+              whileHover={{
+                x: 4,
+                y: 4,
+                boxShadow: "0px 0px 0px 0px rgba(0,0,0,1)",
+              }}
+              whileTap={{ scale: 0.98 }}
+              className="group bg-white text-neo-black text-xl font-bold px-10 py-5 border-4 border-neo-black shadow-neo-lg transition-all cursor-pointer"
+              onClick={() => {
+                window.open(
+                  "https://www.github.com/Abhishek-B-R/Deployr",
+                  "_blank",
+                  "noopener,noreferrer"
+                );
+              }}
+            >
+              <span className="flex items-center gap-3 uppercase tracking-wider">
+                <Github className="w-6 h-6" />
+                Star on GitHub
+              </span>
+            </motion.button>
+          </div>
+
+          {/* Trust Badges - FREE CONTEXT */}
+          <div className="mt-20 pt-8 border-t-2 border-dashed border-gray-400 flex flex-wrap justify-center gap-6 md:gap-12 text-sm font-bold opacity-100">
+            <div className="flex items-center gap-2 group cursor-default">
+              <div className="bg-neo-black text-white p-1.5 border border-black group-hover:bg-neo-pink group-hover:text-black transition-colors">
+                <Zap size={14} strokeWidth={3} />
+              </div>
+              <span className="uppercase tracking-wide">Always Free</span>
+            </div>
+            <div className="flex items-center gap-2 group cursor-default">
+              <div className="bg-neo-black text-white p-1.5 border border-black group-hover:bg-neo-blue group-hover:text-black transition-colors">
+                <Zap size={14} strokeWidth={3} />
+              </div>
+              <span className="uppercase tracking-wide">Open Source</span>
+            </div>
+            <div className="flex items-center gap-2 group cursor-default">
+              <div className="bg-neo-black text-white p-1.5 border border-black group-hover:bg-neo-yellow group-hover:text-black transition-colors">
+                <Zap size={14} strokeWidth={3} />
+              </div>
+              <span className="uppercase tracking-wide">No Credit Card</span>
+            </div>
+          </div>
         </motion.div>
       </div>
+      <div id="frameworks-supported" />
 
-      {/* Bottom fade effect */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-linear-to-t from-background to-transparent" />
+      {/* Marquee Ticker */}
+      <div className="absolute bottom-0 left-0 w-full bg-neo-yellow border-t-4 border-neo-black py-3 overflow-hidden whitespace-nowrap z-20">
+        <motion.div
+          className="inline-block text-xl font-black uppercase tracking-widest"
+          animate={{ x: [0, -1000] }}
+          transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+        >
+          <span className="mx-8">Deployed in Seconds</span> •
+          <span className="mx-8">React</span> •<span className="mx-8">Vue</span>{" "}
+          <span className="mx-8">Svelte</span> •
+          <span className="mx-8">Angular</span> •
+          <span className="mx-8">Vue</span> •
+          <span className="mx-8">Static</span> •
+          <span className="mx-8">Deployed in Seconds</span> •
+          <span className="mx-8">React</span> •<span className="mx-8">Vue</span>{" "}
+          <span className="mx-8">Svelte</span> •
+          <span className="mx-8">Angular</span> •
+          <span className="mx-8">Vue</span> •
+          <span className="mx-8">Static</span> •
+          <span className="mx-8">React</span> •<span className="mx-8">Vue</span>{" "}
+          <span className="mx-8">Svelte</span> •
+          <span className="mx-8">Angular</span> •
+          <span className="mx-8">Vue</span> •
+          <span className="mx-8">Static</span> •
+        </motion.div>
+      </div>
     </section>
   );
 }
