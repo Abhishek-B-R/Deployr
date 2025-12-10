@@ -1,26 +1,23 @@
 "use client";
 import { Suspense } from "react";
-import { DeployConfig } from "./deploy-config";
+import { DeployConfig } from "@/components/Import/deploy-config";
 import { SessionProvider } from "next-auth/react";
-import NavBar from "../NavBar";
-import Footer from "../Footer";
-import DeployConfigSkeleton from "./deploy-config-skeleton";
+import NavBar from "@/components/NavBar";
+import Footer from "@/components/Footer";
+import DeployConfigSkeleton from "@/components/Import/deploy-config-skeleton";
 
 export default function ImportPage() {
   return (
-    <div className="min-h-screen md:px-16 min-w-full bg-linear-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800">
-      {/* Header */}
+    <div className="min-h-screen w-full bg-neo-bg font-sans text-neo-black">
       <NavBar />
-
-      {/* Main Content */}
-      <main className="container py-12 md:pl-30">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-4 text-center">
-            You&apos;re almost done.
-          </h1>
-          <p className="text-lg text-muted-foreground text-center">
-            Please follow the steps to configure your Project and deploy it.
-          </p>
+      <main className="container mx-auto py-12 px-4 md:px-6 pt-32 min-h-screen">
+        <div className="mb-12 text-center">
+            <h1 className="text-5xl font-black mb-4 uppercase leading-none">
+                Almost <span className="text-transparent" style={{ WebkitTextStroke: '2px #1A1A1A' }}>There</span>
+            </h1>
+            <p className="text-xl font-medium text-gray-600">
+                Configure your build settings below.
+            </p>
         </div>
 
         <Suspense fallback={<DeployConfigSkeleton />}>

@@ -1,21 +1,15 @@
 "use client";
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   ChevronDown,
   Github,
   Rocket,
-  Settings,
   Menu,
   X,
-  Sun,
-  Moon,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { SessionProvider, useSession } from "next-auth/react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import AuthButton from "./auth-btn";
 
 // Simple UI Components to replace Shadcn for this demo
@@ -141,7 +135,7 @@ function Header() {
                 >
                   <button
                     onClick={() => router.push("/new")}
-                    className="w-full text-left px-4 py-2 hover:bg-neo-yellow font-bold text-sm transition-colors mb-1 border border-transparent hover:border-black"
+                    className="w-full text-left px-4 py-2 hover:bg-neo-yellow font-bold text-sm transition-colors mb-1 border border-transparent text-black hover:border-black"
                   >
                     Project
                   </button>
@@ -153,7 +147,7 @@ function Header() {
                         "noopener,noreferrer"
                       );
                     }}
-                    className="w-full text-left px-4 py-2 hover:bg-neo-green font-bold text-sm transition-colors border border-transparent hover:border-black"
+                    className="w-full text-left px-4 py-2 hover:bg-neo-green font-bold text-sm transition-colors border border-transparent text-black hover:border-black"
                   >
                     Repository
                   </button>

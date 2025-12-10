@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { getServerSession } from "next-auth";
 // import { authOptions } from "@/lib/authOptions" // Mocked for this view
 import RepositoryList from "@/components/NewDeployment/repository-list";
-import { NeoButton, NeoCard } from "@/components/NewDeployment/neo-ui";
+import { NeoButton, NeoCard } from "@/components/neo-ui";
 import { Github, ArrowRight, Sparkles } from "lucide-react";
 import Link from "next/link";
 import ModelRender from "@/components/NewDeployment/ModelRender";
@@ -19,7 +19,7 @@ export default async function AddNew() {
       <NavBar />
 
       {/* Main Content */}
-      <main className="w-full max-w-full mx-auto px-4 md:px-6 pt-20 sm:pt-24 md:pt-28 min-h-screen overflow-x-hidden">
+      <main className="w-full max-w-full mx-auto px-4 md:px-6 pt-20 sm:pt-24 md:pt-28 min-h-screen mb-10">
         <div className="max-w-7xl mx-auto">
           {/* Header Section */}
           <div className="relative mb-16 text-center">

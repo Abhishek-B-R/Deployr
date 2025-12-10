@@ -3,11 +3,7 @@
 
 import { useState, useEffect } from "react";
 import { SessionProvider, useSession } from "next-auth/react";
-import {
-  NeoButton,
-  NeoCard,
-  NeoBadge,
-} from "@/components/NewDeployment/neo-ui";
+import { NeoButton, NeoCard, NeoBadge } from "@/components/neo-ui";
 import {
   DropdownMenu,
   DropdownMenuContent,

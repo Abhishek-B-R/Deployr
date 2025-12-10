@@ -1,5 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800;900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -13,48 +13,55 @@
   --font-family-sans: "Space Grotesk", var(--font-geist-sans), sans-serif;
   --font-family-display: "DM Sans", sans-serif;
   --font-mono: var(--font-geist-mono);
-  
+
   /* Neobrutalism Colors */
-  --color-neo-bg: #F3F0E6;
-  --color-neo-yellow: #FFDE59;
-  --color-neo-green: #A3E635;
-  --color-neo-blue: #54A0FF;
-  --color-neo-pink: #FF90E8;
-  --color-neo-black: #1A1A1A;
-  --color-neo-white: #FFFFFF;
-  
+  --color-neo-bg: #f3f0e6;
+  --color-neo-yellow: #ffde59;
+  --color-neo-green: #a3e635;
+  --color-neo-blue: #54a0ff;
+  --color-neo-pink: #ff90e8;
+  --color-neo-red: #ff5733;
+  --color-neo-black: #1a1a1a;
+  --color-neo-white: #ffffff;
+
   /* Box Shadows */
   --shadow-neo-sm: 2px 2px 0px 0px rgba(0, 0, 0, 1);
   --shadow-neo: 4px 4px 0px 0px rgba(0, 0, 0, 1);
   --shadow-neo-lg: 8px 8px 0px 0px rgba(0, 0, 0, 1);
-  
+
   /* Keep radius for shadcn components */
   --radius: 0.625rem;
 }
 
 /* Additional color system for legacy support */
 :root {
-  --neo-cream: #F3F0E6;
-  --neo-black: #1A1A1A;
-  --neo-yellow: #FFDE59;
-  --neo-blue: #54A0FF;
-  --neo-pink: #FF90E8;
-  --neo-green: #A3E635;
-  --neo-white: #FFFFFF;
+  --neo-red: #ff5733;
+  --neo-green: #a3e635;
+  --neo-cream: #f3f0e6;
+  --neo-black: #1a1a1a;
+  --neo-yellow: #ffde59;
+  --neo-blue: #54a0ff;
+  --neo-pink: #ff90e8;
+  --neo-white: #ffffff;
 }
 
 @layer base {
   /* * {
     @apply border-neo-black outline-neo-black/50;
   } */
-  
+
   body {
     @apply bg-neo-bg text-neo-black antialiased;
     font-family: "Space Grotesk", var(--font-geist-sans), sans-serif;
   }
-  
+
   /* Typography defaults */
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: "Space Grotesk", sans-serif;
     font-weight: 700;
   }
@@ -64,66 +71,72 @@
 @layer utilities {
   /* Border utilities */
   .neo-border {
-    border: 3px solid #1A1A1A;
+    border: 3px solid #1a1a1a;
   }
-  
+
   .neo-border-thick {
-    border: 4px solid #1A1A1A;
+    border: 4px solid #1a1a1a;
   }
-  
+
   /* Shadow utilities - using Tailwind's shadow classes */
   .shadow-neo-sm {
     box-shadow: 2px 2px 0px 0px rgba(0, 0, 0, 1);
   }
-  
+
   .shadow-neo {
     box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
   }
-  
+
   .shadow-neo-lg {
     box-shadow: 8px 8px 0px 0px rgba(0, 0, 0, 1);
   }
-  
+
   /* Component utilities */
   .neo-card {
     @apply border-[3px] border-neo-black bg-white shadow-neo;
   }
-  
+
   .neo-btn {
     @apply border-[4px] border-neo-black shadow-neo font-bold uppercase tracking-wide;
     transition: transform 0.1s ease, box-shadow 0.1s ease;
   }
-  
+
   .neo-btn:hover {
     transform: translate(2px, 2px);
     box-shadow: 2px 2px 0px 0px rgba(0, 0, 0, 1);
   }
-  
+
   .neo-btn:active {
     transform: translate(4px, 4px);
     box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 1);
   }
-  
+
   /* Grid backgrounds */
   .grid-bg {
-    background-image: 
-      linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+    background-image: linear-gradient(
+        to right,
+        rgba(0, 0, 0, 0.05) 1px,
+        transparent 1px
+      ),
       linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
     background-size: 30px 30px;
   }
-  
+
   .grid-bg-visible {
-    background-image: 
-      linear-gradient(to right, rgba(0, 0, 0, 0.08) 1px, transparent 1px),
+    background-image: linear-gradient(
+        to right,
+        rgba(0, 0, 0, 0.08) 1px,
+        transparent 1px
+      ),
       linear-gradient(to bottom, rgba(0, 0, 0, 0.08) 1px, transparent 1px);
     background-size: 30px 30px;
   }
-  
+
   /* Hide scrollbar utilities */
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
-  
+
   .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -132,9 +145,9 @@
 
 /* Dark mode overrides */
 .dark {
-  --neo-cream: #1A1A1A;
-  --neo-black: #FFFFFF;
-  --neo-white: #1A1A1A;
+  --neo-cream: #1a1a1a;
+  --neo-black: #ffffff;
+  --neo-white: #1a1a1a;
 }
 
 .dark body {
@@ -152,8 +165,11 @@
 
 .dark .grid-bg,
 .dark .grid-bg-visible {
-  background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+  background-image: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0.08) 1px,
+      transparent 1px
+    ),
     linear-gradient(to bottom, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
 }
 
@@ -182,7 +198,7 @@ html.lenis body {
 /* Neobrutalism Custom Scrollbar */
 .neo-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: #1A1A1A #F3F0E6;
+  scrollbar-color: #1a1a1a #f3f0e6;
 }
 
 .neo-scrollbar::-webkit-scrollbar {
@@ -190,25 +206,25 @@ html.lenis body {
 }
 
 .neo-scrollbar::-webkit-scrollbar-track {
-  background: #F3F0E6;
-  border-left: 3px solid #1A1A1A;
-  border-right: 1px solid #1A1A1A;
+  background: #f3f0e6;
+  border-left: 3px solid #1a1a1a;
+  border-right: 1px solid #1a1a1a;
 }
 
 .neo-scrollbar::-webkit-scrollbar-thumb {
-  background: #1A1A1A;
-  border: 3px solid #F3F0E6;
+  background: #1a1a1a;
+  border: 3px solid #f3f0e6;
   box-shadow: 3px 0px 0px 0px rgba(0, 0, 0, 1);
   min-height: 60px;
 }
 
 .neo-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #FFDE59;
-  border: 3px solid #1A1A1A;
+  background: #ffde59;
+  border: 3px solid #1a1a1a;
   box-shadow: 3px 0px 0px 0px rgba(0, 0, 0, 1);
 }
 
 .neo-scrollbar::-webkit-scrollbar-thumb:active {
-  background: #FF90E8;
-  border: 3px solid #1A1A1A;
+  background: #ff90e8;
+  border: 3px solid #1a1a1a;
 }
