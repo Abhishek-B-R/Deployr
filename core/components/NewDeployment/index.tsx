@@ -19,7 +19,7 @@ export default async function AddNew() {
       <NavBar />
 
       {/* Main Content */}
-      <main className="w-full max-w-full mx-auto px-4 md:px-6 pt-20 sm:pt-24 md:pt-28 min-h-screen mb-10">
+      <main className="w-full max-w-full mx-auto px-4 md:px-6 pt-16 sm:pt-20 md:pt-24 min-h-screen mb-10">
         <div className="max-w-7xl mx-auto">
           {/* Header Section */}
           <div className="relative mb-16 text-center">
@@ -42,7 +42,7 @@ export default async function AddNew() {
           </div>
 
           {/* Main Content Grid */}
-          <div className="grid lg:grid-cols-2 gap-10 lg:gap-12 items-start">
+          <div className="grid lg:grid-cols-2 gap-10 lg:gap-12 items-start -mt-4">
             {/* Left Column: Import Section */}
             <div className="space-y-6 w-full relative z-10">
               <div className="absolute left-0 lg:-left-4 top-0 lg:-top-4 w-full h-full bg-black/5 border-2 border-black/10 -z-10 pointer-events-none"></div>

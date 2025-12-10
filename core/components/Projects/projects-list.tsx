@@ -3,17 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   Globe,
   Github,
@@ -30,17 +19,23 @@ import {
   XCircle,
   RefreshCw,
   Rocket,
-  Calendar,
+  LayoutGrid,
+  List,
   Activity,
-  CheckIcon,
-  Ban,
-  Sparkles,
+  Calendar
 } from "lucide-react";
+import NavBar from "@/components/NavBar";
+import Footer from "@/components/Footer";
+import { motion, AnimatePresence } from "framer-motion";
 import { getTimeAgo } from "@/lib/utils";
-import NavBar from "../NavBar";
-import Footer from "../Footer";
-import { motion, useInView, Variants } from "framer-motion";
-import { useRef } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 
 interface Project {
   id: string;
@@ -61,6 +56,7 @@ interface Project {
     name: string | null;
     email: string;
   };
+  framework?: string;
 }
 
 interface ProjectsListProps {
@@ -72,46 +68,62 @@ interface ProjectsListProps {
   };
 }
 
-const statusConfig = {
+const statusConfig: any = {
   PENDING: {
-    color: "bg-yellow-500",
+    color: "bg-neo-yellow",
+    textColor: "text-black",
     icon: Clock,
-    variant: "secondary" as const,
-    label: "Pending",
+    label: "QUEUED",
+    border: "border-neo-black"
   },
   BUILDING: {
-    color: "bg-blue-500",
+    color: "bg-neo-blue",
+    textColor: "text-white",
     icon: RefreshCw,
-    variant: "default" as const,
-    label: "Building",
+    label: "BUILDING",
+    border: "border-neo-black",
+    animate: "animate-spin"
   },
-  DEPLOYED: {
-    color: "bg-green-500",
+  BUILD_SUCCESS: {
+    color: "bg-neo-green",
+    textColor: "text-black",
     icon: CheckCircle,
-    variant: "default" as const,
-    label: "Live",
+    label: "LIVE",
+    border: "border-neo-black"
   },
-  FAILED: {
-    color: "bg-red-500",
+  BUILD_FAILED: {
+    color: "bg-neo-pink",
+    textColor: "text-black",
     icon: XCircle,
-    variant: "destructive" as const,
-    label: "Failed",
+    label: "FAILED",
+    border: "border-neo-black"
   },
+};
+
+const frameworkIcons: any = {
+  nextjs: "N",
+  react: "R",
+  vue: "V",
+  static: "S",
+  vite: "⚡️",
+  default: "?"
 };
 
 export function ProjectsList({ projects }: ProjectsListProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const router = useRouter();
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-50px" });
 
   const filteredProjects = projects.filter((project) => {
     const matchesSearch =
       project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       project.repo_name?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus =
-      statusFilter === "all" || project.status === statusFilter;
+      statusFilter === "all" || 
+      (statusFilter === "live" && project.status === "BUILD_SUCCESS") ||
+      (statusFilter === "failed" && project.status === "BUILD_FAILED") ||
+      (statusFilter === "building" && project.status === "BUILDING");
     return matchesSearch && matchesStatus;
   });
 
@@ -120,504 +132,313 @@ export function ProjectsList({ projects }: ProjectsListProps) {
     const k = 1024;
     const sizes = ["B", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return (
-      Number.parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i]
-    );
-  };
-
-  const containerVariants: Variants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.2,
-      },
-    },
-  };
-
-  const itemVariants: Variants = {
-    hidden: { opacity: 0, y: 20, scale: 0.95 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: {
-        duration: 0.5,
-        ease: [0.25, 0.46, 0.45, 0.94],
-      },
-    },
+    return Number.parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
   };
 
   return (
-    <div className="min-h-screen flex flex-col overflow-x-hidden">
-      {/* Header */}
+    <div className="min-h-screen flex flex-col bg-neo-bg">
       <NavBar />
 
-      {/* Floating Background Elements */}
-      <motion.div
-        className="fixed top-20 right-10 text-blue-500/5 pointer-events-none z-0"
-        animate={{
-          y: [-20, 20, -20],
-          rotate: [0, 180, 360],
-        }}
-        transition={{
-          duration: 20,
-          repeat: Number.POSITIVE_INFINITY,
-          ease: "linear",
-        }}
-      >
-        <Rocket className="w-32 h-32" />
-      </motion.div>
-
-      <motion.div
-        className="fixed bottom-20 left-10 text-gray-500/5 pointer-events-none z-0"
-        animate={{
-          y: [15, -15, 15],
-          rotate: [0, -90, -180, -270, -360],
-        }}
-        transition={{
-          duration: 25,
-          repeat: Number.POSITIVE_INFINITY,
-          ease: "linear",
-        }}
-      >
-        <Sparkles className="w-24 h-24" />
-      </motion.div>
-
-      {/* Main Content */}
-      <main
-        ref={ref}
-        className="flex-1 container mx-auto px-4 py-8 relative z-10 max-w-full"
-      >
-        <div className="max-w-7xl mx-auto space-y-8">
-          {/* Page Header */}
-          <motion.div
-            className="flex flex-col md:flex-row md:items-center justify-between gap-4"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+      <main className="flex-1 container mx-auto px-4 md:px-10 py-12 pt-32 max-w-screen-2xl">
+        
+        {/* Page Header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+          <div>
+            <h1 className="text-6xl md:text-7xl font-black text-neo-black mb-2 uppercase leading-none tracking-tighter">
+              Dashboard
+            </h1>
+            <p className="text-xl font-bold text-gray-500 font-mono">
+              {projects.length} PROJECTS DEPLOYED
+            </p>
+          </div>
+          
+          <motion.button
+            whileHover={{ scale: 1.02, boxShadow: "0px 0px 0px 0px rgba(0,0,0,1)", x: 4, y: 4 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => router.push("/new")}
+            className="bg-neo-black text-white px-6 py-4 text-lg font-bold uppercase tracking-wider border-4 border-neo-black shadow-neo-lg flex items-center gap-3 transition-all cursor-pointer"
           >
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
-              <h1 className="text-3xl font-bold bg-linear-to-r from-blue-600 via-gray-600 to-indigo-600 bg-clip-text text-transparent">
-                Projects
-              </h1>
-              <p className="text-muted-foreground">
-                Manage and monitor your deployed projects
-              </p>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Button
-                asChild
-                className="bg-linear-to-r from-blue-600 to-gray-600 text-white hover:from-blue-700 hover:to-gray-700"
+            <Plus strokeWidth={4} className="w-5 h-5" />
+            New Project
+          </motion.button>
+        </div>
+
+        {/* Toolbar */}
+        <div className="bg-white border-4 border-neo-black p-4 shadow-neo-sm mb-12 flex flex-col md:flex-row gap-4 items-center">
+          {/* Search */}
+          <div className="relative flex-1 w-full">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" strokeWidth={3} />
+            <input 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="SEARCH PROJECTS..." 
+              className="w-full h-12 pl-12 pr-4 border-2 border-neo-black bg-gray-50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-neo-yellow/50 font-bold font-mono text-lg transition-all placeholder:text-gray-300"
+            />
+          </div>
+
+          {/* Filters */}
+          <div className="flex gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 no-scrollbar">
+            {['all', 'live', 'building', 'failed'].map((filter) => (
+              <button
+                key={filter}
+                onClick={() => setStatusFilter(filter)}
+                className={`px-4 py-2 border-2 border-neo-black font-bold uppercase text-sm whitespace-nowrap transition-all cursor-pointer ${
+                  statusFilter === filter 
+                    ? "bg-neo-black text-white shadow-none translate-y-[2px] translate-x-[2px]" 
+                    : "bg-white text-neo-black shadow-neo-sm hover:-translate-y-1 hover:shadow-neo"
+                }`}
               >
-                <Link href="/new">
-                  <Plus className="w-4 h-4 mr-2" />
-                  New Project
-                </Link>
-              </Button>
-            </motion.div>
-          </motion.div>
+                {filter}
+              </button>
+            ))}
+          </div>
 
-          {/* Filters and Search */}
-          <motion.div
-            className="flex flex-col sm:flex-row gap-4"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
-          >
-            <motion.div
-              className="relative flex-1"
-              whileFocus={{ scale: 1.02 }}
-              transition={{ type: "spring", stiffness: 300 }}
+          {/* View Toggle */}
+          <div className="hidden md:flex border-2 border-neo-black bg-white">
+            <button 
+              onClick={() => setViewMode("grid")}
+              className={`p-2 hover:bg-neo-yellow transition-colors ${viewMode === "grid" ? "bg-neo-yellow" : ""}`}
             >
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                placeholder="Search projects..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 transition-all duration-200 focus:shadow-lg"
-              />
-            </motion.div>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <motion.div
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <Button
-                    variant="outline"
-                    className="flex items-center gap-2 min-w-fit bg-transparent"
-                  >
-                    <Filter className="w-4 h-4" />
-                    Status:{" "}
-                    {statusFilter === "all"
-                      ? "All"
-                      : statusConfig[statusFilter as keyof typeof statusConfig]
-                          ?.label}
-                  </Button>
-                </motion.div>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => setStatusFilter("all")}>
-                  All Projects
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={() => setStatusFilter("BUILD_SUCCESS")}
-                >
-                  <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
-                  Live
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setStatusFilter("BUILDING")}>
-                  <RefreshCw className="w-4 h-4 mr-2 text-blue-500" />
-                  Building
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => setStatusFilter("BUILD_FAILED")}
-                >
-                  <XCircle className="w-4 h-4 mr-2 text-red-500" />
-                  Failed
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setStatusFilter("PENDING")}>
-                  <Clock className="w-4 h-4 mr-2 text-yellow-500" />
-                  Pending
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </motion.div>
+              <LayoutGrid className="w-5 h-5 text-black" />
+            </button>
+            <div className="w-[2px] bg-neo-black"></div>
+            <button 
+              onClick={() => setViewMode("list")}
+              className={`p-2 hover:bg-neo-yellow transition-colors ${viewMode === "list" ? "bg-neo-yellow" : ""}`}
+            >
+              <List className="w-5 h-5 text-black" />
+            </button>
+          </div>
+        </div>
 
-          {/* Projects Grid */}
-          {filteredProjects.length === 0 ? (
-            <motion.div
-              className="text-center py-12"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, delay: 0.8 }}
-            >
-              {projects.length === 0 ? (
-                <div className="space-y-4">
-                  <motion.div
-                    className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto"
-                    animate={{ y: [-5, 5, -5] }}
-                    transition={{
-                      duration: 1,
-                      repeat: Number.POSITIVE_INFINITY,
-                    }}
-                  >
-                    <Rocket className="w-8 h-8 text-muted-foreground" />
-                  </motion.div>
-                  <div>
-                    <h3 className="text-lg font-semibold mb-2">
-                      No projects yet
-                    </h3>
-                    <p className="text-muted-foreground mb-4">
-                      Get started by deploying your first project
-                    </p>
-                    <motion.div
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <Button asChild>
-                        <Link href="/new">
-                          <Plus className="w-4 h-4 mr-2" />
-                          Create New Project
-                        </Link>
-                      </Button>
-                    </motion.div>
-                  </div>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  <motion.div
-                    className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto"
-                    animate={{ rotate: [0, 360] }}
-                    transition={{
-                      duration: 4,
-                      repeat: Number.POSITIVE_INFINITY,
-                      ease: "linear",
-                    }}
-                  >
-                    <Search className="w-8 h-8 text-muted-foreground" />
-                  </motion.div>
-                  <div>
-                    <h3 className="text-lg font-semibold mb-2">
-                      No projects found
-                    </h3>
-                    <p className="text-muted-foreground">
-                      Try adjusting your search or filter criteria
-                    </p>
-                  </div>
-                </div>
-              )}
-            </motion.div>
-          ) : (
-            <motion.div
-              className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 w-full"
-              variants={containerVariants}
-              initial="hidden"
-              animate={isInView ? "visible" : "hidden"}
-            >
+        {/* Content Area */}
+        {filteredProjects.length === 0 ? (
+          <div className="border-4 border-dashed border-gray-400 p-12 text-center rounded-none flex flex-col items-center justify-center min-h-[400px]">
+            <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mb-6 animate-bounce-slow">
+              <Rocket className="w-10 h-10 text-gray-400" />
+            </div>
+            <h3 className="text-3xl font-black text-gray-400 mb-2 uppercase">
+              {projects.length === 0 ? "No Projects Yet" : "No Projects Found"}
+            </h3>
+            <p className="text-gray-500 font-medium mb-8">
+              {projects.length === 0 
+                ? "Get started by deploying your first project" 
+                : "Try clearing your filters or create a new project."}
+            </p>
+            {searchTerm && (
+              <button 
+                onClick={() => setSearchTerm("")}
+                className="text-neo-pink font-bold underline hover:text-black"
+              >
+                Clear Search
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className={viewMode === "grid" ? "grid md:grid-cols-2 lg:grid-cols-3 gap-8" : "flex flex-col gap-4"}>
+            <AnimatePresence>
               {filteredProjects.map((project) => {
-                const status =
-                  statusConfig[project.status as keyof typeof statusConfig] ||
-                  statusConfig.PENDING;
+                const status = statusConfig[project.status] || statusConfig.PENDING;
                 const StatusIcon = status.icon;
+                const fw = project.framework || "default";
                 const deploymentUrl = `https://${project.slug}.deployr.live`;
 
-                return (
-                  <motion.div key={project.id} variants={itemVariants}>
-                    <Card
-                      className="group hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 cursor-pointer border-2 hover:border-primary/20 backdrop-blur-sm bg-white/80 dark:bg-gray-800/80 relative overflow-hidden"
-                      onClick={() =>
-                        router.push(`/projects/${project.id}/overview`)
-                      }
+                if (viewMode === "list") {
+                  return (
+                    <motion.div
+                      key={project.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      onClick={() => router.push(`/projects/${project.id}/overview`)}
+                      className="bg-white border-4 border-neo-black p-4 shadow-neo-sm hover:shadow-neo hover:-translate-y-1 transition-all cursor-pointer flex items-center gap-6 group"
                     >
-                      {/* Glow effect on hover */}
-                      <motion.div
-                        className="absolute inset-0 bg-linear-to-r from-blue-400/10 to-gray-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                        whileHover={{ scale: 1.02 }}
-                      />
-
-                      <CardHeader className="pb-3 relative z-10">
-                        <div className="flex items-start justify-between">
-                          <div className="space-y-1 flex-1 min-w-0">
-                            <motion.div
-                              whileHover={{ x: 5 }}
-                              transition={{ type: "spring", stiffness: 300 }}
-                            >
-                              <CardTitle className="text-lg truncate group-hover:text-primary transition-colors">
-                                {project.name}
-                              </CardTitle>
-                            </motion.div>
-                            <div className="flex items-center space-x-2 flex-wrap">
-                              <motion.div
-                                whileHover={{ scale: 1.05 }}
-                                transition={{ type: "spring", stiffness: 400 }}
-                              >
-                                <Badge
-                                  variant={status.variant}
-                                  className="flex items-center space-x-1"
-                                >
-                                  <StatusIcon
-                                    className={`w-3 h-3 ${
-                                      project.status === "BUILDING"
-                                        ? "animate-spin"
-                                        : "hidden"
-                                    }`}
-                                  />
-                                  <CheckIcon
-                                    className={`w-3 h-3 ${
-                                      project.status === "BUILD_SUCCESS"
-                                        ? "block text-green-500"
-                                        : "hidden"
-                                    }`}
-                                  />
-                                  <Ban
-                                    className={`w-3 h-3 ${
-                                      project.status === "BUILD_FAILED"
-                                        ? "block text-red-500"
-                                        : "hidden"
-                                    }`}
-                                  />
-                                  <span>
-                                    {project.status === "BUILD_SUCCESS"
-                                      ? "Deployed"
-                                      : project.status === "BUILD_FAILED"
-                                      ? "Failed"
-                                      : project.status}
-                                  </span>
-                                </Badge>
-                              </motion.div>
-                              {project.private && (
-                                <Badge variant="outline" className="text-xs">
-                                  Private
-                                </Badge>
-                              )}
-                            </div>
-                          </div>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger
-                              asChild
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <motion.div
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.9 }}
-                                className="opacity-0 group-hover:opacity-100 transition-opacity"
-                              >
-                                <Button variant="ghost" size="icon">
-                                  <MoreHorizontal className="w-4 h-4" />
-                                </Button>
-                              </motion.div>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem
-                                className="cursor-pointer"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  router.push(
-                                    `/projects/${project.id}/overview`
-                                  );
-                                }}
-                              >
-                                <Eye className="w-4 h-4 mr-2" />
-                                View Project
-                              </DropdownMenuItem>
-                              {project.status === "BUILD_SUCCESS" && (
-                                <DropdownMenuItem
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    window.open(deploymentUrl, "_blank");
-                                  }}
-                                >
-                                  <Globe className="w-4 h-4 mr-2" />
-                                  Visit Site
-                                </DropdownMenuItem>
-                              )}
-                              <DropdownMenuItem
-                                className="cursor-pointer"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  router.push(
-                                    `/projects/${project.id}/settings`
-                                  );
-                                }}
-                              >
-                                <Settings className="w-4 h-4 mr-2" />
-                                Settings
-                              </DropdownMenuItem>
-                              <DropdownMenuSeparator />
-                              {project.repo_url && (
-                                <DropdownMenuItem
-                                  className="cursor-pointer"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    window.open(project.repo_url!, "_blank");
-                                  }}
-                                >
-                                  <Github className="w-4 h-4 mr-2" />
-                                  View Source
-                                </DropdownMenuItem>
-                              )}
-                            </DropdownMenuContent>
-                          </DropdownMenu>
+                      <div className={`w-12 h-12 border-2 border-neo-black flex items-center justify-center text-xl font-black shadow-sm ${project.status === 'BUILD_SUCCESS' ? 'bg-neo-green' : 'bg-white'}`}>
+                        {frameworkIcons[fw] || "?"}
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-black text-xl group-hover:underline decoration-4 decoration-neo-yellow">{project.name}</h3>
+                        <div className="flex gap-2 text-sm font-mono text-gray-500">
+                          <span>{project.repo_name}</span>
+                          <span>•</span>
+                          <span>{project.branch}</span>
                         </div>
-                      </CardHeader>
+                      </div>
+                      <div className={`px-3 py-1 border-2 border-neo-black font-bold font-mono text-xs uppercase flex items-center gap-2 ${status.color} ${status.textColor}`}>
+                        <StatusIcon className={`w-3 h-3 ${status.animate || ""}`} />
+                        {status.label}
+                      </div>
+                      <ChevronRight className="w-6 h-6 text-neo-black" />
+                    </motion.div>
+                  );
+                }
 
-                      <CardContent className="space-y-4 relative z-10">
-                        {/* Project URL */}
-                        {project.status === "BUILD_SUCCESS" && (
-                          <motion.div
-                            className="flex items-center space-x-2 p-2 bg-muted/50 rounded-lg"
-                            whileHover={{
-                              scale: 1.02,
-                              backgroundColor: "rgba(0,0,0,0.05)",
-                            }}
-                            transition={{ duration: 0.2 }}
-                          >
-                            <Globe className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                            <code className="text-sm truncate flex-1">
-                              {project.slug}.deployr.live
-                            </code>
-                            <motion.div
-                              whileHover={{ scale: 1.2 }}
-                              whileTap={{ scale: 0.8 }}
+                // Grid View
+                return (
+                  <motion.div
+                    key={project.id}
+                    layout
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    whileHover={{ y: -4 }}
+                    onClick={() => router.push(`/projects/${project.id}/overview`)}
+                    className="group relative bg-white border-4 border-neo-black shadow-neo-lg hover:shadow-neo transition-all duration-200 cursor-pointer overflow-hidden flex flex-col"
+                  >
+                    {/* Card Header */}
+                    <div className="p-6 border-b-4 border-neo-black bg-gray-50 flex justify-between items-start relative overflow-hidden">
+                      <div className="relative z-10">
+                        <div className="flex items-center gap-3 mb-2">
+                          <div className="w-10 h-10 bg-white border-2 border-neo-black flex items-center justify-center font-black shadow-neo-sm">
+                            {frameworkIcons[fw] || "?"}
+                          </div>
+                          <div>
+                            <h3 className="font-black text-2xl leading-none group-hover:text-neo-blue transition-colors truncate max-w-[180px]">
+                              {project.name}
+                            </h3>
+                          </div>
+                        </div>
+                        <div className="inline-flex items-center gap-2 text-xs font-bold font-mono text-gray-500 bg-white px-2 py-1 border-2 border-black shadow-sm">
+                          <Github className="w-3 h-3" />
+                          {project.repo_name}
+                        </div>
+                      </div>
+                      
+                      <div className="relative z-10 flex flex-col gap-2 items-end">
+                        <div className={`w-3 h-3 rounded-full border-2 border-black ${status.color === 'bg-neo-green' ? 'bg-neo-green animate-pulse' : status.color === 'bg-neo-pink' ? 'bg-neo-pink' : 'bg-gray-300'}`}></div>
+                        
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                            <button className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-neo-yellow border-3 border-black hover:border-black">
+                              <MoreHorizontal className="w-5 h-5" />
+                            </button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="border-2 border-neo-black text-black bg-white shadow-neo">
+                            <DropdownMenuItem 
+                              className={`cursor-pointer font-medium hover:${status.color}`}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                router.push(`/projects/${project.id}/overview`);
+                              }}
                             >
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-6 w-6"
+                              <Eye className="w-4 h-4 mr-2" />
+                              View Project
+                            </DropdownMenuItem>
+                            {project.status === "BUILD_SUCCESS" && (
+                              <DropdownMenuItem
+                                className={`cursor-pointer font-medium hover:${status.color}`}
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   window.open(deploymentUrl, "_blank");
                                 }}
                               >
-                                <ExternalLink className="w-3 h-3" />
-                              </Button>
-                            </motion.div>
-                          </motion.div>
-                        )}
-
-                        {/* Repository Info */}
-                        {project.repo_url && (
-                          <motion.div
-                            className="flex items-center space-x-2 text-sm text-muted-foreground"
-                            whileHover={{ x: 3 }}
-                            transition={{ type: "spring", stiffness: 300 }}
-                          >
-                            <Github className="w-4 h-4" />
-                            <span className="truncate">
-                              {project.repo_name}
-                            </span>
-                            {project.branch && (
-                              <>
-                                <GitBranch className="w-3 h-3" />
-                                <span>{project.branch}</span>
-                              </>
+                                <Globe className="w-4 h-4 mr-2" />
+                                Visit Site
+                              </DropdownMenuItem>
                             )}
-                          </motion.div>
-                        )}
-
-                        {/* Stats */}
-                        <div className="grid grid-cols-3 gap-4 pt-2 border-t">
-                          {[
-                            {
-                              icon: Eye,
-                              value: project.views.toLocaleString(),
-                              label: "Views",
-                            },
-                            {
-                              icon: Activity,
-                              value: project.size
-                                ? formatBytes(project.size)
-                                : "—",
-                              label: "Size",
-                            },
-                            {
-                              icon: Calendar,
-                              value: getTimeAgo(project.updatedAt),
-                              label: "Updated",
-                            },
-                          ].map((stat, statIndex) => (
-                            <motion.div
-                              key={statIndex}
-                              className="text-center"
-                              whileHover={{ scale: 1.05, y: -2 }}
-                              transition={{ type: "spring", stiffness: 400 }}
+                            <DropdownMenuItem
+                              className={`cursor-pointer font-medium hover:${status.color}`}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                router.push(`/projects/${project.id}/settings`);
+                              }}
                             >
-                              <div className="flex items-center justify-center space-x-1">
-                                <stat.icon className="w-3 h-3 text-muted-foreground" />
-                                <span className="text-sm font-medium">
-                                  {stat.value}
-                                </span>
-                              </div>
-                              <p className="text-xs text-muted-foreground">
-                                {stat.label}
-                              </p>
-                            </motion.div>
-                          ))}
+                              <Settings className="w-4 h-4 mr-2" />
+                              Settings
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            {project.repo_url && (
+                              <DropdownMenuItem
+                                className={`cursor-pointer font-medium hover:${status.color}`}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  window.open(project.repo_url!, "_blank");
+                                }}
+                              >
+                                <Github className="w-4 h-4 mr-2" />
+                                View Source
+                              </DropdownMenuItem>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+
+                      {/* Decorative Pattern Background */}
+                      <div className="absolute inset-0 opacity-5 pattern-dots pointer-events-none"></div>
+                    </div>
+
+                    {/* Card Body */}
+                    <div className="p-6 flex-1 flex flex-col justify-between">
+                      <div className="space-y-4 mb-6">
+                        {/* Domain */}
+                        <div className="flex justify-between items-center text-sm font-medium border-b-2 border-dashed border-gray-200 pb-2">
+                          <span className="text-gray-500 uppercase tracking-wide text-xs font-bold">Domain</span>
+                          <div className="flex items-center gap-1 hover:text-neo-blue cursor-pointer">
+                            <Globe className="w-3 h-3" />
+                            <span className="truncate max-w-[150px]">{project.slug}.deployr.live</span>
+                          </div>
                         </div>
-                      </CardContent>
-                    </Card>
+                        
+                        {/* Branch */}
+                        <div className="flex justify-between items-center text-sm font-medium border-b-2 border-dashed border-gray-200 pb-2">
+                          <span className="text-gray-500 uppercase tracking-wide text-xs font-bold">Branch</span>
+                          <div className="flex items-center gap-1 font-mono text-xs bg-gray-100 px-1">
+                            <GitBranch className="w-3 h-3" />
+                            {project.branch}
+                          </div>
+                        </div>
+                        
+                        {/* Stats */}
+                        <div className="grid grid-cols-3 gap-2 pt-2">
+                          <div className="text-center">
+                            <div className="flex items-center justify-center gap-1">
+                              <Eye className="w-3 h-3 text-gray-400" />
+                              <span className="text-sm font-bold">{project.status !== "BUILD_SUCCESS" && project.views.toLocaleString()}</span>
+                            </div>
+                            <p className="text-xs text-gray-500 uppercase font-bold">Views</p>
+                          </div>
+                          <div className="text-center">
+                            <div className="flex items-center justify-center gap-1">
+                              <Activity className="w-3 h-3 text-gray-400" />
+                              <span className="text-sm font-bold">{project.size ? formatBytes(project.size) : "—"}</span>
+                            </div>
+                            <p className="text-xs text-gray-500 uppercase font-bold">Size</p>
+                          </div>
+                          <div className="text-center">
+                            <div className="flex items-center justify-center gap-1">
+                              <Calendar className="w-3 h-3 text-gray-400" />
+                              <span className="text-sm font-bold">{getTimeAgo(project.updatedAt)}</span>
+                            </div>
+                            <p className="text-xs text-gray-500 uppercase font-bold">Updated</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className={`w-full py-3 border-2 font-black text-center text-sm uppercase tracking-widest flex items-center justify-center gap-2 shadow-neo-sm ${status.color} ${status.textColor} ${status.border}`}>
+                        <StatusIcon className={`w-4 h-4 ${status.animate || ""}`} strokeWidth={3} />
+                        {status.label}
+                      </div>
+                    </div>
+
+                    {/* Hover Action Overlay - Desktop */}
+                    <div className="absolute inset-0 bg-neo-black/10 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none flex items-center justify-center">
+                      <div className="bg-white border-4 border-neo-black px-6 py-3 font-black uppercase shadow-neo-lg transform translate-y-4 group-hover:translate-y-0 transition-transform">
+                        View Dashboard
+                      </div>
+                    </div>
                   </motion.div>
                 );
               })}
-            </motion.div>
-          )}
-        </div>
+            </AnimatePresence>
+          </div>
+        )}
       </main>
       <Footer />
     </div>
   );
+}
+
+// Helper for View Mode Toggle
+function ChevronRight({className}: {className?: string}) {
+  return <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m9 18 6-6-6-6"/></svg>;
 }

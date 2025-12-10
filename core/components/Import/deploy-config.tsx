@@ -98,7 +98,9 @@ export function DeployConfig() {
 
   // Next.js validation
   const [showNextjsValidation, setShowNextjsValidation] = useState(false);
-  const [nextjsValidationConfirmed, setNextjsValidationConfirmed] = useState<boolean | null>(null);
+  const [nextjsValidationConfirmed, setNextjsValidationConfirmed] = useState<
+    boolean | null
+  >(null);
 
   const [showFolderBrowser, setShowFolderBrowser] = useState(false);
   const [detectingFramework, setDetectingFramework] = useState(false);
@@ -166,11 +168,17 @@ export function DeployConfig() {
     }
   };
 
-  const detectFrameworkInDirectory = async (owner: string, name: string, directory: string) => {
+  const detectFrameworkInDirectory = async (
+    owner: string,
+    name: string,
+    directory: string
+  ) => {
     try {
       setDetectingFramework(true);
       const response = await fetch(
-        `/api/github/repo/${owner}/${name}/detect-framework?path=${encodeURIComponent(directory)}`
+        `/api/github/repo/${owner}/${name}/detect-framework?path=${encodeURIComponent(
+          directory
+        )}`
       );
 
       if (!response.ok) return;
@@ -253,8 +261,12 @@ export function DeployConfig() {
         <div className="w-16 h-16 bg-red-500 border-4 border-neo-black mx-auto mb-6 flex items-center justify-center">
           <AlertTriangle className="w-8 h-8 text-white" />
         </div>
-        <h3 className="text-2xl font-black mb-4 uppercase">Something Went Wrong</h3>
-        <p className="font-medium text-gray-600 mb-6">{error || "Failed to load repository details"}</p>
+        <h3 className="text-2xl font-black mb-4 uppercase">
+          Something Went Wrong
+        </h3>
+        <p className="font-medium text-gray-600 mb-6">
+          {error || "Failed to load repository details"}
+        </p>
         <NeoButton onClick={() => window.location.reload()}>
           <RefreshCw className="w-4 h-4 mr-2" />
           Try Again
@@ -267,19 +279,24 @@ export function DeployConfig() {
     <div className="max-w-5xl mx-auto space-y-12">
       {/* Next.js Validation Alert */}
       {showNextjsValidation && (
-        <div className="border-neo-black shadow-neo-lg p-4 sm:p-6 relative border-4 bg-orange-100 overflow-hidden">
-          <div className="absolute top-0 left-0 w-2 h-full bg-orange-400 border-r-4 border-neo-black"></div>
-          <div className="absolute top-0 left-2 h-2 w-full bg-orange-400 border-b-4 border-neo-black"></div>
+        <div className="border-neo-black shadow-neo-lg p-4 sm:p-6 relative border-4 bg-red-200 overflow-hidden">
+          <div className="absolute top-0 left-0 w-2 h-full bg-neo-red border-r-4 border-neo-black"></div>
+          <div className="absolute top-0 left-2 h-2 w-full bg-neo-red border-b-4 border-neo-black"></div>
           <div className="pl-6 relative">
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-3 mb-4">
-                <div className="bg-orange-400 border-2 border-neo-black p-1">
+                <div className="bg-red-500 border-2 border-neo-black p-1">
                   <AlertTriangle className="w-6 h-6" />
                 </div>
-                <h4 className="font-black text-xl uppercase">Next.js Detected</h4>
+                <h4 className="font-black text-xl uppercase">
+                  Next.js Detected
+                </h4>
               </div>
               <button
-                onClick={() => setShowNextjsValidation(false)}
+                onClick={() => {
+                  setNextjsValidationConfirmed(true);
+                  setShowNextjsValidation(false);
+                }}
                 className="border-2 border-transparent hover:border-black p-1"
               >
                 <X className="w-5 h-5" />
@@ -287,11 +304,21 @@ export function DeployConfig() {
             </div>
 
             <p className="font-medium text-neo-black mb-6 leading-relaxed max-w-2xl">
-              Deployr currently supports static exports for Next.js. We expect you to have only jsx or tsx files (no
-              pure js or ts files like router.ts / router.js) in your{" "}
-              <code className="bg-white border border-black px-1 font-mono text-sm">App/Pages</code> router. Ensure
-              your <code className="bg-white border border-black px-1 font-mono text-sm">next.config.js</code> has
-              <code className="bg-white border border-black px-1 font-mono text-sm ml-1">output: 'export'</code>.
+              Deployr currently supports static exports for Next.js. We expect
+              you to have only jsx or tsx files (no pure js or ts files like
+              router.ts / router.js) in your{" "}
+              <code className="bg-white border border-black px-1 font-mono text-sm">
+                App/Pages
+              </code>{" "}
+              router. Ensure your{" "}
+              <code className="bg-white border border-black px-1 font-mono text-sm">
+                next.config.js
+              </code>{" "}
+              has
+              <code className="bg-white border border-black px-1 font-mono text-sm ml-1">
+                output: 'export'
+              </code>
+              .
             </p>
 
             <div className="flex gap-4">
@@ -321,10 +348,13 @@ export function DeployConfig() {
           <div className="flex items-center gap-3">
             <AlertTriangle className="w-6 h-6 text-red-600" />
             <div>
-              <h4 className="font-black text-red-900 uppercase">Deployment Not Recommended</h4>
+              <h4 className="font-black text-red-900 uppercase">
+                Deployment Not Recommended
+              </h4>
               <p className="text-sm font-medium text-red-800">
-                Since you don't meet the Next.js requirements, we recommend waiting for the next version of Deployr or
-                choosing a different framework.
+                Since you don't meet the Next.js requirements, we recommend
+                waiting for the next version of Deployr or choosing a different
+                framework.
               </p>
             </div>
           </div>
@@ -336,14 +366,18 @@ export function DeployConfig() {
         <div className="space-y-6">
           <NeoCard className="bg-neo-bg">
             <div className="mb-4 border-b-2 border-neo-black pb-2">
-              <span className="font-black uppercase tracking-widest text-sm">Framework</span>
+              <span className="font-black uppercase tracking-widest text-sm">
+                Framework
+              </span>
             </div>
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-white border-2 border-neo-black flex items-center justify-center font-black text-2xl shadow-neo-sm">
                 {frameworks[selectedFramework]?.logo}
               </div>
               <div>
-                <div className="font-bold text-lg leading-none mb-1">{frameworks[selectedFramework]?.name}</div>
+                <div className="font-bold text-lg leading-none mb-1">
+                  {frameworks[selectedFramework]?.name}
+                </div>
                 <div className="text-xs font-mono bg-neo-green/50 inline-block px-1 border border-black">
                   {detectingFramework ? "DETECTING..." : "AUTO-DETECTED"}
                 </div>
@@ -353,7 +387,9 @@ export function DeployConfig() {
 
           <NeoCard className="bg-white">
             <div className="mb-4 border-b-2 border-neo-black pb-2">
-              <span className="font-black uppercase tracking-widest text-sm">Source</span>
+              <span className="font-black uppercase tracking-widest text-sm">
+                Source
+              </span>
             </div>
             <div className="space-y-3 font-medium text-sm">
               <div className="flex items-center gap-2">
@@ -368,7 +404,9 @@ export function DeployConfig() {
               </div>
               <div className="flex items-center gap-2">
                 <GitBranch className="w-4 h-4" />
-                <span className="font-mono bg-gray-100 border border-gray-300 px-1">{selectedBranch}</span>
+                <span className="font-mono bg-gray-100 border border-gray-300 px-1">
+                  {selectedBranch}
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <Folder className="w-4 h-4" />
@@ -382,14 +420,18 @@ export function DeployConfig() {
         <div className="lg:col-span-2">
           <NeoCard className="p-0 overflow-visible">
             <div className="bg-neo-black text-white p-4 border-b-4 border-neo-black flex justify-between items-center">
-              <h2 className="text-2xl font-black uppercase italic tracking-wider">Configuration</h2>
+              <h2 className="text-2xl font-black uppercase italic tracking-wider">
+                Configuration
+              </h2>
               <Settings className="w-6 h-6" />
             </div>
 
             <div className="p-8 space-y-8">
               {/* Project Name */}
               <div className="space-y-2">
-                <label className="font-bold text-neo-black uppercase text-sm block">Project Name</label>
+                <label className="font-bold text-neo-black uppercase text-sm block">
+                  Project Name
+                </label>
                 <input
                   value={projectName}
                   onChange={(e) => setProjectName(e.target.value)}
@@ -400,7 +442,9 @@ export function DeployConfig() {
 
               {/* Branch Selection */}
               <div className="space-y-2">
-                <label className="font-bold text-neo-black uppercase text-sm block">Branch</label>
+                <label className="font-bold text-neo-black uppercase text-sm block">
+                  Branch
+                </label>
                 <div className="relative">
                   <select
                     value={selectedBranch}
@@ -421,13 +465,18 @@ export function DeployConfig() {
 
               {/* Root Directory */}
               <div className="space-y-2">
-                <label className="font-bold text-neo-black uppercase text-sm block">Root Directory</label>
+                <label className="font-bold text-neo-black uppercase text-sm block">
+                  Root Directory
+                </label>
                 <div className="flex gap-4">
                   <div className="flex-1 h-12 flex items-center px-4 border-4 border-neo-black bg-gray-50 font-mono text-sm">
                     <Folder className="w-4 h-4 mr-2 text-gray-400" />
                     {rootDirectory}
                   </div>
-                  <NeoButton variant="outline" onClick={() => setShowFolderBrowser(true)}>
+                  <NeoButton
+                    variant="outline"
+                    onClick={() => setShowFolderBrowser(true)}
+                  >
                     Change
                   </NeoButton>
                 </div>
@@ -435,7 +484,9 @@ export function DeployConfig() {
 
               {/* Framework Selector */}
               <div className="space-y-2">
-                <label className="font-bold text-neo-black uppercase text-sm block">Framework Preset</label>
+                <label className="font-bold text-neo-black uppercase text-sm block">
+                  Framework Preset
+                </label>
                 <div className="relative">
                   <select
                     value={selectedFramework}
@@ -461,11 +512,13 @@ export function DeployConfig() {
                   className="flex items-center gap-2 font-bold hover:text-neo-pink transition-colors group"
                 >
                   <div
-                    className={`w-4 h-4 border-2 border-black flex items-center justify-center transition-colors ${
+                    className={`w-4 h-4 border-2 border-black flex items-center justify-center transition-colors cursor-default ${
                       advancedSettings ? "bg-neo-black" : "bg-white"
                     }`}
                   >
-                    {advancedSettings && <Check className="w-3 h-3 text-white" strokeWidth={4} />}
+                    {advancedSettings && (
+                      <Check className="w-3 h-3 text-white" strokeWidth={4} />
+                    )}
                   </div>
                   OVERRIDE BUILD SETTINGS
                 </button>
@@ -477,7 +530,9 @@ export function DeployConfig() {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="font-bold text-xs uppercase">Build Command</label>
+                      <label className="font-bold text-xs uppercase">
+                        Build Command
+                      </label>
                       <input
                         value={buildCommand}
                         onChange={(e) => setBuildCommand(e.target.value)}
@@ -486,7 +541,9 @@ export function DeployConfig() {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="font-bold text-xs uppercase">Output Directory</label>
+                      <label className="font-bold text-xs uppercase">
+                        Output Directory
+                      </label>
                       <input
                         value={outputDirectory}
                         onChange={(e) => setOutputDirectory(e.target.value)}
@@ -495,7 +552,9 @@ export function DeployConfig() {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="font-bold text-xs uppercase">Install Command</label>
+                      <label className="font-bold text-xs uppercase">
+                        Install Command
+                      </label>
                       <input
                         value={installCommand}
                         onChange={(e) => setInstallCommand(e.target.value)}
@@ -509,9 +568,13 @@ export function DeployConfig() {
               {/* Environment Variables */}
               <div className="border-t-4 border-dashed border-gray-200 pt-6">
                 <div className="flex justify-between items-center mb-4">
-                  <h3 className="font-bold uppercase text-sm">Environment Variables</h3>
+                  <h3 className="font-bold uppercase text-sm">
+                    Environment Variables
+                  </h3>
                   <button
-                    onClick={() => setEnvVars([...envVars, { key: "", value: "" }])}
+                    onClick={() =>
+                      setEnvVars([...envVars, { key: "", value: "" }])
+                    }
                     className="text-xs font-bold bg-neo-black text-white px-2 py-1 hover:bg-neo-pink transition-colors"
                   >
                     + ADD NEW
@@ -542,7 +605,9 @@ export function DeployConfig() {
                         className="flex-1 p-2 border-2 border-neo-black font-mono text-sm"
                       />
                       <button
-                        onClick={() => setEnvVars(envVars.filter((_, idx) => idx !== i))}
+                        onClick={() =>
+                          setEnvVars(envVars.filter((_, idx) => idx !== i))
+                        }
                         className="p-2 border-2 border-neo-black hover:bg-red-500 hover:text-white font-bold"
                       >
                         X
@@ -550,7 +615,9 @@ export function DeployConfig() {
                     </div>
                   ))}
                   {envVars.length === 0 && (
-                    <p className="text-sm text-gray-400 italic">No environment variables configured.</p>
+                    <p className="text-sm text-gray-400 italic">
+                      No environment variables configured.
+                    </p>
                   )}
                 </div>
               </div>
@@ -565,7 +632,8 @@ export function DeployConfig() {
                 disabled={
                   deploying ||
                   !projectName ||
-                  (selectedFramework === "nextjs" && nextjsValidationConfirmed !== true)
+                  (selectedFramework === "nextjs" &&
+                    nextjsValidationConfirmed !== true)
                 }
               >
                 {deploying ? (
@@ -580,11 +648,12 @@ export function DeployConfig() {
                   </>
                 )}
               </NeoButton>
-              {selectedFramework === "nextjs" && nextjsValidationConfirmed === false && (
-                <p className="text-xs text-center mt-3 font-bold text-red-600">
-                  Deployment blocked until Next.js requirements are confirmed
-                </p>
-              )}
+              {selectedFramework === "nextjs" &&
+                nextjsValidationConfirmed === false && (
+                  <p className="text-xs text-center mt-3 font-bold text-red-600">
+                    Deployment blocked until Next.js requirements are confirmed
+                  </p>
+                )}
             </div>
           </NeoCard>
         </div>

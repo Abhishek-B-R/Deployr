@@ -36,7 +36,7 @@ export default async function ProjectsPage() {
   const projects = await getProjects(session.user.email);
 
   return (
-    <div className="min-h-screen min-w-full overflow-x-hidden px-16 bg-linear-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800">
+    <div className="min-h-screen min-w-full overflow-x-hidden bg-neo-bg text-neo-black font-sans selection:bg-neo-yellow">
       <Suspense fallback={<ProjectsListSkeleton />}>
         <ProjectsList projects={projects} user={session.user} />
       </Suspense>
