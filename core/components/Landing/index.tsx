@@ -18,7 +18,7 @@ return (
     // Neo-Brutalist base background is usually an off-white/cream or a very light pastel.
     <div className="min-h-screen w-full bg-neo-bg overflow-x-hidden">
       <NavBar/>
-      <main className="pt-20"> {/* Add padding for fixed navbar */}
+      <main className="-mt-30 md:mt-0 md:pt-20">
         <Hero isVisible={isVisible}/>
         <Features/>
         <HowItWorks/>

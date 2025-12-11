@@ -244,7 +244,7 @@ export function DeployConfig() {
 
       const result: DeploymentResult = await response.json();
 
-      router.push(`/projects/${result.project.id}`);
+      router.push(`/projects/${result.project.id}/overview`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Deployment failed");
       console.error("Deployment error:", err);
