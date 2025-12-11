@@ -1,80 +1,34 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+
+import React from "react";
+import NavBar from "@/components/NavBar";
 
 export function UserSettingsSkeleton() {
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800">
-      {/* Header Skeleton */}
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
-        <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <div className="w-24 h-8 bg-muted rounded animate-pulse" />
-            <Separator orientation="vertical" className="h-6" />
-            <div className="flex items-center space-x-2">
-              <div className="w-5 h-5 bg-muted rounded animate-pulse" />
-              <div className="w-16 h-6 bg-muted rounded animate-pulse" />
-            </div>
-          </div>
-          <div className="w-9 h-9 bg-muted rounded animate-pulse" />
+    <div className="min-h-screen bg-neo-bg">
+      <NavBar />
+      <main className="container mx-auto px-4 md:px-10 py-12 pt-32 max-w-5xl animate-pulse">
+        
+        {/* Header Title Skeleton */}
+        <div className="mb-12 space-y-2">
+           <div className="h-16 w-64 bg-neo-black/10 border-4 border-transparent"></div>
+           <div className="h-16 w-48 bg-neo-black/10 border-4 border-transparent"></div>
         </div>
-      </header>
 
-      {/* Main Content Skeleton */}
-      <main className="container py-8">
-        <div className="max-w-4xl mx-auto space-y-8">
-          {/* Profile Overview Skeleton */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center space-x-4">
-                <div className="h-16 w-16 bg-muted rounded-full animate-pulse" />
-                <div className="space-y-2">
-                  <div className="w-32 h-6 bg-muted rounded animate-pulse" />
-                  <div className="w-48 h-4 bg-muted rounded animate-pulse" />
-                  <div className="flex items-center space-x-4">
-                    <div className="w-24 h-4 bg-muted rounded animate-pulse" />
-                    <div className="w-32 h-4 bg-muted rounded animate-pulse" />
-                  </div>
-                </div>
-              </div>
-            </CardHeader>
-          </Card>
+        <div className="space-y-12">
+           {/* Profile Card Skeleton */}
+           <div className="bg-white border-4 border-neo-black/20 h-64 w-full"></div>
+           
+           {/* Form Card Skeleton */}
+           <div className="bg-white border-4 border-neo-black/20 h-96 w-full p-8 space-y-8">
+               <div className="h-10 w-1/3 bg-neo-black/10"></div>
+               <div className="grid grid-cols-2 gap-8">
+                   <div className="h-12 w-full bg-neo-black/5"></div>
+                   <div className="h-12 w-full bg-neo-black/5"></div>
+               </div>
+           </div>
 
-          {/* Statistics Skeleton */}
-          <div className="grid gap-6 md:grid-cols-3">
-            {[...Array(3)].map((_, i) => (
-              <Card key={i}>
-                <CardContent className="p-6">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-5 h-5 bg-muted rounded animate-pulse" />
-                    <div className="space-y-1">
-                      <div className="w-24 h-4 bg-muted rounded animate-pulse" />
-                      <div className="w-8 h-6 bg-muted rounded animate-pulse" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          {/* Settings Cards Skeleton */}
-          {[...Array(5)].map((_, i) => (
-            <Card key={i}>
-              <CardHeader>
-                <div className="flex items-center space-x-2">
-                  <div className="w-5 h-5 bg-muted rounded animate-pulse" />
-                  <div className="w-32 h-6 bg-muted rounded animate-pulse" />
-                </div>
-                <div className="w-64 h-4 bg-muted rounded animate-pulse" />
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="w-full h-10 bg-muted rounded animate-pulse" />
-                  <div className="w-full h-10 bg-muted rounded animate-pulse" />
-                  <div className="w-24 h-10 bg-muted rounded animate-pulse ml-auto" />
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+           {/* Other Cards Skeleton */}
+           <div className="bg-white border-4 border-neo-black/20 h-48 w-full"></div>
         </div>
       </main>
     </div>

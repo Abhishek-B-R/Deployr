@@ -5,6 +5,8 @@ import prisma from "@/db";
 import { UserSettings } from "@/components/Settings/user-settings";
 import { UserSettingsSkeleton } from "@/components/Settings/user-settings-skeleton";
 import { redirect } from "next/navigation";
+import NavBar from "@/components/NavBar";
+import Footer from "@/components/Footer";
 
 async function getUserData(userEmail: string) {
   const user = await prisma.user.findUnique({
@@ -40,7 +42,8 @@ export default async function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800">
+    <div className="min-h-screen flex items-center justify-center bg-[#F4F0E5] dark:from-slate-950 dark:via-slate-900 dark:to-slate-800">
+      <NavBar/>
       <Suspense fallback={<UserSettingsSkeleton />}>
         <UserSettings user={userData} session={session} />
       </Suspense>
