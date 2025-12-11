@@ -131,7 +131,7 @@ export function ProjectsList({ projects }: ProjectsListProps) {
     <div className="min-h-screen flex flex-col bg-neo-bg">
       <NavBar />
 
-      <main className="flex-1 container mx-auto px-4 md:px-10 py-12 pt-32 max-w-screen-2xl">
+      <main className="flex-1 container mx-auto px-4 md:px-10 py-12 pt-32 max-w-7xl">
         
         {/* Page Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">

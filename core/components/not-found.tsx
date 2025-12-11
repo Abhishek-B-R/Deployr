@@ -11,10 +11,10 @@ export default function NotFound() {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-neo-bg font-sans text-neo-black overflow-hidden flex flex-col">
+    <div className="min-h-screen bg-neo-bg font-sans text-neo-black overflow-hidden flex flex-col mt-20">
       <NavBar />
       
-      <main className="flex-1 flex flex-col items-center justify-center relative p-4 pt-20">
+      <main className="flex-1 flex flex-col items-center justify-center relative p-4 pt-20 min-h-screen">
         
         {/* Background Pattern */}
         <div className="absolute inset-0 z-0 opacity-10 pointer-events-none" 
