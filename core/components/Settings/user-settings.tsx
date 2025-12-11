@@ -279,7 +279,7 @@ export function UserSettings({ user, session }: UserSettingsProps) {
                         <label className="font-black text-sm uppercase">Full Name</label>
                         <input 
                             {...form.register("name")}
-                            className="w-full h-12 px-4 border-4 border-neo-black font-bold focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all bg-white"
+                            className="w-full h-12 px-4 border-4 border-neo-black font-bold focus:outline-none focus:shadow-neo transition-all bg-white"
                             placeholder="John Doe"
                         />
                         {form.formState.errors.name && (

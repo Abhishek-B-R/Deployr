@@ -1,244 +1,122 @@
-"use client"
+"use client";
 
-import type React from "react"
+import { useState } from "react";
+import { Github, Mail, Lock, ArrowRight, AlertCircle } from "lucide-react";
+import { NeoButton, NeoCard } from "@/components/neo-ui";
+import { useRouter } from "next/navigation";
 
-import { signIn, getSession } from "next-auth/react"
-import { useState, useEffect } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Separator } from "@/components/ui/separator"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Github, Lock, Eye, EyeOff, Loader2, Shield, Sparkles } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
+// Mock Sign In for Preview
+const mockSignIn = async (provider: string) => {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            // Mock redirect
+            window.location.href = "/projects"; 
+            resolve(true);
+        }, 1500);
+    });
+};
 
 export default function SignInForm() {
-  const [password, setPassword] = useState("")
-  const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [isGithubLoading, setIsGithubLoading] = useState(false)
-  const [error, setError] = useState("")
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const { toast } = useToast()
+  const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const router = useRouter();
 
-  const callbackUrl = searchParams.get("callbackUrl") || "/"
+  const handleGithubSignIn = async () => {
+    setIsLoading(true);
+    await mockSignIn("github");
+  };
 
-  useEffect(() => {
-    // Check if user is already authenticated
-    const checkAuth = async () => {
-      const session = await getSession()
-      if (session) {
-        router.push(callbackUrl)
-      }
-    }
-    checkAuth()
-  }, [router, callbackUrl])
-
-  const handleCredentialsLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!password.trim()) {
-      setError("Please enter your password")
-      return
-    }
-
-    setIsLoading(true)
-    setError("")
-
-    try {
-      const res = await signIn("credentials", {
-        password,
-        redirect: false,
-        callbackUrl,
-      })
-
-      if (res?.error) {
-        setError("❌ Access Denied – Wrong password")
-        toast({
-          title: "Authentication Failed",
-          description: "The password you entered is incorrect.",
-          variant: "destructive",
-        })
-      } else if (res?.ok) {
-        toast({
-          title: "Welcome back!",
-          description: "You have been successfully authenticated.",
-        })
-        router.push(callbackUrl)
-      }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
-      setError("An unexpected error occurred. Please try again.")
-      toast({
-        title: "Error",
-        description: "An unexpected error occurred during authentication.",
-        variant: "destructive",
-      })
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const handleGithubLogin = async () => {
-    setIsGithubLoading(true)
-    setError("")
-
-    try {
-      await signIn("github", {
-        callbackUrl,
-      })
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
-      setError("Failed to authenticate with GitHub")
-      toast({
-        title: "GitHub Authentication Failed",
-        description: "There was an error connecting to GitHub. Please try again.",
-        variant: "destructive",
-      })
-      setIsGithubLoading(false)
-    }
-  }
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !isLoading) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      handleCredentialsLogin(e as any)
-    }
-  }
+  const handleCredentialsSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    await mockSignIn("credentials");
+  };
 
   return (
-    <div className="w-full max-w-md space-y-8">
-      {/* Header */}
-      <div className="text-center space-y-2">
-        <div className="flex justify-center">
-          <div className="relative">
-            <Shield className="h-12 w-12 text-primary" />
-            <Sparkles className="h-4 w-4 text-yellow-500 absolute -top-1 -right-1 animate-pulse" />
-          </div>
-        </div>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Welcome Back</h1>
-        <p className="text-muted-foreground">Sign in to your account to continue</p>
+    <NeoCard className="bg-white p-8 relative overflow-visible transform hover:rotate-0 transition-transform duration-300">
+        
+      {/* Decorative Tape */}
+      <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-neo-yellow px-4 py-1 border-2 border-neo-black shadow-sm transform -rotate-2 z-20">
+        <span className="font-black text-xs uppercase tracking-widest">Auth Required</span>
       </div>
 
-      <Card className="border-0 shadow-2xl bg-card/50 backdrop-blur-sm">
-        <CardHeader className="space-y-1 pb-4">
-          <CardTitle className="text-2xl font-semibold text-center">Sign In</CardTitle>
-          <CardDescription className="text-center">Choose your preferred authentication method</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* GitHub OAuth Section */}
-          <div className="space-y-3">
-            <Button
-              onClick={handleGithubLogin}
-              disabled={isGithubLoading || isLoading}
-              className="w-full h-12 text-base font-medium bg-[#24292e] hover:bg-[#1a1e22] dark:bg-[#f6f8fa] dark:text-[#24292e] dark:hover:bg-[#e1e4e8] transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
-              size="lg"
-            >
-              {isGithubLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                  Connecting to GitHub...
-                </>
-              ) : (
-                <>
-                  <Github className="mr-2 h-5 w-5" />
-                  Continue with GitHub
-                </>
-              )}
-            </Button>
-            <p className="text-xs text-muted-foreground text-center">
-              Sign in with your GitHub account for quick access
-            </p>
-          </div>
+      <div className="space-y-6 mt-4">
+        {/* GitHub Button */}
+        <button
+          onClick={handleGithubSignIn}
+          disabled={isLoading}
+          className="w-full bg-neo-black text-white h-14 font-bold text-lg border-4 border-neo-black shadow-neo hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] hover:bg-gray-800 transition-all flex items-center justify-center gap-3"
+        >
+          <Github className="w-6 h-6" />
+          <span>Continue with GitHub</span>
+        </button>
 
-          {/* Separator */}
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <Separator className="w-full" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground font-medium">Or continue with</span>
-            </div>
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t-2 border-gray-200"></div>
           </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-white px-2 text-gray-400 font-bold tracking-widest">Or continue with</span>
+          </div>
+        </div>
 
-          {/* Credentials Section */}
-          <form onSubmit={handleCredentialsLogin} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-medium flex items-center gap-2">
-                <Lock className="h-4 w-4" />
-                Secret Password
-              </Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  placeholder="Enter your secret password"
-                  disabled={isLoading || isGithubLoading}
-                  className="h-12 pr-12 text-base transition-all duration-200 focus:ring-2 focus:ring-primary/20"
-                  autoComplete="current-password"
+        {/* Credentials Form */}
+        <form onSubmit={handleCredentialsSignIn} className="space-y-4">
+          <div className="space-y-2">
+            <label className="text-xs font-black uppercase text-gray-500 ml-1">Email Address</label>
+            <div className="relative">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="name@example.com"
+                    className="w-full h-12 pl-12 pr-4 border-4 border-neo-black font-mono text-sm focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(84,160,255,1)] transition-all placeholder:text-gray-300"
+                    required
                 />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="absolute right-0 top-0 h-12 px-3 py-2 hover:bg-transparent"
-                  onClick={() => setShowPassword(!showPassword)}
-                  disabled={isLoading || isGithubLoading}
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4 text-muted-foreground" />
-                  ) : (
-                    <Eye className="h-4 w-4 text-muted-foreground" />
-                  )}
-                </Button>
-              </div>
             </div>
+          </div>
+          
+          <div className="space-y-2">
+            <label className="text-xs font-black uppercase text-gray-500 ml-1">Password</label>
+            <div className="relative">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full h-12 pl-12 pr-4 border-4 border-neo-black font-mono text-sm focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(84,160,255,1)] transition-all placeholder:text-gray-300"
+                    required
+                />
+            </div>
+          </div>
 
-            <Button
-              type="submit"
-              disabled={isLoading || isGithubLoading || !password.trim()}
-              className="w-full h-12 text-base font-medium bg-primary hover:bg-primary/90 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
-              size="lg"
-            >
-              {isLoading ? (
+          <NeoButton 
+            variant="primary" 
+            className="w-full h-12 mt-4 text-base text-black hover:bg-blue-600 hover:text-white"
+            disabled={isLoading}
+            type="submit"
+          >
+            {isLoading ? (
+                "AUTHENTICATING..."
+            ) : (
                 <>
-                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                  Authenticating...
+                    Sign In <ArrowRight className="w-5 h-5 ml-2" />
                 </>
-              ) : (
-                <>
-                  <Lock className="mr-2 h-4 w-4" />
-                  Sign In with Password
-                </>
-              )}
-            </Button>
-          </form>
-
-          {/* Error Alert */}
-          {error && (
-            <Alert variant="destructive" className="animate-in slide-in-from-top-2 duration-300">
-              <AlertDescription className="flex items-center gap-2">
-                <Lock className="h-4 w-4" />
-                {error}
-              </AlertDescription>
-            </Alert>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Footer */}
-      <div className="text-center space-y-2">
-        <p className="text-sm text-muted-foreground">Secure authentication powered by NextAuth</p>
-        <div className="flex items-center justify-center gap-1 text-xs text-muted-foreground">
-          <Shield className="h-3 w-3" />
-          <span>Your data is protected and encrypted</span>
-        </div>
+            )}
+          </NeoButton>
+        </form>
       </div>
-    </div>
-  )
+
+      {/* Info Box */}
+      <div className="mt-8 p-3 bg-gray-50 border-2 border-dashed border-gray-300 flex items-start gap-3">
+        <AlertCircle className="w-5 h-5 text-gray-400 shrink-0 mt-0.5" />
+        <p className="text-xs font-medium text-gray-500">
+            By clicking continue, you agree to our <a href="#" className="underline decoration-2 decoration-neo-yellow text-black font-bold">Terms of Service</a> and <a href="#" className="underline decoration-2 decoration-neo-yellow text-black font-bold">Privacy Policy</a>.
+        </p>
+      </div>
+    </NeoCard>
+  );
 }
