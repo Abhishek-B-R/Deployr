@@ -4,6 +4,8 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/authOptions"
 import prisma from "@/db"
 import { ProjectSettings } from "@/components/ProjectOverview/project-settings"
+import NavBar from "@/components/NavBar"
+import Footer from "@/components/Footer"
 
 async function getProject(projectId: string, userEmail: string) {
   const project = await prisma.project.findFirst({
@@ -40,7 +42,8 @@ export default async function ProjectSettingsPage(props: any) {
   }
 
   return (
-    <div className="min-h-screen bg-background flex justify-center-safe">
+    <div className="min-h-screen bg-background flex justify-center-safe bg-[#F4F0E5]">
+      <NavBar/>
       <Suspense fallback={<div>Loading project settings...</div>}>
         <ProjectSettings project={project} />
       </Suspense>

@@ -1,10 +1,10 @@
-"use client"
+"use client";
 import React from "react";
 import { Zap, Github, Twitter, Linkedin, Heart } from "lucide-react";
 
-export default function Footer() {
+export default function Footer({ className }: { className?: string }) {
   return (
-    <footer className="bg-neo-black text-neo-white pt-24 pb-12 px-6 border-t-4 border-neo-black">
+    <footer className={`bg-neo-black text-neo-white pt-24 pb-12 px-6 border-t-4 border-neo-black ${className}`}>
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
         <div className="space-y-4 col-span-1 md:col-span-2">
           <div className="flex items-center gap-2 mb-6">
@@ -99,7 +99,7 @@ export default function Footer() {
           >
             <Github size={20} />
           </div>
-          <div 
+          <div
             onClick={() => {
               window.open(
                 "https://x.com/abhi__br",
@@ -107,7 +107,8 @@ export default function Footer() {
                 "noopener,noreferrer"
               );
             }}
-            className="p-3 bg-white text-black border-2 border-black hover:bg-neo-blue hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] cursor-pointer transition-all">
+            className="p-3 bg-white text-black border-2 border-black hover:bg-neo-blue hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] cursor-pointer transition-all"
+          >
             <Twitter size={20} />
           </div>
         </div>

@@ -1,10 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { NeoCard, NeoButton, NeoBadge } from "@/components/neo-ui"
 import {
   Terminal,
   Download,
@@ -68,180 +65,166 @@ export function LiveBuildLogs({
   const getLogTypeColor = (type: string) => {
     switch (type) {
       case "error":
-        return "text-red-400"
+        return "text-red-500 font-bold bg-red-900/20"
       case "warning":
-        return "text-yellow-400"
+        return "text-neo-yellow font-bold"
       case "success":
-        return "text-green-400"
+        return "text-neo-green font-bold"
       default:
-        return "text-green-400"
+        return "text-gray-300"
     }
   }
 
   const getConnectionStatus = () => {
     if (error) {
-      return { icon: XCircle, color: "text-red-500", label: "Error" }
+      return { icon: XCircle, color: "bg-red-500", label: "ERROR" }
     }
     if (isComplete) {
-      return { icon: CheckCircle, color: "text-green-500", label: "Complete" }
+      return { icon: CheckCircle, color: "bg-neo-green", label: "COMPLETE" }
     }
     if (isConnected) {
-      return { icon: Wifi, color: "text-green-500", label: "Connected" }
+      return { icon: Wifi, color: "bg-neo-blue", label: "CONNECTED" }
     }
-    return { icon: WifiOff, color: "text-red-500", label: "Connecting..." }
+    return { icon: WifiOff, color: "bg-gray-400", label: "CONNECTING..." }
   }
 
   const status = getConnectionStatus()
   const StatusIcon = status.icon
 
   return (
-    <Card className={cn("w-full", className)}>
-      <CardHeader>
-        <div className="flex items-center justify-between">
+    <div className={cn("w-full font-mono", className)}>
+      {/* Terminal Header */}
+      <div className="bg-neo-black text-white p-3 flex items-center justify-between border-b-4 border-neo-black rounded-t-sm">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 bg-white border-2 border-neo-black flex items-center justify-center text-black">
+            <Terminal className="w-5 h-5" />
+          </div>
           <div>
-            <CardTitle className="flex items-center space-x-2">
-              <Terminal className="w-5 h-5" />
-              <span>Live Build Logs</span>
-            </CardTitle>
-            <CardDescription>Real-time build logs for {projectName}</CardDescription>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Badge variant="outline" className="flex items-center space-x-1">
-              <StatusIcon className={cn("w-3 h-3", status.color)} />
-              <span>{status.label}</span>
-            </Badge>
-            {isLive && (
-              <Badge variant="default" className="bg-red-600">
-                LIVE
-              </Badge>
-            )}
-            {logs.length > 0 && <Badge variant="secondary">{logs.length} lines</Badge>}
+            <h3 className="font-bold text-sm tracking-wider uppercase">Live Build Logs</h3>
+            <p className="text-xs text-gray-400 font-medium">{projectName}.exe</p>
           </div>
         </div>
-
-        <div className="flex items-center justify-between pt-2">
-          <div className="flex items-center space-x-2">
-            <Button variant="outline" size="sm" onClick={() => setIsPaused(!isPaused)} disabled={!isLive}>
-              {isPaused ? (
-                <>
-                  <Play className="w-4 h-4 mr-2" />
-                  Resume
-                </>
-              ) : (
-                <>
-                  <Pause className="w-4 h-4 mr-2" />
-                  Pause
-                </>
-              )}
-            </Button>
-
-            <Button variant="outline" size="sm" onClick={() => setAutoScroll(!autoScroll)}>
-              Auto-scroll: {autoScroll ? "On" : "Off"}
-            </Button>
+        <div className="flex items-center gap-2">
+          <div className={cn("px-2 py-0.5 text-xs font-bold text-black border-2 border-white flex items-center gap-2", status.color)}>
+            <StatusIcon className="w-3 h-3" />
+            {status.label}
           </div>
-
-          <div className="flex items-center space-x-2">
-            {error && (
-              <Button variant="outline" size="sm" onClick={retry}>
-                <RefreshCw className="w-4 h-4 mr-2" />
-                Retry
-              </Button>
-            )}
-
-            <Button variant="outline" size="sm" onClick={clearLogs}>
-              <Trash2 className="w-4 h-4 mr-2" />
-              Clear
-            </Button>
-
-            <Button variant="outline" size="sm" onClick={downloadLogs} disabled={logs.length === 0}>
-              <Download className="w-4 h-4 mr-2" />
-              Download
-            </Button>
-          </div>
+          {isLive && (
+            <div className="bg-red-600 text-white px-2 py-0.5 text-xs font-bold border-2 border-white animate-pulse">
+              LIVE
+            </div>
+          )}
         </div>
-      </CardHeader>
+      </div>
 
-      <CardContent>
-        <div className="relative">
-          <ScrollArea ref={scrollAreaRef} className="h-96 w-full rounded-md border bg-black p-4">
-            <div className="font-mono text-sm space-y-1">
-              {logs.length === 0 ? (
-                <div className="text-gray-500 text-center py-8">
-                  {error ? (
-                    <div className="space-y-2">
-                      <AlertCircle className="w-8 h-8 mx-auto text-red-500" />
-                      <p>Connection error: {error}</p>
-                      <Button variant="outline" size="sm" onClick={retry}>
-                        Try Again
-                      </Button>
-                    </div>
-                  ) : isConnected ? (
-                    <div className="space-y-2">
-                      <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse mx-auto"></div>
-                      <p>Connected - Waiting for build logs...</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-2">
-                      <RefreshCw className="w-8 h-8 mx-auto animate-spin text-blue-500" />
-                      <p>Connecting to build logs...</p>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                logs.map((log, index) => (
-                  <div
-                    key={index}
-                    className={cn(
-                      "whitespace-pre-wrap break-words",
-                      getLogTypeColor(log.type || "info"),
-                      isPaused && "opacity-60",
-                    )}
-                  >
-                    <span className="text-gray-500 text-xs">[{log.timestamp.toLocaleTimeString()}]</span> {log.message}
+      {/* Terminal Controls */}
+      <div className="bg-gray-100 border-x-4 border-neo-black p-2 flex items-center justify-between border-b-4">
+        <div className="flex gap-2">
+          <button 
+            onClick={() => setIsPaused(!isPaused)} 
+            disabled={!isLive}
+            className="px-3 py-1 bg-white border-2 border-neo-black shadow-neo-sm hover:shadow-none hover:translate-x-px hover:translate-y-px text-xs font-bold flex items-center gap-2 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
+          >
+            {isPaused ? <Play className="w-3 h-3" /> : <Pause className="w-3 h-3" />}
+            {isPaused ? "RESUME" : "PAUSE"}
+          </button>
+          <button 
+            onClick={() => setAutoScroll(!autoScroll)}
+            className={cn(
+              "px-3 py-1 border-2 border-neo-black shadow-neo-sm hover:shadow-none hover:translate-x-px hover:translate-y-px text-xs font-bold transition-all cursor-pointer",
+              autoScroll ? "bg-neo-yellow text-black" : "bg-white text-black"
+            )}
+          >
+            AUTO-SCROLL: {autoScroll ? "ON" : "OFF"}
+          </button>
+        </div>
+        <div className="flex gap-2">
+          {error && (
+            <button onClick={retry} className="p-1.5 bg-white border-2 border-neo-black shadow-neo-sm hover:bg-gray-50 cursor-pointer">
+              <RefreshCw className="w-4 h-4" />
+            </button>
+          )}
+          <button onClick={clearLogs} className="p-1.5 bg-white border-2 border-neo-black shadow-neo-sm hover:bg-red-100 hover:text-red-600 cursor-pointer">
+            <Trash2 className="w-4 h-4" />
+          </button>
+          <button onClick={downloadLogs} disabled={logs.length === 0} className="p-1.5 bg-white border-2 border-neo-black shadow-neo-sm hover:bg-neo-blue hover:text-white disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed">
+            <Download className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+
+      {/* Terminal Body */}
+      <div className="relative border-4 border-t-0 border-neo-black bg-[#0c0c0c] min-h-[400px]">
+        <div ref={scrollAreaRef} className="h-96 overflow-y-auto p-4 neo-scrollbar">
+          {/* CRT Scanline Effect */}
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] z-10 pointer-events-none bg-size-[100%_4px,3px_100%]"></div>
+          
+          <div className="font-mono text-sm space-y-1 relative z-0">
+            {logs.length === 0 ? (
+              <div className="text-gray-500 text-center py-20 flex flex-col items-center justify-center">
+                {error ? (
+                  <div className="space-y-4">
+                    <AlertCircle className="w-12 h-12 mx-auto text-red-500" />
+                    <p className="text-red-500 font-bold">CONNECTION_ERROR: {error}</p>
+                    <NeoButton variant="outline" size="sm" onClick={retry}>
+                      RETRY CONNECTION
+                    </NeoButton>
                   </div>
-                ))
-              )}
-              <div ref={bottomRef} />
-            </div>
-          </ScrollArea>
-
-          {/* Live indicator */}
-          {isLive && !isPaused && (
-            <div className="absolute top-2 right-2">
-              <div className="flex items-center space-x-1 bg-red-600 text-white px-2 py-1 rounded text-xs font-medium">
-                <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                <span>LIVE</span>
+                ) : isConnected ? (
+                  <div className="space-y-4">
+                    <div className="w-3 h-3 bg-neo-green rounded-none animate-ping mx-auto"></div>
+                    <p className="font-bold tracking-widest text-neo-green">SIGNAL ESTABLISHED. WAITING FOR DATA...</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <RefreshCw className="w-12 h-12 mx-auto animate-spin text-neo-blue" />
+                    <p className="font-bold tracking-widest text-neo-blue">INITIALIZING UPLINK...</p>
+                  </div>
+                )}
               </div>
-            </div>
-          )}
-
-          {/* Paused indicator */}
-          {isPaused && (
-            <div className="absolute top-2 right-2">
-              <div className="flex items-center space-x-1 bg-yellow-600 text-white px-2 py-1 rounded text-xs font-medium">
-                <Pause className="w-3 h-3" />
-                <span>PAUSED</span>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Status bar */}
-        <div className="mt-4 flex items-center justify-between text-sm text-muted-foreground">
-          <div className="flex items-center space-x-4">
-            <span>Status: {status.label}</span>
-            {logs.length > 0 && <span>Last update: {logs[logs.length - 1]?.timestamp.toLocaleTimeString()}</span>}
-            {isLive && <span className="text-red-500 font-medium">● LIVE MODE</span>}
+            ) : (
+              logs.map((log, index) => (
+                <div
+                  key={index}
+                  className={cn(
+                    "whitespace-pre-wrap wrap-break-word border-l-2 pl-2 border-transparent hover:border-gray-700 hover:bg-white/5",
+                    getLogTypeColor(log.type || "info"),
+                    isPaused && "opacity-50",
+                  )}
+                >
+                  <span className="text-gray-600 text-xs mr-3 select-none">
+                    {log.timestamp.toLocaleTimeString([], { hour12: false, hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+                  </span> 
+                  {log.message}
+                </div>
+              ))
+            )}
+            
+            {isLive && !isPaused && (
+              <div className="w-2 h-4 bg-neo-green animate-pulse inline-block align-middle ml-1"></div>
+            )}
+            
+            <div ref={bottomRef} />
           </div>
-
-          {!isLive && logs.length > 0 && (
-            <div className="flex items-center space-x-1 text-blue-600">
-              <CheckCircle className="w-4 h-4" />
-              <span>Switched to stored logs</span>
-            </div>
-          )}
         </div>
-      </CardContent>
-    </Card>
+
+        {/* Terminal Footer Status */}
+        <div className="bg-neo-black p-1 px-3 text-xs font-mono text-gray-500 flex justify-between border-t border-gray-800">
+          <div>
+            {logs.length > 0 && <span>LAST_PACKET: {logs[logs.length - 1]?.timestamp.toLocaleTimeString()}</span>}
+          </div>
+          <div>
+            {isLive ? <span className="text-neo-green">● LIVE_STREAM</span> : <span>○ OFFLINE</span>}
+          </div>
+        </div>
+
+        {/* Paused Overlay */}
+        {isPaused && (
+          <div className="absolute top-4 right-4 bg-neo-yellow text-black border-2 border-neo-black px-3 py-1 font-bold shadow-neo-sm z-20 animate-pulse">
+            PAUSED
+          </div>
+        )}
+      </div>
+    </div>
   )
 }

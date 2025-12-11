@@ -2,17 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { NeoCard, NeoButton, NeoBadge } from "@/components/neo-ui";
 import {
   Globe,
   Github,
@@ -28,13 +18,16 @@ import {
   Copy,
   CheckCircle,
   XCircle,
-  CheckIcon,
-  Ban,
+  LayoutDashboard,
+  Server,
+  BarChart3,
+  Check,
 } from "lucide-react";
-import { getTimeAgo } from "@/lib/utils";
 import { ProjectLogs } from "@/components/ProjectOverview/project-logs";
-import NavBar from "../NavBar";
-import Footer from "../Footer";
+import { ProjectSettings } from "@/components/ProjectOverview/project-settings";
+import NavBar from "@/components/NavBar";
+import Footer from "@/components/Footer";
+import { getTimeAgo } from "@/lib/utils";
 
 interface ProjectOverviewProps {
   project: {
@@ -59,27 +52,16 @@ interface ProjectOverviewProps {
   };
 }
 
-const statusConfig = {
-  PENDING: {
-    color: "bg-yellow-500",
-    icon: Clock,
-    variant: "secondary" as const,
-  },
+const statusConfig: any = {
+  PENDING: { color: "bg-neo-yellow text-black", icon: Clock, label: "QUEUED" },
   BUILDING: {
-    color: "bg-blue-500",
+    color: "bg-neo-blue text-white",
     icon: RefreshCw,
-    variant: "default" as const,
+    animate: "animate-spin",
+    label: "BUILDING"
   },
-  DEPLOYED: {
-    color: "bg-green-500",
-    icon: CheckCircle,
-    variant: "default" as const,
-  },
-  FAILED: {
-    color: "bg-red-500",
-    icon: XCircle,
-    variant: "destructive" as const,
-  },
+  BUILD_SUCCESS: { color: "bg-neo-green text-black", icon: CheckCircle, label: "LIVE" },
+  BUILD_FAILED: { color: "bg-neo-pink text-black", icon: XCircle, label: "FAILED" },
 };
 
 export function ProjectOverview({
@@ -90,14 +72,12 @@ export function ProjectOverview({
   const [activeTab, setActiveTab] = useState("overview");
   const [redeploy, setRedeploy] = useState(false);
 
-  const status =
-    statusConfig[project.status as keyof typeof statusConfig] ||
-    statusConfig.PENDING;
+  const status = statusConfig[project.status] || statusConfig.PENDING;
   const StatusIcon = status.icon;
   const deploymentUrl = `https://${project.slug}.deployr.live`;
-  const isLive = project.status === "BUILDING";
+  const isLive = project.status === "BUILDING" || project.status === "PENDING";
 
-  // Poll for status updates if building
+  // Poll for status updates if building or pending
   useEffect(() => {
     if (project.status === "BUILDING" || project.status === "PENDING") {
       setActiveTab("deployments");
@@ -108,10 +88,7 @@ export function ProjectOverview({
             const updated = await response.json();
             setProject(updated);
 
-            if (
-              updated.status === "BUILD_SUCCESS" ||
-              updated.status === "FAILED"
-            ) {
+            if (updated.status === "BUILD_SUCCESS" || updated.status === "BUILD_FAILED") {
               clearInterval(interval);
             }
           }
@@ -135,24 +112,17 @@ export function ProjectOverview({
     const k = 1024;
     const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return (
-      Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
-    );
+    return Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
-  // Update the handleDeploy function to use selectedFramework
   const handleRedeploy = async () => {
     setRedeploy(true);
     try {
       const deploymentData = {
-        repository:
-          project.repo_url?.split("/")[3] +
-          "/" +
-          project.repo_url?.split("/")[4],
+        repository: project.repo_url?.split("/")[3] + "/" + project.repo_url?.split("/")[4],
         branch: project.branch,
         projectName: project.name,
       };
-      console.log(deploymentData);
 
       const response = await fetch("/api/redeploy", {
         method: "POST",
@@ -167,6 +137,9 @@ export function ProjectOverview({
       if (!response.ok) {
         throw new Error(result.error || "Deployment failed");
       }
+      
+      // Refresh the page to show updated status
+      window.location.reload();
     } catch (err) {
       console.error("Deployment error:", err);
     } finally {
@@ -176,405 +149,323 @@ export function ProjectOverview({
   };
 
   return (
-    <div className="min-h-screen px-16 bg-linear-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800">
-      {/* Header */}
+    <div className="min-h-screen bg-neo-bg text-neo-black font-sans">
       <NavBar />
 
-      {/* Main Content */}
-      <main className="container py-8 min-h-[750px] 2xl:pl-46 pt-20">
-        <div className="max-w-6xl mx-auto space-y-8">
+      <main className="container mx-auto px-4 md:px-10 py-12 pt-32 min-h-[90vh]">
+        <div className="mx-auto space-y-12">
           {/* Status Banner */}
-          {project.status === "FAILED" && (
-            <Card className="border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/50">
-              <CardContent className="flex items-center space-x-3 p-4">
-                <XCircle className="w-5 h-5 text-red-500" />
-                <div>
-                  <p className="font-medium text-red-900 dark:text-red-100">
-                    Deployment Failed
-                  </p>
-                  <p className="text-sm text-red-700 dark:text-red-300">
-                    There was an error deploying your project. Check the logs
-                    below for details.
+          {project.status === "BUILD_FAILED" && (
+            <div className="border-4 border-red-500 bg-red-100 p-6 shadow-neo">
+              <div className="flex items-center gap-4">
+                <XCircle className="w-8 h-8 text-red-600" />
+                <div className="flex-1">
+                  <h4 className="font-black text-red-900 uppercase text-lg">Deployment Failed</h4>
+                  <p className="font-medium text-red-800">
+                    There was an error deploying your project. Check the logs below for details.
                   </p>
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="ml-auto bg-transparent"
-                >
+                <NeoButton variant="outline" onClick={handleRedeploy}>
+                  <RefreshCw className="w-4 h-4 mr-2" />
                   Retry Deployment
-                </Button>
-              </CardContent>
-            </Card>
+                </NeoButton>
+              </div>
+            </div>
           )}
 
           {project.status === "BUILDING" && (
-            <Card className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/50">
-              <CardContent className="flex items-center space-x-3 p-4">
-                <RefreshCw className="w-5 h-5 text-blue-500 animate-spin" />
+            <div className="border-4 border-neo-blue bg-blue-100 p-6 shadow-neo">
+              <div className="flex items-center gap-4">
+                <RefreshCw className="w-8 h-8 text-blue-600 animate-spin" />
                 <div>
-                  <p className="font-medium text-blue-900 dark:text-blue-100">
-                    Deployment in Progress
-                  </p>
-                  <p className="text-sm text-blue-700 dark:text-blue-300">
-                    Your project is currently being built and deployed.
-                  </p>
+                  <h4 className="font-black text-blue-900 uppercase text-lg">Deployment in Progress</h4>
+                  <p className="font-medium text-blue-800">Your project is currently being built and deployed.</p>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           )}
 
-          {/* Overview Cards */}
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            <Card className="hover:shadow-md transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex items-center space-x-2">
-                  <Globe className="w-5 h-5 text-blue-500" />
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium leading-none">Domain</p>
-                    <p className="text-sm text-muted-foreground">
-                      {project.slug}.deployr.live
-                    </p>
-                  </div>
+          {/* Top Bar: Title & Status */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="bg-neo-black text-white px-2 py-0.5 text-xs font-bold uppercase tracking-widest border border-black">
+                  Project
                 </div>
-              </CardContent>
-            </Card>
+                <div className="w-16 h-1 bg-neo-black"></div>
+              </div>
+              <h1 className="text-5xl md:text-6xl font-black uppercase text-neo-black leading-[0.9]">
+                {project.name}
+              </h1>
+              <a
+                href={deploymentUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xl font-bold text-gray-500 hover:text-neo-blue hover:underline decoration-4 decoration-neo-blue mt-2 inline-flex items-center gap-2"
+              >
+                {project.slug}.deployr.live <ExternalLink className="w-5 h-5" />
+              </a>
+            </div>
 
-            <Card className="hover:shadow-md transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex items-center space-x-2">
-                  <Eye className="w-5 h-5 text-green-500" />
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium leading-none">Views</p>
-                    <p className="text-sm text-muted-foreground">
-                      {project.views.toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="hover:shadow-md transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex items-center space-x-2">
-                  <Activity className="w-5 h-5 text-gray-500" />
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium leading-none">
-                      Last Updated
-                    </p>
-                    <p
-                      className="text-sm text-muted-foreground"
-                      suppressHydrationWarning
-                    >
-                      {getTimeAgo(project.updatedAt)}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="hover:shadow-md transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex items-center space-x-2">
-                  <Zap className="w-5 h-5 text-orange-500" />
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium leading-none">Size</p>
-                    <p className="text-sm text-muted-foreground">
-                      {project.size ? formatBytes(project.size) : "Unknown"}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <div className="flex flex-col items-end gap-3">
+              <div
+                className={`px-6 py-2 border-4 border-neo-black shadow-neo-sm font-black uppercase flex items-center gap-3 text-lg ${status.color}`}
+              >
+                <StatusIcon className={`w-6 h-6 ${status.animate || ""}`} strokeWidth={3} />
+                {status.label}
+              </div>
+              <div className="flex gap-3">
+                <NeoButton 
+                  size="sm" 
+                  variant="outline" 
+                  onClick={handleRedeploy}
+                  disabled={project.status === "BUILDING" || redeploy}
+                >
+                  <RefreshCw className={`w-4 h-4 mr-2 ${redeploy ? "animate-spin" : ""}`} />
+                  Redeploy
+                </NeoButton>
+                {project.status === "BUILD_SUCCESS" && (
+                  <NeoButton
+                    size="sm"
+                    variant="primary"
+                    onClick={() => window.open(deploymentUrl, "_blank")}
+                  >
+                    Visit Site
+                  </NeoButton>
+                )}
+              </div>
+            </div>
           </div>
 
-          {/* Main Content Tabs */}
-          <Tabs
-            value={activeTab}
-            onValueChange={setActiveTab}
-            defaultValue="overview"
-            className="space-y-6"
-          >
-            <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger
-                value="deployments"
-                className="flex items-center space-x-2"
-              >
-                <span>Deployments</span>
-                {isLive && (
-                  <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-                )}
-              </TabsTrigger>
-              <TabsTrigger value="analytics">Analytics</TabsTrigger>
-              <TabsTrigger value="settings">Settings</TabsTrigger>
-            </TabsList>
+          {/* Stats Grid */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+            <NeoCard className="p-4 flex items-center gap-4 hover:bg-white transition-colors">
+              <div className="bg-neo-blue text-white p-3 border-2 border-neo-black shadow-neo-sm">
+                <Globe className="w-6 h-6" />
+              </div>
+              <div>
+                <div className="text-xs font-bold uppercase text-gray-500">Domain</div>
+                <div className="font-bold truncate max-w-[80px] md:max-w-[200px]">{project.slug}</div>
+              </div>
+            </NeoCard>
+            <NeoCard className="p-4 flex items-center gap-4 hover:bg-white transition-colors">
+              <div className="bg-neo-green text-black p-3 border-2 border-neo-black shadow-neo-sm">
+                <Eye className="w-6 h-6" />
+              </div>
+              <div>
+                <div className="text-xs font-bold uppercase text-gray-500">Total Views</div>
+                <div className="font-bold">{project.views.toLocaleString()}</div>
+              </div>
+            </NeoCard>
+            <NeoCard className="p-4 flex items-center gap-4 hover:bg-white transition-colors">
+              <div className="bg-neo-yellow text-black p-3 border-2 border-neo-black shadow-neo-sm">
+                <Activity className="w-6 h-6" />
+              </div>
+              <div>
+                <div className="text-xs font-bold uppercase text-gray-500">Last Update</div>
+                <div className="font-bold">{getTimeAgo(project.updatedAt)}</div>
+              </div>
+            </NeoCard>
+            <NeoCard className="p-4 flex items-center gap-4 hover:bg-white transition-colors">
+              <div className="bg-neo-pink text-black p-3 border-2 border-neo-black shadow-neo-sm">
+                <Zap className="w-6 h-6" />
+              </div>
+              <div>
+                <div className="text-xs font-bold uppercase text-gray-500">Build Size</div>
+                <div className="font-bold">{project.size ? formatBytes(project.size) : "Unknown"}</div>
+              </div>
+            </NeoCard>
+          </div>
 
-            <TabsContent value="overview" className="space-y-6">
-              <div className="grid gap-6 lg:grid-cols-2">
-                {/* Project Details */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center space-x-2">
-                      <Github className="w-5 h-5" />
-                      <span>Repository</span>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {project.repo_url && (
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-1">
-                          <p className="text-sm font-medium">Source</p>
-                          <a
-                            href={project.repo_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-sm text-blue-600 hover:underline flex items-center"
-                          >
-                            {project.repo_url.replace(
-                              "https://github.com/",
-                              ""
-                            )}
-                            <ExternalLink className="w-3 h-3 ml-1" />
-                          </a>
-                        </div>
-                        <Button variant="outline" size="sm" asChild>
-                          <a
-                            href={project.repo_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <Github className="w-4 h-4" />
-                          </a>
-                        </Button>
-                      </div>
-                    )}
+          {/* Main Navigation Tabs */}
+          <div className="border-b-4 border-neo-black grid grid-cols-2 md:grid-cols-4 gap-0">
+            {[
+              { id: "overview", icon: LayoutDashboard, label: "Overview" },
+              { id: "deployments", icon: Server, label: "Deployments" },
+              { id: "analytics", icon: BarChart3, label: "Analytics" },
+              { id: "settings", icon: Settings, label: "Settings" },
+            ].map((tab, index) => {
+              const isBottomRow = index >= 2;
 
-                    <Separator />
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center justify-center gap-2 px-4 md:px-6 py-3 font-black uppercase text-sm border-t-4 border-x-4 border-neo-black transition-all relative top-[4px] ${
+                    isBottomRow ? "border-b-4" : "md:border-b-4"
+                  } ${
+                    activeTab === tab.id
+                      ? "bg-neo-black text-white"
+                      : "bg-white text-gray-400 hover:bg-gray-100"
+                  }`}
+                >
+                  <tab.icon className="w-4 h-4" />
+                  <span className="hidden sm:inline">{tab.label}</span>
+                  <span className="sm:hidden">{tab.label.split(" ")[0]}</span>
+                  {tab.id === "deployments" && isLive && (
+                    <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse ml-1" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
 
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-1">
-                        <p className="text-sm font-medium">Branch</p>
-                        <div className="flex items-center space-x-1">
-                          <GitBranch className="w-3 h-3" />
-                          <span className="text-sm text-muted-foreground">
-                            {project.branch || "main"}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <Separator />
-
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium">Project ID</p>
-                      <div className="flex items-center justify-between">
-                        <code className="text-xs bg-muted px-2 py-1 rounded">
-                          {project.id}
-                        </code>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => copyToClipboard(project.id)}
-                          className="h-6 px-2"
-                        >
-                          {copied ? (
-                            <CheckCircle className="w-3 h-3" />
-                          ) : (
-                            <Copy className="w-3 h-3" />
-                          )}
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Deployment URL */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center space-x-2">
-                      <Globe className="w-5 h-5" />
-                      <span>Deployment</span>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      <p className="text-sm font-medium">Production URL</p>
-                      <div className="flex items-center space-x-2">
-                        <div className="flex-1 p-3 bg-muted rounded-lg">
-                          <code className="text-sm">{deploymentUrl}</code>
-                        </div>
-                        <Button
+          {/* Tab Content */}
+          <div className="min-h-[400px]">
+            {activeTab === "overview" && (
+              <div className="grid lg:grid-cols-2 gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                {/* Left Col */}
+                <div className="space-y-8">
+                  <NeoCard>
+                    <div className="flex justify-between items-center mb-6 border-b-4 border-neo-black pb-4">
+                      <h3 className="font-black text-xl uppercase flex items-center gap-2">
+                        <Github className="w-5 h-5" /> Repository
+                      </h3>
+                      {project.repo_url && (
+                        <NeoButton
                           variant="outline"
-                          size="sm"
-                          onClick={() => copyToClipboard(deploymentUrl)}
+                          size="icon"
+                          onClick={() => window.open(project.repo_url!, "_blank")}
                         >
-                          {copied ? (
-                            <CheckCircle className="w-4 h-4" />
-                          ) : (
-                            <Copy className="w-4 h-4" />
-                          )}
-                        </Button>
-                      </div>
+                          <ExternalLink className="w-4 h-4" />
+                        </NeoButton>
+                      )}
                     </div>
-
-                    <Separator />
-
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-1">
-                        <p className="text-sm font-medium">Status</p>
-                        <Badge
-                          variant={status.variant}
-                          className="flex items-center space-x-1 w-fit"
-                        >
-                          <StatusIcon
-                            className={`w-3 h-3 ${
-                              project.status === "BUILDING"
-                                ? "animate-spin"
-                                : "hidden"
-                            }`}
-                          />
-                          <CheckIcon
-                            className={`w-3 h-3 ${
-                              project.status === "BUILD_SUCCESS"
-                                ? "block text-green-500"
-                                : "hidden"
-                            }`}
-                          />
-                          <Ban
-                            className={`w-3 h-3 ${
-                              project.status === "BUILD_FAILED"
-                                ? "block text-red-500"
-                                : "hidden"
-                            }`}
-                          />
-                          <span>
-                            {project.status === "BUILD_SUCCESS"
-                              ? "Deployed"
-                              : project.status === "BUILD_FAILED"
-                              ? "Failed"
-                              : project.status}
-                          </span>
-                        </Badge>
-                      </div>
-
-                      <div className="flex items-center gap-3">
-                        <Button
-                          onClick={handleRedeploy}
-                          disabled={project.status === "BUILDING"}
-                          className={`flex ${
-                            redeploy ? "cursor-not-allowed" : ""
-                          }`}
-                        >
-                          <RefreshCw
-                            className={`w-4 h-4 ${
-                              redeploy ? "animate-spin" : "disable"
-                            }`}
-                          />
-                          Redeploy
-                        </Button>
-
-                        {project.status === "BUILD_SUCCESS" && (
+                    <div className="space-y-4">
+                      <div>
+                        <div className="text-xs font-bold uppercase text-gray-400 mb-1">Source URL</div>
+                        {project.repo_url && (
                           <a
-                            href={deploymentUrl}
+                            href={project.repo_url}
                             target="_blank"
                             rel="noopener noreferrer"
+                            className="font-mono font-bold hover:text-neo-blue underline break-all"
                           >
-                            <Button asChild>
-                              <span>
-                                <ExternalLink className="w-4 h-4 mr-2" />
-                                Visit
-                              </span>
-                            </Button>
+                            {project.repo_url.replace("https://github.com/", "")}
                           </a>
                         )}
                       </div>
-                    </div>
-
-                    <Separator />
-
-                    <div className="flex items-center space-x-2">
-                      <Shield className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-sm text-muted-foreground">
-                        {project.private ? "Private project" : "Public project"}
-                      </span>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Environment Variables */}
-              {project.envVars.length > 0 && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Environment Variables</CardTitle>
-                    <CardDescription>
-                      Variables configured for this deployment
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      {project.envVars.map((env, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center justify-between p-3 bg-muted rounded-lg"
-                        >
-                          <code className="text-sm font-medium">{env.key}</code>
-                          <Badge variant="secondary">Set</Badge>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <div className="text-xs font-bold uppercase text-gray-400 mb-1">Branch</div>
+                          <div className="inline-block items-center gap-2 font-mono font-bold bg-gray-100 p-2 border-2 border-black">
+                            <GitBranch className="w-4 h-4" /> {project.branch || "main"}
+                          </div>
                         </div>
-                      ))}
+                        <div>
+                          <div className="text-xs font-bold uppercase text-gray-400 mb-1">Project ID</div>
+                          <div className="flex items-center gap-2">
+                            <code className="text-xs bg-gray-100 px-2 py-1 border-2 border-black font-mono">
+                              {project.id.slice(0, 8)}...
+                            </code>
+                            <button
+                              onClick={() => copyToClipboard(project.id)}
+                              className="p-1 hover:bg-neo-yellow border-2 border-black"
+                            >
+                              {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  </CardContent>
-                </Card>
-              )}
-            </TabsContent>
+                  </NeoCard>
 
-            <TabsContent value="deployments">
-              <ProjectLogs project={project} />
-            </TabsContent>
+                  <NeoCard className="bg-neo-yellow/10">
+                    <h3 className="font-black text-lg uppercase mb-4">Quick Actions</h3>
+                    <div className="flex flex-wrap gap-3">
+                      <NeoButton size="sm" variant="outline" onClick={() => copyToClipboard(deploymentUrl)}>
+                        {copied ? <Check className="w-4 h-4 mr-2" /> : <Copy className="w-4 h-4 mr-2" />}
+                        {copied ? "Copied URL" : "Copy URL"}
+                      </NeoButton>
+                      <NeoButton size="sm" variant="outline" onClick={() => setActiveTab("settings")}>
+                        <Settings className="w-4 h-4 mr-2" /> Edit Settings
+                      </NeoButton>
+                    </div>
+                  </NeoCard>
+                </div>
 
-            <TabsContent value="analytics">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Analytics</CardTitle>
-                  <CardDescription>
-                    View your project&apos;s performance metrics
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-center py-12">
-                    <Activity className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">
-                      Analytics Coming Soon
-                    </h3>
-                    <p className="text-muted-foreground">
-                      We&apos;re working on detailed analytics for your
-                      deployments.
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
+                {/* Right Col */}
+                <div className="space-y-8">
+                  <NeoCard className="bg-neo-black text-white border-neo-black">
+                    <div className="flex justify-between items-center mb-6 border-b-2 border-gray-700 pb-4">
+                      <h3 className="font-black text-xl uppercase flex items-center gap-2">
+                        <Shield className="w-5 h-5 text-neo-green" /> Deployment Info
+                      </h3>
+                      <NeoBadge color={project.private ? "pink" : "green"}>
+                        {project.private ? "PRIVATE" : "PUBLIC"}
+                      </NeoBadge>
+                    </div>
+                    <div className="space-y-4">
+                      <div className="p-4 bg-[#222] border-2 border-gray-700 font-mono text-sm break-all">
+                        <div className="text-xs text-gray-500 mb-1">PRODUCTION_URL</div>
+                        <span className="text-neo-blue">{deploymentUrl}</span>
+                      </div>
 
-            <TabsContent value="settings">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Quick Settings</CardTitle>
-                  <CardDescription>
-                    Manage your project configuration
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button asChild>
-                    <Link href={`/projects/${project.id}/settings`}>
-                      <Settings className="w-4 h-4 mr-2" />
-                      Open Project Settings
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
+                      <div className="flex items-center justify-between p-4 bg-[#222] border-2 border-gray-700">
+                        <div>
+                          <div className="text-xs text-gray-500 mb-1">STATUS</div>
+                          <span className="font-mono font-bold text-white">{status.label}</span>
+                        </div>
+                        <NeoBadge color="blue">{project.status}</NeoBadge>
+                      </div>
+                    </div>
+                  </NeoCard>
+
+                  {project.envVars.length > 0 && (
+                    <NeoCard>
+                      <h3 className="font-black text-xl uppercase mb-4 flex items-center gap-2">
+                        <Zap className="w-5 h-5" /> Env Variables
+                      </h3>
+                      <div className="space-y-2">
+                        {project.envVars.map((env, i) => (
+                          <div
+                            key={i}
+                            className="flex justify-between items-center p-2 bg-gray-50 border-2 border-black"
+                          >
+                            <code className="font-bold text-sm">{env.key}</code>
+                            <span className="text-xs font-bold bg-neo-black text-white px-1">ENCRYPTED</span>
+                          </div>
+                        ))}
+                      </div>
+                    </NeoCard>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {activeTab === "deployments" && (
+              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <ProjectLogs project={project} />
+              </div>
+            )}
+
+            {activeTab === "analytics" && (
+              <NeoCard className="min-h-[400px] flex flex-col items-center justify-center text-center animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <div className="w-24 h-24 bg-neo-yellow border-4 border-neo-black rounded-full flex items-center justify-center mb-6 shadow-neo-lg">
+                  <BarChart3 className="w-12 h-12" />
+                </div>
+                <h2 className="text-3xl font-black uppercase mb-2">Data Processing</h2>
+                <p className="text-xl font-medium text-gray-500 max-w-md">
+                  Analytics engine is warming up. Detailed metrics will appear here soon.
+                </p>
+              </NeoCard>
+            )}
+
+            {activeTab === "settings" && (
+              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <NeoCard>
+                  <h3 className="font-black text-xl uppercase mb-4">Quick Settings</h3>
+                  <p className="text-gray-600 mb-6 font-medium">
+                    Manage your project configuration and deployment settings.
+                  </p>
+                  <NeoButton onClick={() => window.location.href = `/projects/${project.id}/settings`}>
+                    <Settings className="w-4 h-4 mr-2" />
+                    Open Project Settings
+                  </NeoButton>
+                </NeoCard>
+              </div>
+            )}
+          </div>
         </div>
       </main>
       <Footer />

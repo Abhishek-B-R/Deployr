@@ -1,11 +1,8 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { RefreshCw, Download, Terminal, History, Wifi, WifiOff } from "lucide-react"
+import { NeoCard, NeoButton, NeoBadge } from "@/components/neo-ui"
+import { RefreshCw, Download, Terminal, History, Wifi, WifiOff, FileText, ArrowDown } from "lucide-react"
 import { LiveBuildLogs } from "@/components/ProjectOverview/live-build-logs"
 import { useBuildLogs } from "@/hooks/use-build-logs"
 
@@ -23,7 +20,6 @@ export function ProjectLogs({ project }: ProjectLogsProps) {
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [activeTab, setActiveTab] = useState<"live" | "stored">("stored")
 
-  // 🟢 Memoized handlers to avoid re-creating them on each render
   const handleReceiveMessage = useCallback(() => {
     setActiveTab("live")
   }, [])
@@ -39,13 +35,11 @@ export function ProjectLogs({ project }: ProjectLogsProps) {
     onLogsComplete: handleLogsComplete,
   })
 
-  // Auto switch between live and stored based on activity
+  // Auto switch logic
   useEffect(() => {
-    (async ()=>{
-      if (isLive && logs.length > 0) {
+    if (isLive && logs.length > 0) {
       setActiveTab("live")
     }
-  })()
   }, [isLive, logs.length])
 
   const refreshStoredLogs = async () => {
@@ -76,64 +70,84 @@ export function ProjectLogs({ project }: ProjectLogsProps) {
   }
 
   return (
-    <div className="space-y-6">
-      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "live" | "stored")} className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="live" className="flex items-center space-x-2">
-            <Terminal className="w-4 h-4" />
-            <span>Live Logs</span>
-            {isLive && <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />}
-            {isConnected ? <Wifi className="w-3 h-3 text-green-500" /> : <WifiOff className="w-3 h-3 text-red-500" />}
-          </TabsTrigger>
-          <TabsTrigger value="stored" className="flex items-center space-x-2">
-            <History className="w-4 h-4" />
-            <span>Stored Logs</span>
-          </TabsTrigger>
-        </TabsList>
+    <div className="space-y-8">
+      {/* Brutalist Tabs */}
+      <div className="flex w-full border-4 border-neo-black bg-white shadow-neo-sm p-1">
+        <button 
+          onClick={() => setActiveTab("live")}
+          className={`flex-1 py-3 px-4 font-black uppercase tracking-wider flex items-center justify-center gap-3 transition-all cursor-pointer ${
+            activeTab === "live" 
+              ? "bg-neo-black text-white" 
+              : "bg-white text-gray-400 hover:bg-gray-100 hover:text-black"
+          }`}
+        >
+          <Terminal className="w-5 h-5" />
+          Live Logs
+          {isLive && <div className="w-3 h-3 bg-red-500 rounded-none animate-pulse" />}
+        </button>
+        
+        <div className="w-1 bg-neo-black"></div>
+        
+        <button 
+          onClick={() => setActiveTab("stored")}
+          className={`flex-1 py-3 px-4 font-black uppercase tracking-wider flex items-center justify-center gap-3 transition-all cursor-pointer ${
+            activeTab === "stored" 
+              ? "bg-neo-black text-white" 
+              : "bg-white text-gray-400 hover:bg-gray-100 hover:text-black"
+          }`}
+        >
+          <History className="w-5 h-5" />
+          Stored Logs
+        </button>
+      </div>
 
-        <TabsContent value="live" className="space-y-4">
+      {activeTab === "live" ? (
+        <div className="animate-in fade-in duration-300 slide-in-from-bottom-2">
           <LiveBuildLogs projectId={project.id} projectName={project.name} showAsActive={isLive} />
-        </TabsContent>
+        </div>
+      ) : (
+        <NeoCard className="animate-in fade-in duration-300 slide-in-from-bottom-2">
+          <div className="flex items-center justify-between mb-6 border-b-4 border-neo-black pb-4">
+            <div className="flex items-center gap-3">
+              <div className="bg-neo-yellow p-2 border-2 border-neo-black shadow-neo-sm">
+                <FileText className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="font-black text-xl uppercase">Archived Logs</h3>
+                <p className="text-gray-500 font-mono text-xs">Access past deployment records</p>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <NeoButton variant="ghost" size="sm" onClick={refreshStoredLogs} disabled={isRefreshing}>
+                <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? "animate-spin" : ""}`} />
+                Refresh
+              </NeoButton>
+              <NeoButton
+                variant="primary"
+                size="sm"
+                onClick={() => downloadLogs(storedLogs, `${project.name}-stored-logs.txt`)}
+                disabled={!storedLogs}
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Download
+              </NeoButton>
+            </div>
+          </div>
 
-        <TabsContent value="stored" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="flex items-center space-x-2">
-                    <History className="w-5 h-5" />
-                    <span>Stored Deployment Logs</span>
-                  </CardTitle>
-                  <CardDescription>Previously saved logs from your deployment process</CardDescription>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Badge variant="secondary">Stored</Badge>
-                  <Button variant="outline" size="sm" onClick={refreshStoredLogs} disabled={isRefreshing}>
-                    <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? "animate-spin" : ""}`} />
-                    Refresh
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => downloadLogs(storedLogs, `${project.name}-stored-logs.txt`)}
-                    disabled={!storedLogs}
-                  >
-                    <Download className="w-4 h-4 mr-2" />
-                    Download
-                  </Button>
+          <div className="relative bg-gray-50 border-4 border-gray-200 p-1">
+            <pre className="bg-white p-6 h-96 overflow-y-auto font-mono text-sm whitespace-pre-wrap text-gray-700 neo-scrollbar border-2 border-dashed border-gray-300">
+              {storedLogs || <span className="text-gray-400 italic">No stored logs available for this deployment yet...</span>}
+            </pre>
+            {!storedLogs && (
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="bg-white border-2 border-black p-4 shadow-neo-sm rotate-3 opacity-50">
+                  <h4 className="font-black text-lg">LOGS_EMPTY</h4>
                 </div>
               </div>
-            </CardHeader>
-            <CardContent>
-              <div className="relative">
-                <pre className="bg-black text-green-400 p-4 rounded-lg text-sm overflow-x-auto max-h-96 overflow-y-auto font-mono whitespace-pre-wrap">
-                  {storedLogs || "No stored logs available yet..."}
-                </pre>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+            )}
+          </div>
+        </NeoCard>
+      )}
     </div>
   )
 }

@@ -1,51 +1,11 @@
 "use client";
 
-// TODO: Implement env vars update and also updates of build,root and out dirs from here
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import Link from "next/link";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
-import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { NeoButton, NeoCard } from "@/components/neo-ui";
 import {
   ArrowLeft,
   Save,
@@ -55,33 +15,29 @@ import {
   Globe,
   Plus,
   X,
+  Lock,
+  Circle,
+  LoaderCircle,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import NavBar from "../NavBar";
+import Footer from "../Footer";
 
 const projectUpdateSchema = z.object({
-  name: z
-    .string()
-    .min(1, "Project name is required")
-    .max(50, "Project name must be less than 50 characters"),
+  name: z.string().min(1).max(50),
   slug: z
     .string()
-    .min(1, "Slug is required")
-    .max(50, "Slug must be less than 50 characters")
-    .regex(
-      /^[a-z0-9-]+$/,
-      "Slug can only contain lowercase letters, numbers, and hyphens"
-    ),
+    .min(1)
+    .max(50)
+    .regex(/^[a-z0-9-]+$/),
   private: z.boolean(),
-  buildCommand: z.string().min(1, "Build command is required"),
-  installCommand: z.string().min(1, "Install command is required"),
-  outputDirectory: z.string().min(1, "Output directory is required"),
-  framework: z.string().min(1, "Framework is required"),
-  rootDirectory: z.string().min(1, "Root directory is required"),
+  buildCommand: z.string().min(1),
+  installCommand: z.string().min(1),
+  outputDirectory: z.string().min(1),
+  framework: z.string().min(1),
+  rootDirectory: z.string().min(1),
   envVars: z.array(
-    z.object({
-      key: z.string().min(1, "Environment variable key is required"),
-      value: z.string().min(1, "Environment variable value is required"),
-    })
+    z.object({ key: z.string().min(1), value: z.string().min(1) })
   ),
 });
 
@@ -101,7 +57,7 @@ interface ProjectSettingsProps {
     outputDirectory: string;
     framework: string;
     rootDirectory: string;
-    envVars: Array<{ id: string; key: string; value: string }>;
+    envVars: Array<{ id?: string; key: string; value: string }>;
   };
 }
 
@@ -109,7 +65,6 @@ export function ProjectSettings({ project }: ProjectSettingsProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteConfirmation, setDeleteConfirmation] = useState("");
-  const [showUpdateDialog, setShowUpdateDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
@@ -120,11 +75,11 @@ export function ProjectSettings({ project }: ProjectSettingsProps) {
       name: project.name,
       slug: project.slug,
       private: project.private,
-      buildCommand: project.buildCommand,
-      installCommand: project.installCommand,
-      outputDirectory: project.outputDirectory,
-      framework: project.framework,
-      rootDirectory: project.rootDirectory,
+      buildCommand: project.buildCommand || "npm run build",
+      installCommand: project.installCommand || "npm install",
+      outputDirectory: project.outputDirectory || "out",
+      framework: project.framework || "nextjs",
+      rootDirectory: project.rootDirectory || "./",
       envVars: project.envVars.map((env) => ({
         key: env.key,
         value: env.value,
@@ -157,7 +112,6 @@ export function ProjectSettings({ project }: ProjectSettingsProps) {
         title: "Project updated",
         description: "Your project settings have been updated successfully.",
       });
-      setShowUpdateDialog(false);
       router.refresh();
     } catch (error) {
       toast({
@@ -171,10 +125,6 @@ export function ProjectSettings({ project }: ProjectSettingsProps) {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleUpdateClick = () => {
-    setShowUpdateDialog(true);
   };
 
   const deleteProject = async () => {
@@ -193,7 +143,6 @@ export function ProjectSettings({ project }: ProjectSettingsProps) {
         description: "Your project has been deleted successfully.",
       });
       router.push("/projects");
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast({
         title: "Error",
@@ -207,446 +156,327 @@ export function ProjectSettings({ project }: ProjectSettingsProps) {
     }
   };
 
-  const addEnvVar = () => {
-    append({ key: "", value: "" });
-  };
-
   const isDeleteConfirmationValid = deleteConfirmation === project.name;
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800">
-      {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center justify-between">
-          <div className="flex justify-center space-x-4">
-            <Button variant="ghost" size="sm" asChild>
-              <Link href={`/projects/${project.id}/overview`}>
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Project
-              </Link>
-            </Button>
-            <Separator orientation="vertical" className="h-6" />
-            <div className="flex items-center space-x-2">
-              <Settings className="w-5 h-5" />
-              <h1 className="text-xl font-semibold">Project Settings</h1>
+    <div className="mx-auto space-y-12 text-black mt-30">
+      {/* Header Info */}
+      <div className="flex items-center justify-between mb-6 md:mb-8">
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-black uppercase flex items-center gap-2 md:gap-3">
+          <div className="bg-neo-black text-white p-1.5 md:p-2 border-2 border-white shadow-neo-sm shrink-0">
+            <Settings className="w-4 h-4 md:w-6 md:h-6" />
+          </div>
+          <span className="truncate">Project Configuration</span>
+        </h2>
+      </div>
+
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-12">
+        <NeoCard className="p-0 overflow-visible">
+          <div className="bg-neo-yellow border-b-4 border-neo-black p-4 md:p-5 flex items-center justify-between gap-3">
+            <span className="font-bold font-mono text-xs md:text-sm uppercase truncate">
+              General Settings
+            </span>
+            <div className="flex gap-2 shrink-0">
+              <div className="w-3 h-3 bg-black rounded-full" />
+              <div className="w-3 h-3 bg-black rounded-full" />
+            </div>
+          </div>
+
+          <div className="p-5 md:p-9 space-y-7 md:space-y-9">
+            <div className="space-y-3">
+              <label className="font-bold text-sm uppercase">
+                Project Name
+              </label>
+              <input
+                {...form.register("name")}
+                className="w-full h-12 px-5 border-4 border-neo-black font-bold font-mono focus:outline-none focus:shadow-neo transition-all"
+              />
+              {form.formState.errors.name && (
+                <p className="text-sm text-neo-red font-bold mt-1">
+                  {form.formState.errors.name.message}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-3">
+              <label className="font-bold text-sm uppercase">
+                Project Slug
+              </label>
+              <div className="flex flex-col sm:flex-row">
+                <span className="h-12 flex items-center px-3 sm:px-4 bg-gray-100 border-4 border-b-0 sm:border-b-4 sm:border-r-0 border-neo-black font-mono text-xs font-bold text-gray-500 whitespace-nowrap">
+                  https://
+                </span>
+                <input
+                  {...form.register("slug")}
+                  className="flex-1 h-12 px-5 border-4 border-t-0 sm:border-t-4 border-neo-black font-bold font-mono focus:outline-none focus:ring-4 focus:ring-neo-blue/20"
+                />
+                <span className="h-12 flex items-center px-3 sm:px-4 bg-gray-100 border-4 border-t-0 sm:border-t-4 sm:border-l-0 border-neo-black font-mono text-xs font-bold text-gray-500 whitespace-nowrap">
+                  .deployr.live
+                </span>
+              </div>
+              {form.formState.errors.slug && (
+                <p className="text-sm text-neo-red font-bold mt-1">
+                  {form.formState.errors.slug.message}
+                </p>
+              )}
+            </div>
+          </div>
+        </NeoCard>
+
+        <NeoCard className="p-0 overflow-visible">
+          <div className="bg-neo-blue text-white border-b-4 border-neo-black p-4 md:p-5 flex items-center justify-between">
+            <span className="font-bold font-mono text-xs md:text-sm uppercase truncate">
+              Build Configuration
+            </span>
+          </div>
+
+          <div className="p-5 md:p-9 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-7">
+              <div className="space-y-3">
+                <label className="font-bold text-xs uppercase text-gray-500">
+                  Build Command
+                </label>
+                <input
+                  {...form.register("buildCommand")}
+                  className="w-full p-4 border-2 border-neo-black font-mono text-sm"
+                />
+                {form.formState.errors.buildCommand && (
+                  <p className="text-sm text-neo-red font-bold mt-1">
+                    {form.formState.errors.buildCommand.message}
+                  </p>
+                )}
+              </div>
+              <div className="space-y-3">
+                <label className="font-bold text-xs uppercase text-gray-500">
+                  Output Directory
+                </label>
+                <input
+                  {...form.register("outputDirectory")}
+                  className="w-full p-4 border-2 border-neo-black font-mono text-sm"
+                />
+                {form.formState.errors.outputDirectory && (
+                  <p className="text-sm text-neo-red font-bold mt-1">
+                    {form.formState.errors.outputDirectory.message}
+                  </p>
+                )}
+              </div>
+              <div className="space-y-3">
+                <label className="font-bold text-xs uppercase text-gray-500">
+                  Install Command
+                </label>
+                <input
+                  {...form.register("installCommand")}
+                  className="w-full p-4 border-2 border-neo-black font-mono text-sm"
+                />
+                {form.formState.errors.installCommand && (
+                  <p className="text-sm text-neo-red font-bold mt-1">
+                    {form.formState.errors.installCommand.message}
+                  </p>
+                )}
+              </div>
+              <div className="space-y-3">
+                <label className="font-bold text-xs uppercase text-gray-500">
+                  Root Directory
+                </label>
+                <input
+                  {...form.register("rootDirectory")}
+                  className="w-full p-4 border-2 border-neo-black font-mono text-sm"
+                />
+                {form.formState.errors.rootDirectory && (
+                  <p className="text-sm text-neo-red font-bold mt-1">
+                    {form.formState.errors.rootDirectory.message}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        </NeoCard>
+
+        <NeoCard className="p-0 overflow-visible">
+          <div className="bg-neo-pink border-b-4 border-neo-black p-4 md:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <span className="font-bold font-mono text-xs md:text-sm uppercase">
+              Environment Variables
+            </span>
+            <button
+              type="button"
+              onClick={() => append({ key: "", value: "" })}
+              className="bg-neo-green border-2 border-neo-black px-4 py-2.5 text-xs font-bold hover:shadow-neo-sm active:translate-y-1 transition-all cursor-pointer whitespace-nowrap w-full sm:w-auto"
+            >
+              + ADD NEW
+            </button>
+          </div>
+
+          <div className="p-5 md:p-9 space-y-4">
+            {fields.map((field, index) => (
+              <div
+                key={field.id}
+                className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center"
+              >
+                <div className="font-mono text-xs font-bold text-gray-400 sm:w-8 sm:text-center flex items-center">
+                  #{index + 1}
+                </div>
+                <input
+                  {...form.register(`envVars.${index}.key` as const)}
+                  placeholder="KEY"
+                  className="flex-1 min-w-0 p-3 border-2 border-neo-black font-mono text-sm uppercase placeholder:text-gray-300"
+                />
+                <input
+                  {...form.register(`envVars.${index}.value` as const)}
+                  placeholder="VALUE"
+                  type="password"
+                  className="flex-1 min-w-0 p-3 border-2 border-neo-black font-mono text-sm placeholder:text-gray-300"
+                />
+                <button
+                  type="button"
+                  onClick={() => remove(index)}
+                  className="p-3 border-2 border-neo-black hover:bg-neo-pink hover:text-white transition-colors cursor-pointer shrink-0 sm:w-auto w-full"
+                >
+                  <Trash2 className="w-4 h-4 mx-auto" />
+                </button>
+              </div>
+            ))}
+            {fields.length === 0 && (
+              <div className="text-center text-gray-400 italic py-6">
+                No environment variables set.
+              </div>
+            )}
+          </div>
+        </NeoCard>
+
+        <div className="flex justify-end pt-6">
+          <NeoButton
+            type="submit"
+            variant="primary"
+            size="default"
+            disabled={isLoading}
+            className="w-full md:w-auto cursor-pointer"
+          >
+            {isLoading ? (
+              <>
+                <LoaderCircle className="w-5 h-5 mr-2 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="w-5 h-5 mr-2" />
+                Save Changes
+              </>
+            )}
+          </NeoButton>
+        </div>
+      </form>
+
+      {/* Danger Zone */}
+      <div className="mt-14 space-y-6">
+        <NeoCard className="p-0 overflow-visible border-4 border-black">
+          <div className="bg-red-500 border-b-4 border-neo-black p-4 md:p-5 flex items-center gap-3">
+            <div className="bg-white text-neo-red p-2 border-4 border-neo-black shadow-neo-sm shrink-0">
+              <AlertTriangle
+                className="w-5 h-5 md:w-6 md:h-6"
+                strokeWidth={3}
+              />
+            </div>
+            <div>
+              <h3 className="text-xl sm:text-2xl font-black uppercase text-white">
+                Danger Zone
+              </h3>
+              <p className="font-bold text-xs sm:text-sm text-red-100">
+                Irreversible actions. Proceed with caution.
+              </p>
+            </div>
+          </div>
+
+          <div className="p-5 md:p-8">
+            <NeoCard className="bg-red-50 border-4 border-red-300 p-5 md:p-6">
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-5 md:gap-6">
+                <div className="flex-1">
+                  <h4 className="font-black uppercase text-lg md:text-xl text-red-900 mb-2">
+                    Delete Project
+                  </h4>
+                  <p className="text-sm md:text-base font-medium text-red-700">
+                    Permanently remove this project and all its deployments.
+                    This action cannot be undone.
+                  </p>
+                </div>
+                <NeoButton
+                  variant="outline"
+                  onClick={() => setShowDeleteDialog(true)}
+                  className="bg-white border-4 border-neo-red text-neo-red hover:bg-neo-red hover:text-white hover:border-red-700 w-full md:w-auto font-black uppercase px-6 py-3 cursor-pointer"
+                >
+                  Delete Project
+                </NeoButton>
+              </div>
+            </NeoCard>
+          </div>
+        </NeoCard>
+      </div>
+
+      {/* Delete Confirmation Dialog */}
+      {showDeleteDialog && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white border-4 border-neo-black shadow-neo-lg max-w-md w-full my-auto">
+            <div className="bg-red-500 border-b-4 border-neo-black p-3 md:p-4 flex items-center gap-2 md:gap-3">
+              <AlertTriangle className="w-5 h-5 md:w-6 md:h-6 text-white shrink-0" />
+              <h3 className="font-black text-white uppercase text-base md:text-lg">
+                Delete Project
+              </h3>
+            </div>
+            <div className="p-4 md:p-6 space-y-4">
+              <p className="font-bold text-sm md:text-base text-gray-700">
+                This action <span className="text-neo-red">CANNOT</span> be
+                undone. This will permanently delete the{" "}
+                <span className="font-black text-black wrap-break-words">
+                  {project.name}
+                </span>{" "}
+                project, deployments, and remove all associated data.
+              </p>
+              <p className="font-bold text-xs md:text-sm text-gray-600">
+                Please type{" "}
+                <span className="font-black text-black wrap-break-words">
+                  {project.name}
+                </span>{" "}
+                to confirm.
+              </p>
+              <input
+                type="text"
+                value={deleteConfirmation}
+                onChange={(e) => setDeleteConfirmation(e.target.value)}
+                placeholder={project.name}
+                className="w-full p-3 border-4 border-neo-black font-mono font-bold text-sm md:text-base focus:outline-none focus:ring-4 focus:ring-red-500/20"
+              />
+            </div>
+            <div className="p-4 md:p-6 border-t-4 border-neo-black flex flex-col sm:flex-row gap-3">
+              <button
+                onClick={() => {
+                  setShowDeleteDialog(false);
+                  setDeleteConfirmation("");
+                }}
+                className="flex-1 py-3 border-2 border-neo-black font-bold uppercase hover:bg-gray-100 transition-colors cursor-pointer text-sm md:text-base"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={deleteProject}
+                disabled={!isDeleteConfirmationValid || isDeleting}
+                className="flex-1 py-3 bg-neo-red text-white border-2 border-neo-black font-bold uppercase disabled:opacity-50 disabled:cursor-not-allowed hover:bg-red-700 transition-colors cursor-pointer text-sm md:text-base"
+              >
+                {isDeleting ? (
+                  <>
+                    <LoaderCircle className="w-4 h-4 inline mr-2 animate-spin" />
+                    Deleting...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="w-4 h-4 inline mr-2" />
+                    Delete Forever
+                  </>
+                )}
+              </button>
             </div>
           </div>
         </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="container py-8">
-        <div className="max-w-2xl mx-auto space-y-8">
-          {/* Project Info Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Globe className="w-5 h-5" />
-                <span>{project.name}</span>
-              </CardTitle>
-              <CardDescription>
-                Manage your project&apos;s configuration and deployment
-                settings.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <p className="text-sm font-medium">Current URL</p>
-                  <code className="text-sm bg-muted px-2 py-1 rounded">
-                    {project.slug}.deployr.app
-                  </code>
-                </div>
-                <Badge
-                  variant={
-                    project.status === "BUILD_SUCCESS" ? "default" : "secondary"
-                  }
-                >
-                  {project.status}
-                </Badge>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Settings Form */}
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(handleUpdateClick)}
-              className="space-y-8"
-            >
-              {/* General Settings */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>General Settings</CardTitle>
-                  <CardDescription>
-                    Update your project&apos;s basic information and
-                    configuration.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Project Name</FormLabel>
-                        <FormControl>
-                          <Input placeholder="My Awesome Project" {...field} />
-                        </FormControl>
-                        <FormDescription>
-                          This is your project&apos;s display name.
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="slug"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Project Slug</FormLabel>
-                        <FormControl>
-                          <div className="flex">
-                            <div className="flex items-center px-3 bg-muted border border-r-0 rounded-l-md text-sm text-muted-foreground">
-                              https://
-                            </div>
-                            <Input
-                              className="rounded-l-none"
-                              placeholder="my-project"
-                              {...field}
-                            />
-                            <div className="flex items-center px-3 bg-muted border border-l-0 rounded-r-md text-sm text-muted-foreground">
-                              .deployr.app
-                            </div>
-                          </div>
-                        </FormControl>
-                        <FormDescription>
-                          The unique identifier for your project&apos;s URL.
-                          Only lowercase letters, numbers, and hyphens are
-                          allowed.
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="private"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                        <div className="space-y-0.5">
-                          <FormLabel className="text-base">
-                            Private Project
-                          </FormLabel>
-                          <FormDescription>
-                            Make your project private and only accessible to
-                            you. This will hide it from public listings.
-                          </FormDescription>
-                        </div>
-                        <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                </CardContent>
-              </Card>
-
-              {/* Build & Deploy Settings */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Build & Deploy Settings</CardTitle>
-                  <CardDescription>
-                    Configure how your project is built and deployed.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <FormField
-                    control={form.control}
-                    name="rootDirectory"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Root Directory</FormLabel>
-                        <FormControl>
-                          <Input placeholder="./" {...field} />
-                        </FormControl>
-                        <FormDescription>
-                          The directory within your repository where your
-                          project is located.
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="buildCommand"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Build Command</FormLabel>
-                        <FormControl>
-                          <Input placeholder="npm run build" {...field} />
-                        </FormControl>
-                        <FormDescription>
-                          The command used to build your project.
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="installCommand"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Install Command</FormLabel>
-                        <FormControl>
-                          <Input placeholder="npm install" {...field} />
-                        </FormControl>
-                        <FormDescription>
-                          The command used to install dependencies.
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="outputDirectory"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Output Directory</FormLabel>
-                        <FormControl>
-                          <Input placeholder="dist" {...field} />
-                        </FormControl>
-                        <FormDescription>
-                          The directory where your built project files are
-                          located.
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </CardContent>
-              </Card>
-
-              {/* Environment Variables */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Environment Variables</CardTitle>
-                  <CardDescription>
-                    Manage environment variables for your project. Changes
-                    require a new deployment.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {fields.map((field, index) => (
-                      <div key={field.id} className="flex gap-2 items-start">
-                        <FormField
-                          control={form.control}
-                          name={`envVars.${index}.key`}
-                          render={({ field }) => (
-                            <FormItem className="flex-1">
-                              <FormControl>
-                                <Input placeholder="VARIABLE_NAME" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={form.control}
-                          name={`envVars.${index}.value`}
-                          render={({ field }) => (
-                            <FormItem className="flex-1">
-                              <FormControl>
-                                <Input
-                                  placeholder="variable_value"
-                                  type="password"
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="icon"
-                          onClick={() => remove(index)}
-                          className="shrink-0"
-                        >
-                          <X className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    ))}
-
-                    {fields.length === 0 && (
-                      <div className="text-center py-6">
-                        <p className="text-muted-foreground mb-4">
-                          No environment variables configured
-                        </p>
-                      </div>
-                    )}
-
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={addEnvVar}
-                      className="w-full bg-transparent"
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      Add Environment Variable
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Update Button */}
-              <div className="flex justify-end">
-                <Button type="button" onClick={handleUpdateClick}>
-                  <Save className="w-4 h-4 mr-2" />
-                  Update Settings
-                </Button>
-              </div>
-            </form>
-          </Form>
-
-          {/* Danger Zone */}
-          <Card className="border-red-200 dark:border-red-800">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2 text-red-600 dark:text-red-400">
-                <AlertTriangle className="w-5 h-5" />
-                <span>Danger Zone</span>
-              </CardTitle>
-              <CardDescription>
-                Irreversible and destructive actions. Please proceed with
-                caution.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 border border-red-200 dark:border-red-800 rounded-lg">
-                  <div>
-                    <h4 className="font-medium">Delete Project</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Permanently delete this project and all of its data. This
-                      action cannot be undone.
-                    </p>
-                  </div>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => setShowDeleteDialog(true)}
-                  >
-                    <Trash2 className="w-4 h-4 mr-2" />
-                    Delete
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </main>
-
-      {/* Update Confirmation Dialog */}
-      <Dialog open={showUpdateDialog} onOpenChange={setShowUpdateDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Update Project Settings</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to update the settings for &quot;
-              {project.name}&quot;? This will apply the changes immediately and
-              may trigger a new deployment.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setShowUpdateDialog(false)}
-            >
-              No, Cancel
-            </Button>
-            <Button onClick={form.handleSubmit(onSubmit)} disabled={isLoading}>
-              {isLoading ? (
-                <>
-                  <Save className="w-4 h-4 mr-2 animate-spin" />
-                  Updating...
-                </>
-              ) : (
-                <>
-                  <Save className="w-4 h-4 mr-2" />
-                  Yes, Update
-                </>
-              )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Delete Confirmation Dialog - GitHub Style */}
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent className="max-w-md">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center space-x-2 text-red-600">
-              <AlertTriangle className="w-5 h-5" />
-              <span>Delete Project</span>
-            </AlertDialogTitle>
-            <AlertDialogDescription className="text-left space-y-3">
-              This action <strong>cannot</strong> be undone. This will
-              permanently delete the <strong>{project.name}</strong> project,
-              deployments, and remove all associated data. Please type{" "}
-              <strong>{project.name}</strong> to confirm.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <div className="py-4">
-            <Input
-              placeholder={project.name}
-              value={deleteConfirmation}
-              onChange={(e) => setDeleteConfirmation(e.target.value)}
-              className="w-full"
-            />
-          </div>
-          <AlertDialogFooter>
-            <AlertDialogCancel
-              onClick={() => {
-                setShowDeleteDialog(false);
-                setDeleteConfirmation("");
-              }}
-            >
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={deleteProject}
-              disabled={!isDeleteConfirmationValid || isDeleting}
-              className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
-            >
-              {isDeleting ? (
-                <>
-                  <Trash2 className="w-4 h-4 mr-2 animate-spin" />
-                  Deleting...
-                </>
-              ) : (
-                <>
-                  <Trash2 className="w-4 h-4 mr-2" />I understand the
-                  consequences, delete this project
-                </>
-              )}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      )}
+      <Footer className="absolute" />
     </div>
   );
 }
