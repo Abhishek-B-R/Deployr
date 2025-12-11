@@ -36,6 +36,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { frameworks } from "@/lib/framework-detection";
 
 interface Project {
   id: string;
@@ -98,15 +99,6 @@ const statusConfig: any = {
     label: "FAILED",
     border: "border-neo-black"
   },
-};
-
-const frameworkIcons: any = {
-  nextjs: "N",
-  react: "R",
-  vue: "V",
-  static: "S",
-  vite: "⚡️",
-  default: "?"
 };
 
 export function ProjectsList({ projects }: ProjectsListProps) {
@@ -254,7 +246,7 @@ export function ProjectsList({ projects }: ProjectsListProps) {
                       className="bg-white border-4 border-neo-black p-4 shadow-neo-sm hover:shadow-neo hover:-translate-y-1 transition-all cursor-pointer flex items-center gap-6 group"
                     >
                       <div className={`w-12 h-12 border-2 border-neo-black flex items-center justify-center text-xl font-black shadow-sm ${project.status === 'BUILD_SUCCESS' ? 'bg-neo-green' : 'bg-white'}`}>
-                        {frameworkIcons[fw] || "?"}
+                        {frameworks[fw].logo || "?"}
                       </div>
                       <div className="flex-1">
                         <h3 className="font-black text-xl group-hover:underline decoration-4 decoration-neo-yellow">{project.name}</h3>
@@ -290,7 +282,7 @@ export function ProjectsList({ projects }: ProjectsListProps) {
                       <div className="relative z-10">
                         <div className="flex items-center gap-3 mb-2">
                           <div className="w-10 h-10 bg-white border-2 border-neo-black flex items-center justify-center font-black shadow-neo-sm">
-                            {frameworkIcons[fw] || "?"}
+                            {frameworks[fw].logo || "?"}
                           </div>
                           <div>
                             <h3 className="font-black text-2xl leading-none group-hover:text-neo-blue transition-colors truncate max-w-[180px]">

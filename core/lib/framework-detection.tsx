@@ -1,7 +1,12 @@
+import { ReactElement } from "react"
+import { SiNextdotjs, SiVite, SiSvelte, SiHtml5} from "react-icons/si";
+import { GrReactjs } from "react-icons/gr";
+import { FaVuejs, FaAngular, FaQuestion } from "react-icons/fa";
+
 export interface FrameworkConfig {
   name: string
   slug: string
-  logo: string
+  logo: ReactElement
   buildCommand: string
   outputDirectory: string
   installCommand: string
@@ -14,7 +19,7 @@ export const frameworks: Record<string, FrameworkConfig> = {
   nextjs: {
     name: "Next.js",
     slug: "nextjs",
-    logo: "⚡",
+    logo: <SiNextdotjs />,
     buildCommand: "npm run build",
     outputDirectory: "out",
     installCommand: "npm install",
@@ -25,7 +30,7 @@ export const frameworks: Record<string, FrameworkConfig> = {
   react: {
     name: "Create React App",
     slug: "react",
-    logo: "⚛️",
+    logo: <div className="text-blue-500"><GrReactjs /></div>,
     buildCommand: "npm run build",
     outputDirectory: "build",
     installCommand: "npm install",
@@ -36,7 +41,7 @@ export const frameworks: Record<string, FrameworkConfig> = {
   vue: {
     name: "Vue.js",
     slug: "vue",
-    logo: "💚",
+    logo: <div className="text-green-500"><FaVuejs /></div>,
     buildCommand: "npm run build",
     outputDirectory: "dist",
     installCommand: "npm install",
@@ -47,7 +52,7 @@ export const frameworks: Record<string, FrameworkConfig> = {
   vite: {
     name: "Vite",
     slug: "vite",
-    logo: "⚡",
+    logo: <div className="text-purple-500"><SiVite /></div>,
     buildCommand: "npm run build",
     outputDirectory: "dist",
     installCommand: "npm install",
@@ -58,7 +63,7 @@ export const frameworks: Record<string, FrameworkConfig> = {
   angular: {
     name: "Angular",
     slug: "angular",
-    logo: "🅰️",
+    logo: <div className="text-red-500"><FaAngular/></div>,
     buildCommand: "npm run build",
     outputDirectory: "dist",
     installCommand: "npm install",
@@ -69,7 +74,7 @@ export const frameworks: Record<string, FrameworkConfig> = {
   svelte: {
     name: "SvelteKit",
     slug: "svelte",
-    logo: "🧡",
+    logo: <div className="text-red-500"><SiSvelte /></div>,
     buildCommand: "npm run build",
     outputDirectory: "build",
     installCommand: "npm install",
@@ -80,7 +85,7 @@ export const frameworks: Record<string, FrameworkConfig> = {
   static: {
     name: "Static HTML",
     slug: "static",
-    logo: "📄",
+    logo: <div className="text-orange-500"><SiHtml5 /></div>,
     buildCommand: "cd .",
     outputDirectory: ".",
     installCommand: "cd .",
@@ -91,7 +96,7 @@ export const frameworks: Record<string, FrameworkConfig> = {
   unknown: {
     name: "Other",
     slug: "unknown",
-    logo: "❓",
+    logo: <div className="text-red-500"><FaQuestion /></div>,
     buildCommand: "cd .",
     outputDirectory: ".",
     installCommand: "cd .",

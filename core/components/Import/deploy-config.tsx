@@ -275,6 +275,14 @@ export function DeployConfig() {
     );
   }
 
+  // Pick the active framework config from our local map to ensure the logo is a React element
+  const activeFramework =
+    frameworks[selectedFramework] ||
+    (repoDetails?.framework?.slug
+      ? frameworks[repoDetails.framework.slug]
+      : undefined) ||
+    frameworks.unknown;
+
   return (
     <div className="max-w-5xl mx-auto space-y-12">
       {/* Next.js Validation Alert */}
@@ -372,11 +380,11 @@ export function DeployConfig() {
             </div>
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-white border-2 border-neo-black flex items-center justify-center font-black text-2xl shadow-neo-sm">
-                {frameworks[selectedFramework]?.logo}
+                {activeFramework.logo}
               </div>
               <div>
                 <div className="font-bold text-lg leading-none mb-1">
-                  {frameworks[selectedFramework]?.name}
+                  {activeFramework.name}
                 </div>
                 <div className="text-xs font-mono bg-neo-green/50 inline-block px-1 border border-black">
                   {detectingFramework ? "DETECTING..." : "AUTO-DETECTED"}
