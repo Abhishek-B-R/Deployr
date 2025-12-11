@@ -42,8 +42,8 @@ export default async function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#F4F0E5] dark:from-slate-950 dark:via-slate-900 dark:to-slate-800">
-      <NavBar/>
+    <div className="min-h-screen flex items-center justify-center bg-neo-cream dark:from-slate-950 dark:via-slate-900 dark:to-slate-800">
+      <NavBar />
       <Suspense fallback={<UserSettingsSkeleton />}>
         <UserSettings user={userData} session={session} />
       </Suspense>
