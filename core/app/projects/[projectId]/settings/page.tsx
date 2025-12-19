@@ -42,7 +42,7 @@ export default async function ProjectSettingsPage(props: any) {
   }
 
   return (
-    <div className="min-h-screen bg-background flex justify-center-safe bg-neo-cream">
+    <div className="min-h-screen bg-[#F4F0E6] flex justify-center-safe bg-neo-cream">
       <NavBar />
       <Suspense fallback={<div>Loading project settings...</div>}>
         <ProjectSettings project={project} />
