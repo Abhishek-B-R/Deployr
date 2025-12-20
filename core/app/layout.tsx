@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next"
 import { ThemeProvider } from "@/components/theme-provider"
 import LenisProvider from "@/components/lenis-provider";
 import Footer from "@/components/Footer";
@@ -36,6 +37,7 @@ export default function RootLayout({
        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <LenisProvider>
             {children}
+            <Analytics />
           </LenisProvider>
         </ThemeProvider>
       </body>
