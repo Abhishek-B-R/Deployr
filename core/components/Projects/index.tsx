@@ -30,7 +30,7 @@ export default async function ProjectsPage() {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.email) {
-    redirect("/api/auth/signin");
+    redirect("/signin");
   }
 
   const projects = await getProjects(session.user.email);

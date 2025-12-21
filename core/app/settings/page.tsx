@@ -32,13 +32,13 @@ export default async function SettingsPage() {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.email) {
-    redirect("/api/auth/signin");
+    redirect("/signin");
   }
 
   const userData = await getUserData(session.user.email);
 
   if (!userData) {
-    redirect("/api/auth/signin");
+    redirect("/signin");
   }
 
   return (

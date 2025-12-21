@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
+import { signOut } from 'next-auth/react'
 
 interface AuthButtonProps {
   session: {
@@ -115,7 +116,7 @@ export default function AuthButton({ session,className }: AuthButtonProps) {
 
             <DropdownMenuItem
               className="cursor-pointer rounded-none hover:bg-red-100 border-2 border-transparent hover:border-neo-black font-medium text-red-600"
-              onClick={() => router.push('/api/auth/signout')}
+              onClick={() => signOut()}
             >
               <LogOut className="mr-3 h-4 w-4" />
               Sign Out

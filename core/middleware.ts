@@ -11,7 +11,7 @@ export default async function middleware(req: NextRequest) {
   if (pathname.startsWith("/api/auth") || pathname.startsWith("/signin")) return NextResponse.next();
 
   if (!token && pathname !== "/") {
-    return NextResponse.redirect(new URL("/api/auth/signin", req.url));
+    return NextResponse.redirect(new URL("/signin", req.url));
   }
 
   if (token && pathname === "/api/auth/signin") {

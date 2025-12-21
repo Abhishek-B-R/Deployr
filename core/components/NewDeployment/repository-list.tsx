@@ -73,7 +73,7 @@ function RepositoryListInsider() {
         <p className="mb-4 text-gray-600 font-medium">
           Or your GitHub token expired. Try re-logging in.
         </p>
-        <NeoButton onClick={() => router.push("/api/auth/signin")}>
+        <NeoButton onClick={() => router.push("/signin")}>
           Sign in with GitHub
         </NeoButton>
       </NeoCard>

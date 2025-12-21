@@ -4,9 +4,11 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import FileSVG from "./SVG/FileSVG";
 import GithubSVG from "./SVG/Github";
 import JsSvg from "./SVG/JS";
+import { useRouter } from "next/navigation";
 
 export default function Hero({ isVisible }: { isVisible: boolean }) {
   const ref = useRef(null);
+  const router = useRouter();
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end start"],
@@ -135,6 +137,7 @@ export default function Hero({ isVisible }: { isVisible: boolean }) {
               }}
               whileTap={{ scale: 0.98 }}
               className="group relative bg-neo-yellow text-neo-black text-xl font-bold px-10 py-5 border-4 border-neo-black shadow-neo-lg transition-all"
+              onClick={()=>router.push("/new")}
             >
               <span className="flex items-center gap-3 uppercase tracking-wider">
                 Start Deploying
