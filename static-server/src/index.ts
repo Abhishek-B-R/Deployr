@@ -5,15 +5,35 @@ import { Pool } from "pg";
 import { DATABASE_URL } from "./envVars";
 import { getS3Object } from "./aws";
 import { notFoundHandler } from "./not-found";
+import { checkRateLimit, getRetryAfterSeconds } from "./rateLimiter";
 
 const pgClient = new Pool({
   connectionString: DATABASE_URL
 });
 
+function getClientIp(req: express.Request): string {
+  const forwarded = req.headers["x-forwarded-for"];
+  if (forwarded) {
+    const first = typeof forwarded === "string" ? forwarded : forwarded[0];
+    return first.split(",")[0].trim();
+  }
+  return req.ip ?? req.socket.remoteAddress ?? "unknown";
+}
+
 const app = express();
 const PORT = 8081;
 
+app.set("trust proxy", 1);
+
 app.get(/.*/, async (req, res) => {
+  const ip = getClientIp(req);
+  if (checkRateLimit(ip)) {
+    const retryAfter = getRetryAfterSeconds(ip);
+    res.setHeader("Retry-After", String(retryAfter));
+    res.status(429).send("Too Many Requests. Try again later.");
+    return;
+  }
+
   try {
     const host = req.hostname;
     const slug = host.split(".")[0];
