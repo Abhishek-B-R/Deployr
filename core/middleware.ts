@@ -1,8 +1,15 @@
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
-import { checkRateLimit, getClientIp, getRateLimitStatus } from "@/lib/rateLimiter";
+import {
+  checkRateLimit,
+  getClientIp,
+  getRateLimitStatus,
+} from "@/lib/rateLimiter";
 
-const PROTECTED_HOSTS = ["deployr.abhi.wtf", "ws.abhi.wtf"] as const;
+const PROTECTED_HOSTS = [
+  "deployr.abhishekbr.dev",
+  "ws.abhishekbr.dev",
+] as const;
 
 export default async function middleware(req: NextRequest) {
   let host = req.nextUrl.hostname;
@@ -23,16 +30,26 @@ export default async function middleware(req: NextRequest) {
 
   const { pathname } = req.nextUrl;
 
-  if (pathname.startsWith("/x.svg") || pathname.startsWith("/demo.mp4") || pathname.startsWith("/logo.png") || pathname.startsWith("/imgs")) return NextResponse.next();
+  if (
+    pathname.startsWith("/x.svg") ||
+    pathname.startsWith("/demo.mp4") ||
+    pathname.startsWith("/logo.png") ||
+    pathname.startsWith("/imgs")
+  )
+    return NextResponse.next();
 
-  if (pathname.startsWith("/api/auth") || pathname.startsWith("/signin")) return NextResponse.next();
+  if (pathname.startsWith("/api/auth") || pathname.startsWith("/signin"))
+    return NextResponse.next();
 
   // Allow rate-limited page to load without counting toward limit
   if (pathname !== "/rate-limited") {
     const ip = getClientIp(req);
     if (checkRateLimit(ip)) {
       const status = getRateLimitStatus(ip);
-      const retry = status.limited && "retryAfterSeconds" in status ? status.retryAfterSeconds : 60;
+      const retry =
+        status.limited && "retryAfterSeconds" in status
+          ? status.retryAfterSeconds
+          : 60;
       const url = new URL("/rate-limited", req.url);
       url.searchParams.set("retry", String(retry));
       return NextResponse.redirect(url);
@@ -67,4 +84,4 @@ export const config = {
      */
     "/((?!_next/static|_next/image|favicon.ico).*)",
   ],
-}
+};

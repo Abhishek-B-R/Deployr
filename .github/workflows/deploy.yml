@@ -56,11 +56,11 @@ jobs:
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.SSH_HOST }}
-          username: azureuser
+          username: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            cd /home/azureuser/deployr
+            cd /root/deployr
             sudo docker-compose pull
             sudo docker-compose up -d --build
             sudo docker image prune -a -f

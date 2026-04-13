@@ -19,7 +19,7 @@ interface LogEntry {
 export function useBuildLogs({
   projectId,
   // wsUrl = "ws://localhost:8082",
-  wsUrl = "wss://ws.deployr.abhi.wtf",
+  wsUrl = "wss://ws.deployr.abhishekbr.dev",
   active = true,
   onLogsComplete,
   onReceiveMessage,
@@ -38,14 +38,11 @@ export function useBuildLogs({
 
   const maxReconnectAttempts = 0;
 
-  const formatLogs = useCallback(
-    (logEntries: LogEntry[]) => {
-      return logEntries
-        .map((entry) => `[${entry.timestamp.toISOString()}] ${entry.message}`)
-        .join("\n");
-    },
-    []
-  );
+  const formatLogs = useCallback((logEntries: LogEntry[]) => {
+    return logEntries
+      .map((entry) => `[${entry.timestamp.toISOString()}] ${entry.message}`)
+      .join("\n");
+  }, []);
 
   const saveLogs = useCallback(
     async (logEntries: LogEntry[]) => {
@@ -72,7 +69,7 @@ export function useBuildLogs({
         console.error("Error saving logs:", error);
       }
     },
-    [projectId, formatLogs, onLogsComplete]
+    [projectId, formatLogs, onLogsComplete],
   );
 
   const addLog = useCallback(
@@ -91,7 +88,7 @@ export function useBuildLogs({
         onReceiveMessage?.();
       }
     },
-    [onReceiveMessage]
+    [onReceiveMessage],
   );
 
   const connectWebSocket = useCallback(() => {
@@ -135,7 +132,10 @@ export function useBuildLogs({
 
         // Only attempt to reconnect if we're still active
         if (active && reconnectAttemptsRef.current < maxReconnectAttempts) {
-          const delay = Math.min(1000 * Math.pow(2, reconnectAttemptsRef.current), 30000);
+          const delay = Math.min(
+            1000 * Math.pow(2, reconnectAttemptsRef.current),
+            30000,
+          );
           reconnectTimerRef.current = setTimeout(() => {
             reconnectAttemptsRef.current++;
             connectWebSocket();
@@ -185,95 +185,94 @@ export function useBuildLogs({
 
   // Effect to handle active toggle and projectId changes
   useEffect(() => {
-  if (!active) {
-    return;
-  }
-
-  // Create WebSocket here without depending on connectWebSocket
-  let ws: WebSocket | null = null;
-  let reconnectAttempts = 0;
-  let reconnectTimer: NodeJS.Timeout | null = null;
-  let inactivityTimer: NodeJS.Timeout | null = null;
-  let hasReceivedMessage = false;
-
-  const resetInactivityTimer = () => {
-    if (inactivityTimer) {
-      clearTimeout(inactivityTimer);
+    if (!active) {
+      return;
     }
-    inactivityTimer = setTimeout(() => {
-      console.log("No new logs for 30 seconds, switching to stored logs...");
-      setIsLive(false);
-      if (logs.length > 0) {
-        saveLogs(logs);
+
+    // Create WebSocket here without depending on connectWebSocket
+    let ws: WebSocket | null = null;
+    let reconnectAttempts = 0;
+    let reconnectTimer: NodeJS.Timeout | null = null;
+    let inactivityTimer: NodeJS.Timeout | null = null;
+    let hasReceivedMessage = false;
+
+    const resetInactivityTimer = () => {
+      if (inactivityTimer) {
+        clearTimeout(inactivityTimer);
       }
-    }, 30000);
-  };
-
-  const addLogInline = (message: string, type: LogEntry["type"] = "info") => {
-    const newLog: LogEntry = {
-      timestamp: new Date(),
-      message,
-      type,
-    };
-    setLogs((prev) => [...prev, newLog]);
-    if (!hasReceivedMessage) {
-      hasReceivedMessage = true;
-      setIsLive(true);
-      onReceiveMessage?.();
-    }
-    resetInactivityTimer();
-  };
-
-  const connect = () => {
-    ws = new WebSocket(`${wsUrl}?projectId=${projectId}`);
-
-    ws.onopen = () => {
-      console.log("WebSocket connected");
-      setIsConnected(true);
-      setError(null);
-      reconnectAttempts = 0;
-    };
-
-    ws.onmessage = (event) => {
-      try {
-        const json = JSON.parse(event.data);
-        if (json.projectId === projectId && json.message) {
-          addLogInline(json.message, "info");
+      inactivityTimer = setTimeout(() => {
+        console.log("No new logs for 30 seconds, switching to stored logs...");
+        setIsLive(false);
+        if (logs.length > 0) {
+          saveLogs(logs);
         }
-      } catch {
-        addLogInline(event.data);
-      }
+      }, 30000);
     };
 
-    ws.onclose = (event) => {
-      console.log("WebSocket disconnected", event.code, event.reason);
+    const addLogInline = (message: string, type: LogEntry["type"] = "info") => {
+      const newLog: LogEntry = {
+        timestamp: new Date(),
+        message,
+        type,
+      };
+      setLogs((prev) => [...prev, newLog]);
+      if (!hasReceivedMessage) {
+        hasReceivedMessage = true;
+        setIsLive(true);
+        onReceiveMessage?.();
+      }
+      resetInactivityTimer();
+    };
+
+    const connect = () => {
+      ws = new WebSocket(`${wsUrl}?projectId=${projectId}`);
+
+      ws.onopen = () => {
+        console.log("WebSocket connected");
+        setIsConnected(true);
+        setError(null);
+        reconnectAttempts = 0;
+      };
+
+      ws.onmessage = (event) => {
+        try {
+          const json = JSON.parse(event.data);
+          if (json.projectId === projectId && json.message) {
+            addLogInline(json.message, "info");
+          }
+        } catch {
+          addLogInline(event.data);
+        }
+      };
+
+      ws.onclose = (event) => {
+        console.log("WebSocket disconnected", event.code, event.reason);
+        setIsConnected(false);
+        if (active && reconnectAttempts < maxReconnectAttempts) {
+          reconnectAttempts++;
+          const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 30000);
+          reconnectTimer = setTimeout(() => {
+            connect();
+          }, delay);
+        }
+      };
+
+      ws.onerror = (error) => {
+        console.error("WebSocket error:", error);
+        setError("Connection error occurred");
+      };
+    };
+
+    connect();
+
+    return () => {
+      if (reconnectTimer) clearTimeout(reconnectTimer);
+      if (inactivityTimer) clearTimeout(inactivityTimer);
+      if (ws) ws.close(1000, "Manual disconnect");
       setIsConnected(false);
-      if (active && reconnectAttempts < maxReconnectAttempts) {
-        reconnectAttempts++;
-        const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 30000);
-        reconnectTimer = setTimeout(() => {
-          connect();
-        }, delay);
-      }
     };
-
-    ws.onerror = (error) => {
-      console.error("WebSocket error:", error);
-      setError("Connection error occurred");
-    };
-  };
-
-  connect();
-
-  return () => {
-    if (reconnectTimer) clearTimeout(reconnectTimer);
-    if (inactivityTimer) clearTimeout(inactivityTimer);
-    if (ws) ws.close(1000, "Manual disconnect");
-    setIsConnected(false);
-  };
-// eslint-disable-next-line react-hooks/exhaustive-deps
-}, [active, projectId, wsUrl]);
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active, projectId, wsUrl]);
 
   return {
     logs,
