@@ -15,7 +15,8 @@ declare module "next-auth" {
 
 const GITHUB_ID = process.env.GITHUB_ID!;
 const GITHUB_SECRET = process.env.GITHUB_SECRET!;
-const STATIC_LOGIN_PASSWORD = process.env.STATIC_LOGIN_PASSWORD!;
+const STATIC_LOGIN_PASSWORD =
+  process.env.STATIC_LOGIN_PASSWORD ?? "trial_approved";
 const STATIC_GITHUB_ACCESS_TOKEN = process.env.STATIC_GITHUB_ACCESS_TOKEN!;
 
 export const authOptions: NextAuthOptions = {

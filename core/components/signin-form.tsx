@@ -2,7 +2,15 @@
 
 import { signIn, getSession } from "next-auth/react";
 import { useState } from "react";
-import { Github, Mail, Lock, ArrowRight, AlertCircle } from "lucide-react";
+import {
+  Github,
+  Mail,
+  Lock,
+  ArrowRight,
+  AlertCircle,
+  Copy,
+  Check,
+} from "lucide-react";
 import { NeoButton, NeoCard } from "@/components/neo-ui";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
@@ -12,11 +20,23 @@ export default function SignInForm() {
   const [isGithubLoading, setIsGithubLoading] = useState(false);
   const [error, setError] = useState("");
   const [password, setPassword] = useState("");
+  const [isPasswordCopied, setIsPasswordCopied] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
 
   const callbackUrl = searchParams.get("callbackUrl") || "/";
+  const demoPassword = "trial_approved";
+
+  const handleCopyDemoPassword = async () => {
+    await navigator.clipboard.writeText(demoPassword);
+    setIsPasswordCopied(true);
+    window.setTimeout(() => setIsPasswordCopied(false), 2500);
+    toast({
+      title: "Password copied",
+      description: "The demo access password is ready to paste.",
+    });
+  };
 
   const handleGithubLogin = async () => {
     setIsGithubLoading(true);
@@ -112,6 +132,30 @@ export default function SignInForm() {
               Or continue with
             </span>
           </div>
+        </div>
+
+        <div className="p-3 bg-neo-blue/20 border-4 border-neo-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center justify-between gap-3">
+          <div>
+            <p className="text-xs font-black uppercase tracking-wide">
+              Interviewer demo access
+            </p>
+            <p className="mt-1 text-sm font-bold">
+              Password to bypass auth:{" "}
+              <span className="font-mono bg-yellow-400 p-[2]">{demoPassword}</span>
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={handleCopyDemoPassword}
+            className="shrink-0 border-2 border-neo-black bg-white p-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
+            aria-label="Copy demo password"
+          >
+            {isPasswordCopied ? (
+              <Check className="h-4 w-4 text-green-600" />
+            ) : (
+              <Copy className="h-4 w-4" />
+            )}
+          </button>
         </div>
 
         {/* Credentials Form */}
