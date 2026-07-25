@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
     try {
       // const backendResponse = await fetch("http://localhost:8080/deploy", {
       const backendResponse = await fetch(
-        "https://api.deployr.abhishekbr.dev/deploy",
+        "https://api.deployr.abhishekbr.com/deploy",
         {
           method: "POST",
           headers: {
