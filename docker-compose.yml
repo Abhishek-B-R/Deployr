@@ -32,7 +32,7 @@ services:
       - redis
     environment:
       - REDIS_URL=redis://redis:6379
-      - OUTPUT_BASE_PATH=/home/azureuser/deployr/output
+      - OUTPUT_BASE_PATH=/root/deployr/output
 
   static-server:
     image: abhibr/deployr-static-server:latest

@@ -126,7 +126,7 @@ export async function POST(request: NextRequest) {
           installCommand: installCommand || "npm install",
           outputDirectory: outputDirectory || "dist",
           framework: framework || "",
-          rootDirectory: "./" + rootDirectory,
+          rootDirectory: rootDirectory?.replace(/^\.\/+/, "") || ".",
           envVars: {
             create: envVars.map((env: { key: string; value: string }) => ({
               key: env.key,

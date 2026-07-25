@@ -8,9 +8,18 @@ import {exec} from "child_process"
 
 const docker = new Docker();
 
+function normalizeRootDirectory(rootDirectory: string): string {
+    return (rootDirectory || ".")
+        .trim()
+        .replace(/^\.\/+/, "")
+        .replace(/\/+$/, "");
+}
+
 export async function buildProject(id: string,rootDirectory: string, installCommand: string, buildCommand: string,envVarsArray?: { key: string, value: string }[]) {
     const outputBasePath = process.env.OUTPUT_BASE_PATH || path.resolve("output");
     const projectPath = path.join(outputBasePath, id);
+    const cleanedRoot = normalizeRootDirectory(rootDirectory);
+    const workingDir = cleanedRoot ? path.posix.join("/app", cleanedRoot) : "/app";
     let logsList = ""
 
     async function log(msg: string) {
@@ -85,6 +94,15 @@ export async function buildProject(id: string,rootDirectory: string, installComm
 
         log("Creating and starting container...");
 
+        const packageJsonPath = cleanedRoot
+            ? path.join(projectPath, cleanedRoot, "package.json")
+            : path.join(projectPath, "package.json");
+        if (!fs.existsSync(packageJsonPath)) {
+            throw new Error(
+                `package.json not found at ${packageJsonPath}. Check OUTPUT_BASE_PATH bind mount (host files must be under ${projectPath}).`
+            );
+        }
+
         const container = await docker.createContainer({
             Image: "node:18",
             Cmd: [
@@ -93,7 +111,7 @@ export async function buildProject(id: string,rootDirectory: string, installComm
                 `${installCommand} && ${buildCommand} && chown -R 1000:1000 /app`
             ],
             Tty: false,
-            WorkingDir: `/app/${rootDirectory}`,
+            WorkingDir: workingDir,
             Env: envVarsArray?.map(({ key, value }) => `${key}=${value}`),
             HostConfig: {
                 Binds: [`${projectPath}:/app`],
@@ -135,7 +153,13 @@ export async function copyFinalDist(
   rootDirectory: string,
   outputDirectory: string
 ): Promise<number> {
-  const folderPath = path.resolve("output", id, rootDirectory, outputDirectory);
+  const cleanedRoot = normalizeRootDirectory(rootDirectory);
+  const folderPath = path.resolve(
+    "output",
+    id,
+    cleanedRoot || ".",
+    outputDirectory
+  );
 
   try {
     if (!fs.existsSync(folderPath)) {
