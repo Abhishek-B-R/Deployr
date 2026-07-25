@@ -51,11 +51,12 @@ export async function POST(request: NextRequest) {
     try {
       // const backendResponse = await fetch("http://localhost:8080/deploy", {
       const backendResponse = await fetch(
-        "https://api.deployr.abhishekbr.com/deploy",
+        "https://api.deployr.abhishekbr.dev/deploy",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "x-internal-secret": process.env.INTERNAL_SECRET ?? "",
           },
           body: JSON.stringify(backendPayload),
         },
