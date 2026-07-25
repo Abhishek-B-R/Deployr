@@ -6,28 +6,7 @@ import {
   getRateLimitStatus,
 } from "@/lib/rateLimiter";
 
-const PROTECTED_HOSTS = [
-  "deployr.abhishekbr.com",
-  "ws.abhishekbr.com",
-] as const;
-
 export default async function middleware(req: NextRequest) {
-  let host = req.nextUrl.hostname;
-  if (!host) {
-    const h = req.headers.get("host");
-    host = h ? h.split(":")[0] : "";
-  }
-
-  if (PROTECTED_HOSTS.includes(host as (typeof PROTECTED_HOSTS)[number])) {
-    const expectedSecret = process.env.INTERNAL_SECRET;
-    if (expectedSecret) {
-      const secret = req.headers.get("x-internal-secret");
-      if (secret !== expectedSecret) {
-        return new NextResponse(null, { status: 403 });
-      }
-    }
-  }
-
   const { pathname } = req.nextUrl;
 
   if (
