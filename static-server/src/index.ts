@@ -8,7 +8,7 @@ import { notFoundHandler } from "./not-found";
 import { checkRateLimit, getRetryAfterSeconds } from "./rateLimiter";
 
 const pgClient = new Pool({
-  connectionString: DATABASE_URL
+  connectionString: DATABASE_URL,
 });
 
 function getClientIp(req: express.Request): string {
@@ -37,8 +37,8 @@ app.get(/.*/, async (req, res) => {
   try {
     const host = req.hostname;
     const slug = host.split(".")[0];
-    const splits = host.split(".").length
-    if(splits < 2 || splits > 3) {
+    const splits = host.split(".").length;
+    if (splits < 2 || splits > 3) {
       notFoundHandler("Invalid host format", res);
       return;
     }
@@ -51,11 +51,15 @@ app.get(/.*/, async (req, res) => {
 
     const { rows } = await pgClient.query(
       `SELECT * FROM "Project" WHERE slug = $1`,
-      [slug]
+      [slug],
     );
     const project = rows[0];
 
-    if (!project?.id || project.isDeleted || project.status !== "BUILD_SUCCESS") {
+    if (
+      !project?.id ||
+      project.isDeleted ||
+      project.status !== "BUILD_SUCCESS"
+    ) {
       notFoundHandler("Project not found or unavailable", res);
       return;
     }
@@ -70,8 +74,8 @@ app.get(/.*/, async (req, res) => {
 
     const contentType = mime.lookup(filePath) || "application/octet-stream";
     res.setHeader("Content-Type", contentType);
-    res.setHeader("X-Powered-By", "deployr.live");
-    res.setHeader("Server", "deployr.live");
+    res.setHeader("X-Powered-By", "deployr.abhishekbr.com");
+    res.setHeader("Server", "deployr.abhishekbr.com");
 
     // Stream S3 object body
     (s3Obj.Body as Readable).pipe(res);
@@ -79,12 +83,11 @@ app.get(/.*/, async (req, res) => {
     // Increment views in background (fire-and-forget)
     /* Temporarily done in server itself, on scale add these in Redis
       and update in DB every 1 minute only once for a particular id */
-    await pgClient.query(
-      `UPDATE "Project" SET views = views + 1 WHERE id = $1`,
-      [id]
-    ).catch((err) => {
-      console.error("Error incrementing views:", err);
-    });
+    await pgClient
+      .query(`UPDATE "Project" SET views = views + 1 WHERE id = $1`, [id])
+      .catch((err) => {
+        console.error("Error incrementing views:", err);
+      });
   } catch (err: any) {
     if (err.Code === "NoSuchKey" || err.name === "NoSuchKey") {
       console.warn("File not found:", err);

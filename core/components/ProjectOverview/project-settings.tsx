@@ -37,7 +37,7 @@ const projectUpdateSchema = z.object({
   framework: z.string().min(1),
   rootDirectory: z.string().min(1),
   envVars: z.array(
-    z.object({ key: z.string().min(1), value: z.string().min(1) })
+    z.object({ key: z.string().min(1), value: z.string().min(1) }),
   ),
 });
 
@@ -211,7 +211,7 @@ export function ProjectSettings({ project }: ProjectSettingsProps) {
                   className="flex-1 h-12 px-5 border-4 border-t-0 sm:border-t-4 border-neo-black font-bold font-mono focus:outline-none focus:ring-4 focus:ring-neo-blue/20"
                 />
                 <span className="h-12 flex items-center px-3 sm:px-4 bg-gray-100 border-4 border-t-0 sm:border-t-4 sm:border-l-0 border-neo-black font-mono text-xs font-bold text-gray-500 whitespace-nowrap">
-                  .deployr.live
+                  .deployr.abhishekbr.com
                 </span>
               </div>
               {form.formState.errors.slug && (

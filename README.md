@@ -1,8 +1,8 @@
 # Deployr: Self-Hosted Vercel Clone
 
-![Deployr Banner](https://deployr.live/imgs/Landing.png)
+![Deployr Banner](https://deployr.abhishekbr.com/imgs/Landing.png)
 
-> **Deployr** is a full-stack, self-hosted Vercel-like platform that allows you to connect a GitHub repository, specify your build settings, and deploy static/Next.js sites dynamically under a custom subdomain (e.g., `yourproject.deployr.live`).
+> **Deployr** is a full-stack, self-hosted Vercel-like platform that allows you to connect a GitHub repository, specify your build settings, and deploy static/Next.js sites dynamically under a custom subdomain (e.g., `yourproject.deployr.abhishekbr.com`).
 
 ---
 
@@ -10,7 +10,7 @@
 
 - 🧠 **GitHub Integration** — Connect repos, auto-fetch branches, and trigger builds.
 - 🏗️ **Docker-based CI/CD** — Fully containerized build process using Docker.
-- 🌐 **Dynamic Subdomain Routing** — Automatic reverse proxying with Nginx to `*.deployr.live`.
+- 🌐 **Dynamic Subdomain Routing** — Automatic reverse proxying with Nginx to `*.deployr.abhishekbr.com`.
 - ⚙️ **Environment Variables Support** — Easily inject env variables during builds.
 - 📦 **R2 Object Storage** — Uses Cloudflare R2 for uploading final build output.
 - 📊 **Status Dashboard** — Tracks builds with logs, size, and real-time updates.
@@ -30,7 +30,7 @@ apps/
 ├── docker-pull-and-builder/    # Consumes Redis queue & builds projects
 │   └── ws-server/              # WebSocket server for real-time build updates
 └── static-server/              # Serves built frontend projects from R2
-    └── nginx/                  # Config for routing *.deployr.live, api, and ws
+    └── nginx/                  # Config for routing *.deployr.abhishekbr.com, api, and ws
 
 ```
 
@@ -107,7 +107,7 @@ await pgClient.query(`INSERT INTO "FailedJobs" (id) VALUES ($1)`, [id]);
 - Routes:
   - `api.deployr.abhishekbr.com` -> API Server (8080)
   - `ws.deployr.abhishekbr.com` -> WebSocket Server (8082)
-  - `*.deployr.live` -> Static file server (8081)
+  - `*.deployr.abhishekbr.com` -> Static file server (8081)
 
 ```nginx
 server {
@@ -127,7 +127,7 @@ server {
 
 ## 🧠 Challenges Faced
 
-- ⚠️ DNS Propagation delays: `*.deployr.live` took hours to propagate globally.
+- ⚠️ DNS Propagation delays: `*.deployr.abhishekbr.com` took hours to propagate globally.
 - ❌ Certbot errors due to SERVFAIL on `_acme-challenge` DNS records.
 - 💣 Redis crash in production — fallback queue logging in PostgreSQL added.
 - 🐞 AWS SDK error due to accidental misuse of GitHub URL as S3 endpoint.
@@ -140,22 +140,22 @@ server {
 ## 📸 Screenshots
 
 - Dashboard with list of projects
-  ![alt text](https://deployr.live/imgs/Dashboard.webp)
+  ![alt text](https://deployr.abhishekbr.com/imgs/Dashboard.webp)
 
 - Create project modal with GitHub repo selector
-  ![alt text](https://deployr.live/imgs/CreateProject.webp)
+  ![alt text](https://deployr.abhishekbr.com/imgs/CreateProject.webp)
 
 - Smart framework detection along with customization like editing framework,build command,install command and output directory.
-  ![alt text](https://deployr.live/imgs/FrameworkDetection.webp)
+  ![alt text](https://deployr.abhishekbr.com/imgs/FrameworkDetection.webp)
 
 - Logs viewer with real-time status (via WS)
-  ![alt text](https://deployr.live/imgs/LogViewer.png)
+  ![alt text](https://deployr.abhishekbr.com/imgs/LogViewer.png)
 
 - R2 uploads in Cloudflare dashboard
-  ![alt text](https://deployr.live/imgs/CloudflareDash.png)
+  ![alt text](https://deployr.abhishekbr.com/imgs/CloudflareDash.png)
 
-- Final deployed website - `deployr.live`
-  ![alt text](https://deployr.live/imgs/Landing.png)
+- Final deployed website - `deployr.abhishekbr.com`
+  ![alt text](https://deployr.abhishekbr.com/imgs/Landing.png)
 
 ---
 
@@ -174,8 +174,8 @@ make devBuild
 
 Make sure:
 
-- You own a wildcard domain (like `*.deployr.live`) and it points to your server IP
-- Certbot is configured for `*.deployr.live` + root domain
+- You own a wildcard domain (like `*.deployr.abhishekbr.com`) and it points to your server IP
+- Certbot is configured for `*.deployr.abhishekbr.com` + root domain
 
 ---
 

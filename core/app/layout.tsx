@@ -17,19 +17,19 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.deployr.live"),
+  metadataBase: new URL("https://www.deployr.abhishekbr.com"),
   title: "Deployr - Deploy Your Projects with Ease",
   description:
     "Deploy your applications effortlessly with Deployr. A powerful Vercel clone that simplifies deployment workflows, supports multiple frameworks, and provides real-time build logs. Get your projects live in minutes.",
   openGraph: {
     type: "website",
-    url: "https://www.deployr.live/",
+    url: "https://www.deployr.abhishekbr.com/",
     title: "Deployr - Deploy Your Projects with Ease",
     description:
       "Deploy your applications effortlessly with Deployr. A powerful Vercel clone that simplifies deployment workflows, supports multiple frameworks, and provides real-time build logs. Get your projects live in minutes.",
     images: [
       {
-        url: "https://www.deployr.live/imgs/Landing.png",
+        url: "https://www.deployr.abhishekbr.com/imgs/Landing.png",
         width: 1200,
         height: 630,
         alt: "Deployr - Deploy Your Projects with Ease",
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     title: "Deployr - Deploy Your Projects with Ease",
     description:
       "Deploy your applications effortlessly with Deployr. A powerful Vercel clone that simplifies deployment workflows, supports multiple frameworks, and provides real-time build logs. Get your projects live in minutes.",
-    images: ["https://www.deployr.live/imgs/Landing.png"],
+    images: ["https://www.deployr.abhishekbr.com/imgs/Landing.png"],
   },
 };
 

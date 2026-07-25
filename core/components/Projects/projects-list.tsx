@@ -22,7 +22,7 @@ import {
   LayoutGrid,
   List,
   Activity,
-  Calendar
+  Calendar,
 } from "lucide-react";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
@@ -75,7 +75,7 @@ const statusConfig: any = {
     textColor: "text-black",
     icon: Clock,
     label: "QUEUED",
-    border: "border-neo-black"
+    border: "border-neo-black",
   },
   BUILDING: {
     color: "bg-neo-blue",
@@ -83,21 +83,21 @@ const statusConfig: any = {
     icon: RefreshCw,
     label: "BUILDING",
     border: "border-neo-black",
-    animate: "animate-spin"
+    animate: "animate-spin",
   },
   BUILD_SUCCESS: {
     color: "bg-neo-green",
     textColor: "text-black",
     icon: CheckCircle,
     label: "LIVE",
-    border: "border-neo-black"
+    border: "border-neo-black",
   },
   BUILD_FAILED: {
     color: "bg-neo-pink",
     textColor: "text-black",
     icon: XCircle,
     label: "FAILED",
-    border: "border-neo-black"
+    border: "border-neo-black",
   },
 };
 
@@ -112,7 +112,7 @@ export function ProjectsList({ projects }: ProjectsListProps) {
       project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       project.repo_name?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus =
-      statusFilter === "all" || 
+      statusFilter === "all" ||
       (statusFilter === "live" && project.status === "BUILD_SUCCESS") ||
       (statusFilter === "failed" && project.status === "BUILD_FAILED") ||
       (statusFilter === "building" && project.status === "BUILDING");
@@ -124,7 +124,9 @@ export function ProjectsList({ projects }: ProjectsListProps) {
     const k = 1024;
     const sizes = ["B", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return Number.parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
+    return (
+      Number.parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i]
+    );
   };
 
   return (
@@ -132,7 +134,6 @@ export function ProjectsList({ projects }: ProjectsListProps) {
       <NavBar />
 
       <main className="flex-1 container mx-auto px-4 md:px-10 py-12 pt-32 max-w-7xl">
-        
         {/* Page Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
           <div>
@@ -143,9 +144,14 @@ export function ProjectsList({ projects }: ProjectsListProps) {
               {projects.length} PROJECTS DEPLOYED
             </p>
           </div>
-          
+
           <motion.button
-            whileHover={{ scale: 1.02, boxShadow: "0px 0px 0px 0px rgba(0,0,0,1)", x: 4, y: 4 }}
+            whileHover={{
+              scale: 1.02,
+              boxShadow: "0px 0px 0px 0px rgba(0,0,0,1)",
+              x: 4,
+              y: 4,
+            }}
             whileTap={{ scale: 0.98 }}
             onClick={() => router.push("/new")}
             className="bg-neo-black text-white px-6 py-4 text-lg font-bold uppercase tracking-wider border-4 border-neo-black shadow-neo-lg flex items-center gap-3 transition-all cursor-pointer"
@@ -159,24 +165,27 @@ export function ProjectsList({ projects }: ProjectsListProps) {
         <div className="bg-white border-4 border-neo-black p-4 shadow-neo-sm mb-12 flex flex-col md:flex-row gap-4 items-center">
           {/* Search */}
           <div className="relative flex-1 w-full">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" strokeWidth={3} />
-            <input 
+            <Search
+              className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+              strokeWidth={3}
+            />
+            <input
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="SEARCH PROJECTS..." 
+              placeholder="SEARCH PROJECTS..."
               className="w-full h-12 pl-12 pr-4 border-2 border-neo-black bg-gray-50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-neo-yellow/50 font-bold font-mono text-lg transition-all placeholder:text-gray-300"
             />
           </div>
 
           {/* Filters */}
           <div className="flex gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 no-scrollbar">
-            {['all', 'live', 'building', 'failed'].map((filter) => (
+            {["all", "live", "building", "failed"].map((filter) => (
               <button
                 key={filter}
                 onClick={() => setStatusFilter(filter)}
                 className={`px-4 py-2 border-2 border-neo-black font-bold uppercase text-sm whitespace-nowrap transition-all cursor-pointer ${
-                  statusFilter === filter 
-                    ? "bg-neo-black text-white shadow-none translate-y-[2px] translate-x-[2px]" 
+                  statusFilter === filter
+                    ? "bg-neo-black text-white shadow-none translate-y-[2px] translate-x-[2px]"
                     : "bg-white text-neo-black shadow-neo-sm hover:-translate-y-1 hover:shadow-neo"
                 }`}
               >
@@ -187,14 +196,14 @@ export function ProjectsList({ projects }: ProjectsListProps) {
 
           {/* View Toggle */}
           <div className="hidden md:flex border-2 border-neo-black bg-white">
-            <button 
+            <button
               onClick={() => setViewMode("grid")}
               className={`p-2 hover:bg-neo-yellow transition-colors ${viewMode === "grid" ? "bg-neo-yellow" : ""}`}
             >
               <LayoutGrid className="w-5 h-5 text-black" />
             </button>
             <div className="w-[2px] bg-neo-black"></div>
-            <button 
+            <button
               onClick={() => setViewMode("list")}
               className={`p-2 hover:bg-neo-yellow transition-colors ${viewMode === "list" ? "bg-neo-yellow" : ""}`}
             >
@@ -213,12 +222,12 @@ export function ProjectsList({ projects }: ProjectsListProps) {
               {projects.length === 0 ? "No Projects Yet" : "No Projects Found"}
             </h3>
             <p className="text-gray-500 font-medium mb-8">
-              {projects.length === 0 
-                ? "Get started by deploying your first project" 
+              {projects.length === 0
+                ? "Get started by deploying your first project"
                 : "Try clearing your filters or create a new project."}
             </p>
             {searchTerm && (
-              <button 
+              <button
                 onClick={() => setSearchTerm("")}
                 className="text-neo-pink font-bold underline hover:text-black"
               >
@@ -227,13 +236,20 @@ export function ProjectsList({ projects }: ProjectsListProps) {
             )}
           </div>
         ) : (
-          <div className={viewMode === "grid" ? "grid md:grid-cols-2 lg:grid-cols-3 gap-8" : "flex flex-col gap-4"}>
+          <div
+            className={
+              viewMode === "grid"
+                ? "grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+                : "flex flex-col gap-4"
+            }
+          >
             <AnimatePresence>
               {filteredProjects.map((project) => {
-                const status = statusConfig[project.status] || statusConfig.PENDING;
+                const status =
+                  statusConfig[project.status] || statusConfig.PENDING;
                 const StatusIcon = status.icon;
                 const fw = project.framework || "default";
-                const deploymentUrl = `https://${project.slug}.deployr.live`;
+                const deploymentUrl = `https://${project.slug}.deployr.abhishekbr.com`;
 
                 if (viewMode === "list") {
                   return (
@@ -242,22 +258,32 @@ export function ProjectsList({ projects }: ProjectsListProps) {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0 }}
-                      onClick={() => router.push(`/projects/${project.id}/overview`)}
+                      onClick={() =>
+                        router.push(`/projects/${project.id}/overview`)
+                      }
                       className="bg-white border-4 border-neo-black p-4 shadow-neo-sm hover:shadow-neo hover:-translate-y-1 transition-all cursor-pointer flex items-center gap-6 group"
                     >
-                      <div className={`w-12 h-12 border-2 border-neo-black flex items-center justify-center text-xl font-black shadow-sm ${project.status === 'BUILD_SUCCESS' ? 'bg-neo-green' : 'bg-white'}`}>
+                      <div
+                        className={`w-12 h-12 border-2 border-neo-black flex items-center justify-center text-xl font-black shadow-sm ${project.status === "BUILD_SUCCESS" ? "bg-neo-green" : "bg-white"}`}
+                      >
                         {frameworks[fw].logo || "?"}
                       </div>
                       <div className="flex-1">
-                        <h3 className="font-black text-xl group-hover:underline decoration-4 decoration-neo-yellow">{project.name}</h3>
+                        <h3 className="font-black text-xl group-hover:underline decoration-4 decoration-neo-yellow">
+                          {project.name}
+                        </h3>
                         <div className="flex gap-2 text-sm font-mono text-gray-500">
                           <span>{project.repo_name}</span>
                           <span>•</span>
                           <span>{project.branch}</span>
                         </div>
                       </div>
-                      <div className={`px-3 py-1 border-2 border-neo-black font-bold font-mono text-xs uppercase flex items-center gap-2 ${status.color} ${status.textColor}`}>
-                        <StatusIcon className={`w-3 h-3 ${status.animate || ""}`} />
+                      <div
+                        className={`px-3 py-1 border-2 border-neo-black font-bold font-mono text-xs uppercase flex items-center gap-2 ${status.color} ${status.textColor}`}
+                      >
+                        <StatusIcon
+                          className={`w-3 h-3 ${status.animate || ""}`}
+                        />
                         {status.label}
                       </div>
                       <ChevronRight className="w-6 h-6 text-neo-black" />
@@ -274,7 +300,9 @@ export function ProjectsList({ projects }: ProjectsListProps) {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     whileHover={{ y: -4 }}
-                    onClick={() => router.push(`/projects/${project.id}/overview`)}
+                    onClick={() =>
+                      router.push(`/projects/${project.id}/overview`)
+                    }
                     className="group relative bg-white border-4 border-neo-black shadow-neo-lg hover:shadow-neo transition-all duration-200 cursor-pointer overflow-hidden flex flex-col"
                   >
                     {/* Card Header */}
@@ -295,18 +323,26 @@ export function ProjectsList({ projects }: ProjectsListProps) {
                           {project.repo_name}
                         </div>
                       </div>
-                      
+
                       <div className="relative z-10 flex flex-col gap-2 items-end">
-                        <div className={`w-3 h-3 rounded-full border-2 border-black ${status.color === 'bg-neo-green' ? 'bg-neo-green animate-pulse' : status.color === 'bg-neo-pink' ? 'bg-neo-pink' : 'bg-gray-300'}`}></div>
-                        
+                        <div
+                          className={`w-3 h-3 rounded-full border-2 border-black ${status.color === "bg-neo-green" ? "bg-neo-green animate-pulse" : status.color === "bg-neo-pink" ? "bg-neo-pink" : "bg-gray-300"}`}
+                        ></div>
+
                         <DropdownMenu>
-                          <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                          <DropdownMenuTrigger
+                            asChild
+                            onClick={(e) => e.stopPropagation()}
+                          >
                             <button className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-neo-yellow border-3 border-black hover:border-black">
                               <MoreHorizontal className="w-5 h-5" />
                             </button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="border-2 border-neo-black text-black bg-white shadow-neo">
-                            <DropdownMenuItem 
+                          <DropdownMenuContent
+                            align="end"
+                            className="border-2 border-neo-black text-black bg-white shadow-neo"
+                          >
+                            <DropdownMenuItem
                               className={`cursor-pointer font-medium hover:${status.color}`}
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -364,50 +400,74 @@ export function ProjectsList({ projects }: ProjectsListProps) {
                       <div className="space-y-4 mb-6">
                         {/* Domain */}
                         <div className="flex justify-between items-center text-sm font-medium border-b-2 border-dashed border-gray-200 pb-2">
-                          <span className="text-gray-500 uppercase tracking-wide text-xs font-bold">Domain</span>
+                          <span className="text-gray-500 uppercase tracking-wide text-xs font-bold">
+                            Domain
+                          </span>
                           <div className="flex items-center gap-1 hover:text-neo-blue cursor-pointer">
                             <Globe className="w-3 h-3" />
-                            <span className="truncate max-w-[150px]">{project.slug}.deployr.live</span>
+                            <span className="truncate max-w-[150px]">
+                              {project.slug}.deployr.abhishekbr.com
+                            </span>
                           </div>
                         </div>
-                        
+
                         {/* Branch */}
                         <div className="flex justify-between items-center text-sm font-medium border-b-2 border-dashed border-gray-200 pb-2">
-                          <span className="text-gray-500 uppercase tracking-wide text-xs font-bold">Branch</span>
+                          <span className="text-gray-500 uppercase tracking-wide text-xs font-bold">
+                            Branch
+                          </span>
                           <div className="flex items-center gap-1 font-mono text-xs bg-gray-100 px-1">
                             <GitBranch className="w-3 h-3" />
                             {project.branch}
                           </div>
                         </div>
-                        
+
                         {/* Stats */}
                         <div className="grid grid-cols-3 gap-2 pt-2">
                           <div className="text-center">
                             <div className="flex items-center justify-center gap-1">
                               <Eye className="w-3 h-3 text-gray-400" />
-                              <span className="text-sm font-bold">{project.status !== "BUILD_SUCCESS" && project.views.toLocaleString()}</span>
+                              <span className="text-sm font-bold">
+                                {project.status !== "BUILD_SUCCESS" &&
+                                  project.views.toLocaleString()}
+                              </span>
                             </div>
-                            <p className="text-xs text-gray-500 uppercase font-bold">Views</p>
+                            <p className="text-xs text-gray-500 uppercase font-bold">
+                              Views
+                            </p>
                           </div>
                           <div className="text-center">
                             <div className="flex items-center justify-center gap-1">
                               <Activity className="w-3 h-3 text-gray-400" />
-                              <span className="text-sm font-bold">{project.size ? formatBytes(project.size) : "—"}</span>
+                              <span className="text-sm font-bold">
+                                {project.size ? formatBytes(project.size) : "—"}
+                              </span>
                             </div>
-                            <p className="text-xs text-gray-500 uppercase font-bold">Size</p>
+                            <p className="text-xs text-gray-500 uppercase font-bold">
+                              Size
+                            </p>
                           </div>
                           <div className="text-center">
                             <div className="flex items-center justify-center gap-1">
                               <Calendar className="w-3 h-3 text-gray-400" />
-                              <span className="text-sm font-bold">{getTimeAgo(project.updatedAt)}</span>
+                              <span className="text-sm font-bold">
+                                {getTimeAgo(project.updatedAt)}
+                              </span>
                             </div>
-                            <p className="text-xs text-gray-500 uppercase font-bold">Updated</p>
+                            <p className="text-xs text-gray-500 uppercase font-bold">
+                              Updated
+                            </p>
                           </div>
                         </div>
                       </div>
 
-                      <div className={`w-full py-3 border-2 font-black text-center text-sm uppercase tracking-widest flex items-center justify-center gap-2 shadow-neo-sm ${status.color} ${status.textColor} ${status.border}`}>
-                        <StatusIcon className={`w-4 h-4 ${status.animate || ""}`} strokeWidth={3} />
+                      <div
+                        className={`w-full py-3 border-2 font-black text-center text-sm uppercase tracking-widest flex items-center justify-center gap-2 shadow-neo-sm ${status.color} ${status.textColor} ${status.border}`}
+                      >
+                        <StatusIcon
+                          className={`w-4 h-4 ${status.animate || ""}`}
+                          strokeWidth={3}
+                        />
                         {status.label}
                       </div>
                     </div>
@@ -431,6 +491,21 @@ export function ProjectsList({ projects }: ProjectsListProps) {
 }
 
 // Helper for View Mode Toggle
-function ChevronRight({className}: {className?: string}) {
-  return <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m9 18 6-6-6-6"/></svg>;
+function ChevronRight({ className }: { className?: string }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="m9 18 6-6-6-6" />
+    </svg>
+  );
 }
