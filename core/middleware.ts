@@ -7,8 +7,8 @@ import {
 } from "@/lib/rateLimiter";
 
 const PROTECTED_HOSTS = [
-  "deployr.abhishekbr.dev",
-  "ws.abhishekbr.dev",
+  "deployr.abhishekbr.com",
+  "ws.abhishekbr.com",
 ] as const;
 
 export default async function middleware(req: NextRequest) {

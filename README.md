@@ -17,7 +17,7 @@
 - 🔐 **Auth via NextAuth.js** — GitHub OAuth + session-protected APIs.
 - 🧵 **Redis Queue** — Pushes builds into Redis queue for serialized processing.
 - 🗂️ **PostgreSQL (via Prisma)** — Used for storing all metadata.
-- 📡 **WebSocket Updates (wss.deployr.abhishekbr.dev)** — Real-time updates over WS.
+- 📡 **WebSocket Updates (wss.deployr.abhishekbr.com)** — Real-time updates over WS.
 
 ---
 
@@ -105,14 +105,14 @@ await pgClient.query(`INSERT INTO "FailedJobs" (id) VALUES ($1)`, [id]);
 
 - SSL termination via Certbot (wildcard + root)
 - Routes:
-  - `api.deployr.abhishekbr.dev` -> API Server (8080)
-  - `ws.deployr.abhishekbr.dev` -> WebSocket Server (8082)
+  - `api.deployr.abhishekbr.com` -> API Server (8080)
+  - `ws.deployr.abhishekbr.com` -> WebSocket Server (8082)
   - `*.deployr.live` -> Static file server (8081)
 
 ```nginx
 server {
   listen 443 ssl;
-  server_name api.deployr.abhishekbr.dev;
+  server_name api.deployr.abhishekbr.com;
   proxy_pass http://localhost:8080;
 }
 
